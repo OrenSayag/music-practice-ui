@@ -30,6 +30,8 @@ export const en = {
   'settings.title': 'Settings',
   'settings.theme': 'Theme',
   'settings.language': 'Language',
+  'settings.hebrew': 'עברית',
+  'settings.english': 'English',
 
   // Sidebar
   'sidebar.logout': 'Log out',

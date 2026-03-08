@@ -13,14 +13,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useDir } from '@/hooks/use-dir';
 
 export function AppSidebar() {
   const { user } = useAuthUser();
   const { t } = useTranslation();
   const location = useLocation();
+  const dir = useDir()
 
   return (
-    <Sidebar side="left">
+    <Sidebar side={
+            dir === "rtl" ? "right" : "left"
+        }>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
