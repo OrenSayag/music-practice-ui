@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api/api-client';
-import type { LoginResponse, MeResponse } from './auth-types';
+import type { LoginResponse, MeResponse, GuestLoginResponse } from './auth-types';
 
 export function login(email: string): Promise<LoginResponse> {
   return apiClient.post<LoginResponse>('/auth/login', { email }, { skipAuthRedirect: true });
@@ -7,6 +7,10 @@ export function login(email: string): Promise<LoginResponse> {
 
 export function getMe(): Promise<MeResponse> {
   return apiClient.get<MeResponse>('/user/me');
+}
+
+export function guestLogin(guestId: string): Promise<GuestLoginResponse> {
+  return apiClient.post<GuestLoginResponse>('/guest/login', { guestId }, { skipAuthRedirect: true });
 }
 
 export async function logout(): Promise<void> {

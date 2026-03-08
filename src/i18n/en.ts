@@ -20,10 +20,13 @@ export const en = {
   'login.checkSpam':
     "Click the link in the email to sign in. If you don't see it, check your spam folder.",
   'login.failedToSend': 'Failed to send sign-in link',
+  'login.or': 'or',
+  'login.continueAsGuest': 'Continue as Guest',
 
   // Dashboard
   'dashboard.welcome': 'Welcome',
   'dashboard.welcomeName': 'Welcome, {{name}}',
+  'dashboard.welcomeGuest': 'Welcome, Guest',
   'dashboard.subtitle': 'Your music practice dashboard',
 
   // Settings
@@ -34,6 +37,7 @@ export const en = {
   'settings.english': 'English',
 
   // Sidebar
+  'sidebar.guest': 'Guest',
   'sidebar.logout': 'Log out',
 
   // Error page

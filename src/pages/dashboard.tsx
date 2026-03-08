@@ -16,7 +16,9 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold">
-          {t('dashboard.welcomeName', { name: user.firstName })}
+          {user.isGuest
+            ? t('dashboard.welcomeGuest')
+            : t('dashboard.welcomeName', { name: user.firstName })}
         </h1>
         <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>

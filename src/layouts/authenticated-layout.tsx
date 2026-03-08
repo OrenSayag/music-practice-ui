@@ -69,7 +69,7 @@ export default function AuthenticatedLayout() {
               <Avatar className="h-8 w-8">
                 {user.image && <AvatarImage src={user.image} />}
                 <AvatarFallback>
-                  {getInitials(`${user.firstName} ${user.lastName}`)}
+                  {user.isGuest ? 'G' : getInitials(`${user.firstName} ${user.lastName}`)}
                 </AvatarFallback>
               </Avatar>
               <Button variant="ghost" size="icon" onClick={handleLogout}>

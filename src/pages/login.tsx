@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Mail, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { Mail, CheckCircle, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -12,12 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { login } from '@/services/auth/auth-api';
+import { Separator } from '@/components/ui/separator';
+import { login, guestLogin } from '@/services/auth/auth-api';
+import { getOrCreateGuestId } from '@/services/auth/guest-id';
 import { ApiError } from '@/services/api/api-client';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const { email, isSubmitting, isSent, handlers } = useLoginForm();
+  const { email, isSubmitting, isGuestLoading, isSent, handlers } = useLoginForm();
 
   if (isSent) {
     return (
@@ -51,7 +54,7 @@ export default function LoginPage() {
             {t('login.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <form onSubmit={handlers.handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">{t('login.email')}</Label>
@@ -65,7 +68,7 @@ export default function LoginPage() {
                 autoFocus
               />
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting || isGuestLoading} className="w-full">
               {isSubmitting ? (
                 t('login.sending')
               ) : (
@@ -76,6 +79,22 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          <div className="flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-sm text-muted-foreground">{t('login.or')}</span>
+            <Separator className="flex-1" />
+          </div>
+
+          <Button
+            variant="outline"
+            onClick={handlers.handleGuestLogin}
+            disabled={isSubmitting || isGuestLoading}
+            className="w-full"
+          >
+            <UserRound className="mr-2 h-4 w-4" />
+            {t('login.continueAsGuest')}
+          </Button>
         </CardContent>
       </Card>
     </div>
@@ -84,8 +103,10 @@ export default function LoginPage() {
 
 function useLoginForm() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,12 +127,32 @@ function useLoginForm() {
     }
   };
 
+  const handleGuestLogin = async () => {
+    setIsGuestLoading(true);
+
+    try {
+      const guestId = getOrCreateGuestId();
+      await guestLogin(guestId);
+      navigate('/');
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : t('login.failedToSend');
+      toast.error(message);
+    } finally {
+      setIsGuestLoading(false);
+    }
+  };
+
   return {
     email,
     isSubmitting,
+    isGuestLoading,
     isSent,
     handlers: {
       handleSubmit,
+      handleGuestLogin,
       handleEmailChange: (e: React.ChangeEvent<HTMLInputElement>) =>
         setEmail(e.target.value),
     },

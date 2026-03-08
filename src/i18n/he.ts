@@ -22,10 +22,13 @@ export const he: Record<TranslationKey, string> = {
   'login.checkSpam':
     'לחצו על הקישור באימייל כדי להיכנס. אם אינכם רואים אותו, בדקו את תיקיית הספאם.',
   'login.failedToSend': 'שליחת קישור הכניסה נכשלה',
+  'login.or': 'או',
+  'login.continueAsGuest': 'המשך כאורח',
 
   // Dashboard
   'dashboard.welcome': 'ברוכים הבאים',
   'dashboard.welcomeName': 'ברוכים הבאים, {{name}}',
+  'dashboard.welcomeGuest': 'ברוכים הבאים, אורח',
   'dashboard.subtitle': 'לוח תרגול המוזיקה שלכם',
 
   // Settings
@@ -36,6 +39,7 @@ export const he: Record<TranslationKey, string> = {
   'settings.english': 'English',
 
   // Sidebar
+  'sidebar.guest': 'אורח',
   'sidebar.logout': 'התנתקות',
 
   // Error page

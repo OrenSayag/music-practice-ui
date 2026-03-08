@@ -30,10 +30,14 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" className="cursor-default">
               <div className="flex flex-col gap-0.5 leading-none grow">
-                <span className="font-bold">{`${user.firstName ?? ''} ${user.lastName ?? ''}`}</span>
-                <span className="text-xs text-muted-foreground">
-                  {user.email}
+                <span className="font-bold">
+                  {user.isGuest ? t('sidebar.guest') : `${user.firstName ?? ''} ${user.lastName ?? ''}`}
                 </span>
+                {!user.isGuest && user.email && (
+                  <span className="text-xs text-muted-foreground">
+                    {user.email}
+                  </span>
+                )}
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
