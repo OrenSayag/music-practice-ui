@@ -1,4 +1,5 @@
 import { AppSidebar } from '@/components/app-sidebar';
+import { MobileTabBar } from '@/components/mobile-tab-bar';
 import { ErrorPage } from '@/components/error-page';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -56,10 +57,13 @@ export default function AuthenticatedLayout() {
   return (
     <AuthContext value={{ user, setUser }}>
       <SidebarProvider>
-        <AppSidebar />
+        <div className="hidden md:contents">
+          <AppSidebar />
+        </div>
         <SidebarInset>
           <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <SidebarTrigger />
+            <SidebarTrigger className="hidden md:flex" />
+            <span className="text-sm font-medium md:hidden">{t('appName')}</span>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/settings">
@@ -78,10 +82,11 @@ export default function AuthenticatedLayout() {
             </div>
           </header>
 
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 pb-24 md:pb-6">
             <Outlet />
           </main>
         </SidebarInset>
+        <MobileTabBar />
       </SidebarProvider>
     </AuthContext>
   );

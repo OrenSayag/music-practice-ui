@@ -6,7 +6,9 @@ export const he: Record<TranslationKey, string> = {
   appTagline: 'עקבו ושפרו את התרגולים שלכם',
 
   // Nav
-  'nav.dashboard': 'לוח בקרה',
+  'nav.home': 'בית',
+  'nav.practice': 'תרגול',
+  'nav.recordings': 'הקלטות',
   'nav.settings': 'הגדרות',
   'nav.navigation': 'ניווט',
 
@@ -30,6 +32,7 @@ export const he: Record<TranslationKey, string> = {
   'dashboard.welcomeName': 'ברוכים הבאים, {{name}}',
   'dashboard.welcomeGuest': 'ברוכים הבאים, אורח',
   'dashboard.subtitle': 'לוח תרגול המוזיקה שלכם',
+  'dashboard.getStarted': 'התחילו לבנות את אפליקציית התרגול שלכם מכאן.',
 
   // Settings
   'settings.title': 'הגדרות',
@@ -54,7 +57,7 @@ export const he: Record<TranslationKey, string> = {
 
   // Theme
   'theme.toggle': 'החלפת ערכת נושא',
+  'theme.matrix': 'מטריקס',
   'theme.light': 'בהיר',
   'theme.dark': 'כהה',
-  'theme.system': 'מערכת',
 } as const;

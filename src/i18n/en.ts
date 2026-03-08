@@ -4,7 +4,9 @@ export const en = {
   appTagline: 'Track and improve your practice sessions',
 
   // Nav
-  'nav.dashboard': 'Dashboard',
+  'nav.home': 'Home',
+  'nav.practice': 'Practice',
+  'nav.recordings': 'Recordings',
   'nav.settings': 'Settings',
   'nav.navigation': 'Navigation',
 
@@ -28,6 +30,7 @@ export const en = {
   'dashboard.welcomeName': 'Welcome, {{name}}',
   'dashboard.welcomeGuest': 'Welcome, Guest',
   'dashboard.subtitle': 'Your music practice dashboard',
+  'dashboard.getStarted': 'Start building your music practice app from here.',
 
   // Settings
   'settings.title': 'Settings',
@@ -52,9 +55,9 @@ export const en = {
 
   // Theme
   'theme.toggle': 'Toggle theme',
+  'theme.matrix': 'Matrix',
   'theme.light': 'Light',
   'theme.dark': 'Dark',
-  'theme.system': 'System',
 } as const;
 
 export type TranslationKey = keyof typeof en;

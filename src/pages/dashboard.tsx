@@ -30,7 +30,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Start building your music practice app from here.
+            {t('dashboard.getStarted')}
           </p>
         </CardContent>
       </Card>
