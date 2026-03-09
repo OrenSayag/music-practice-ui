@@ -57,6 +57,12 @@ export const he: Record<TranslationKey, string> = {
   'settings.weekStartDay': 'השבוע מתחיל ב',
   'settings.sunday': 'ראשון',
   'settings.monday': 'שני',
+  'settings.metronomeSound': 'צליל מטרונום',
+  'settings.sound.wood': 'עץ',
+  'settings.sound.glass': 'זכוכית',
+  'settings.sound.electromagnetic': 'אלקטרומגנטי',
+  'settings.sound.arcane': 'מיסטי',
+  'settings.metronomeVolume': 'עוצמת מטרונום',
 
   // Sidebar
   'sidebar.guest': 'אורח',

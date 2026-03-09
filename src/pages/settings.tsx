@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthUser } from '@/layouts/authenticated-layout';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -9,6 +10,10 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useUpdatePreferences } from '@/services/user/user-queries';
+import { playPreviewClick } from '@/hooks/use-metronome';
+import type { MetronomeSound } from '@/services/auth/auth-types';
+
+const METRONOME_SOUNDS: MetronomeSound[] = ['wood', 'glass', 'electromagnetic', 'arcane'];
 
 export default function SettingsPage() {
   const { handlers } = useSettingsPage();
@@ -71,20 +76,78 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.metronomeSound')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {METRONOME_SOUNDS.map((sound) => (
+              <Button
+                key={sound}
+                variant={user.metronomeSound === sound ? 'default' : 'outline'}
+                onClick={() => handlers.setMetronomeSound(sound)}
+              >
+                {t(`settings.sound.${sound}`)}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.metronomeVolume')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round(handlers.volume * 100)}
+              onChange={(e) => handlers.setVolume(Number(e.target.value) / 100)}
+              className="flex-1 accent-accent-green"
+            />
+            <span className="w-10 text-end font-mono text-sm text-muted-foreground">
+              {Math.round(handlers.volume * 100)}%
+            </span>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
+const VOLUME_KEY = 'metronome-volume';
+
 function useSettingsPage() {
   const { user, setUser } = useAuthUser();
   const updatePreferences = useUpdatePreferences();
+  const [volume, setVolumeState] = useState(() => {
+    const stored = localStorage.getItem(VOLUME_KEY);
+    return stored !== null ? Number(stored) : 0.8;
+  });
 
   const setWeekStartDay = (day: number) => {
     setUser({ ...user, weekStartDay: day });
     updatePreferences.mutate({ weekStartDay: day });
   };
 
+  const setMetronomeSound = (sound: MetronomeSound) => {
+    setUser({ ...user, metronomeSound: sound });
+    updatePreferences.mutate({ metronomeSound: sound });
+    playPreviewClick(sound, volume);
+  };
+
+  const setVolume = (value: number) => {
+    const clamped = Math.max(0, Math.min(1, value));
+    setVolumeState(clamped);
+    localStorage.setItem(VOLUME_KEY, String(clamped));
+  };
+
   return {
-    handlers: { setWeekStartDay },
+    handlers: { setWeekStartDay, setMetronomeSound, volume, setVolume },
   };
 }

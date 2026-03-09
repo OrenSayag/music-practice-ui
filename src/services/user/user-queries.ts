@@ -1,12 +1,15 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/services/api/api-client';
+import type { MetronomeSound } from '@/services/auth/auth-types';
 
 interface UpdatePreferencesInput {
-  weekStartDay: number;
+  weekStartDay?: number;
+  metronomeSound?: MetronomeSound;
 }
 
 interface PreferencesResponse {
   weekStartDay: number;
+  metronomeSound: MetronomeSound;
 }
 
 export const useUpdatePreferences = () => {

@@ -6,9 +6,62 @@ const DEFAULT_BPM = 80;
 const DEFAULT_BEATS = 4;
 const LOOKAHEAD_MS = 25;
 const SCHEDULE_AHEAD_S = 0.1;
-const CLICK_DURATION_S = 0.03;
-const ACCENT_FREQ = 1000;
-const NORMAL_FREQ = 800;
+
+const VOLUME_KEY = 'metronome-volume';
+const DEFAULT_VOLUME = 0.8;
+
+function loadVolume(): number {
+  const stored = localStorage.getItem(VOLUME_KEY);
+  if (stored === null) return DEFAULT_VOLUME;
+  const parsed = Number(stored);
+  return Number.isFinite(parsed) ? Math.max(0, Math.min(1, parsed)) : DEFAULT_VOLUME;
+}
+
+export type MetronomeSound = 'wood' | 'glass' | 'electromagnetic' | 'arcane';
+
+export interface SoundConfig {
+  accentFreq: number;
+  normalFreq: number;
+  accentGain: number;
+  normalGain: number;
+  duration: number;
+  waveform: OscillatorType;
+}
+
+export const SOUND_CONFIGS: Record<MetronomeSound, SoundConfig> = {
+  wood: {
+    accentFreq: 800,
+    normalFreq: 500,
+    accentGain: 0.8,
+    normalGain: 0.5,
+    duration: 0.02,
+    waveform: 'sine',
+  },
+  glass: {
+    accentFreq: 2200,
+    normalFreq: 1600,
+    accentGain: 0.4,
+    normalGain: 0.25,
+    duration: 0.08,
+    waveform: 'sine',
+  },
+  electromagnetic: {
+    accentFreq: 600,
+    normalFreq: 440,
+    accentGain: 0.6,
+    normalGain: 0.4,
+    duration: 0.015,
+    waveform: 'square',
+  },
+  arcane: {
+    accentFreq: 1200,
+    normalFreq: 700,
+    accentGain: 0.5,
+    normalGain: 0.35,
+    duration: 0.06,
+    waveform: 'triangle',
+  },
+};
 
 export interface MetronomeState {
   bpm: number;
@@ -16,6 +69,7 @@ export interface MetronomeState {
   accents: boolean[];
   isPlaying: boolean;
   currentBeat: number;
+  volume: number;
 }
 
 export interface MetronomeActions {
@@ -23,9 +77,10 @@ export interface MetronomeActions {
   setBeats: (beats: number) => void;
   toggleAccent: (index: number) => void;
   togglePlay: () => void;
+  setVolume: (volume: number) => void;
 }
 
-export function useMetronome(): MetronomeState & MetronomeActions {
+export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState & MetronomeActions {
   const [bpm, setBpmState] = useState(DEFAULT_BPM);
   const [beats, setBeatsState] = useState(DEFAULT_BEATS);
   const [accents, setAccents] = useState<boolean[]>(() =>
@@ -33,6 +88,7 @@ export function useMetronome(): MetronomeState & MetronomeActions {
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
+  const [volume, setVolumeState] = useState(loadVolume);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -41,13 +97,17 @@ export function useMetronome(): MetronomeState & MetronomeActions {
   const bpmRef = useRef(bpm);
   const beatsRef = useRef(beats);
   const accentsRef = useRef(accents);
+  const soundRef = useRef(SOUND_CONFIGS[soundType]);
+  const volumeRef = useRef(volume);
 
   bpmRef.current = bpm;
   beatsRef.current = beats;
   accentsRef.current = accents;
+  soundRef.current = SOUND_CONFIGS[soundType];
+  volumeRef.current = volume;
 
   const getAudioContext = useCallback(() => {
-    if (!audioCtxRef.current) {
+    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
       audioCtxRef.current = new AudioContext();
     }
     if (audioCtxRef.current.state === 'suspended') {
@@ -59,18 +119,21 @@ export function useMetronome(): MetronomeState & MetronomeActions {
   const scheduleClick = useCallback(
     (time: number, isAccent: boolean) => {
       const ctx = getAudioContext();
+      const cfg = soundRef.current;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      osc.frequency.value = isAccent ? ACCENT_FREQ : NORMAL_FREQ;
-      gain.gain.value = isAccent ? 1 : 0.6;
-      gain.gain.exponentialRampToValueAtTime(0.001, time + CLICK_DURATION_S);
+      const vol = volumeRef.current;
+      osc.type = cfg.waveform;
+      osc.frequency.value = isAccent ? cfg.accentFreq : cfg.normalFreq;
+      gain.gain.setValueAtTime((isAccent ? cfg.accentGain : cfg.normalGain) * vol, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + cfg.duration);
 
       osc.start(time);
-      osc.stop(time + CLICK_DURATION_S);
+      osc.stop(time + cfg.duration);
     },
     [getAudioContext]
   );
@@ -132,6 +195,12 @@ export function useMetronome(): MetronomeState & MetronomeActions {
     });
   }, []);
 
+  const setVolume = useCallback((value: number) => {
+    const clamped = Math.max(0, Math.min(1, value));
+    setVolumeState(clamped);
+    localStorage.setItem(VOLUME_KEY, String(clamped));
+  }, []);
+
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -145,9 +214,32 @@ export function useMetronome(): MetronomeState & MetronomeActions {
     accents,
     isPlaying,
     currentBeat,
+    volume,
     setBpm,
     setBeats,
     toggleAccent,
     togglePlay,
+    setVolume,
   };
+}
+
+export function playPreviewClick(sound: MetronomeSound, volume: number = 0.8) {
+  const ctx = new AudioContext();
+  const cfg = SOUND_CONFIGS[sound];
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.type = cfg.waveform;
+  osc.frequency.value = cfg.accentFreq;
+  const now = ctx.currentTime;
+  gain.gain.setValueAtTime(cfg.accentGain * volume, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + cfg.duration);
+
+  osc.start(now);
+  osc.stop(now + cfg.duration);
+
+  setTimeout(() => ctx.close(), 500);
 }

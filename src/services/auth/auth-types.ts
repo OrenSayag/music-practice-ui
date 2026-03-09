@@ -1,3 +1,5 @@
+export type MetronomeSound = 'wood' | 'glass' | 'electromagnetic' | 'arcane';
+
 export interface User {
   id: string;
   email: string;
@@ -6,6 +8,7 @@ export interface User {
   image: string | null;
   isGuest: boolean;
   weekStartDay: number;
+  metronomeSound: MetronomeSound;
 }
 
 export interface GuestLoginResponse {

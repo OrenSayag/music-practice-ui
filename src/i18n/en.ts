@@ -55,6 +55,12 @@ export const en = {
   'settings.weekStartDay': 'Week starts on',
   'settings.sunday': 'Sunday',
   'settings.monday': 'Monday',
+  'settings.metronomeSound': 'Metronome Sound',
+  'settings.sound.wood': 'Wood',
+  'settings.sound.glass': 'Glass',
+  'settings.sound.electromagnetic': 'Electromagnetic',
+  'settings.sound.arcane': 'Arcane',
+  'settings.metronomeVolume': 'Metronome Volume',
 
   // Sidebar
   'sidebar.guest': 'Guest',
