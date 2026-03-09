@@ -31,6 +31,18 @@ export const en = {
   'dashboard.welcomeGuest': 'Welcome, Guest',
   'dashboard.subtitle': 'Your music practice dashboard',
   'dashboard.getStarted': 'Start building your music practice app from here.',
+  'dashboard.today': 'Today',
+  'dashboard.dailyQuote': 'daily_quote',
+  'dashboard.weeklyActivity': 'Weekly Activity',
+  'dashboard.thisWeek': 'This Week',
+  'dashboard.weekOverWeek': 'vs last week',
+  'dashboard.noDataYet': 'No data yet',
+  'dashboard.recentSessions': 'Recent Sessions',
+  'dashboard.noSessions': 'No practice sessions yet',
+  'dashboard.startPracticing': 'Start your first practice session!',
+  'dashboard.items': '{{count}} items',
+  'dashboard.min': '{{min}}m',
+  'dashboard.hourMin': '{{hours}}h {{min}}m',
 
   // Settings
   'settings.title': 'Settings',

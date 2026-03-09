@@ -33,6 +33,18 @@ export const he: Record<TranslationKey, string> = {
   'dashboard.welcomeGuest': 'ברוכים הבאים, אורח',
   'dashboard.subtitle': 'לוח תרגול המוזיקה שלכם',
   'dashboard.getStarted': 'התחילו לבנות את אפליקציית התרגול שלכם מכאן.',
+  'dashboard.today': 'היום',
+  'dashboard.dailyQuote': 'ציטוט_יומי',
+  'dashboard.weeklyActivity': 'פעילות שבועית',
+  'dashboard.thisWeek': 'השבוע',
+  'dashboard.weekOverWeek': 'מול שבוע שעבר',
+  'dashboard.noDataYet': 'אין נתונים עדיין',
+  'dashboard.recentSessions': 'תרגולים אחרונים',
+  'dashboard.noSessions': 'אין תרגולים עדיין',
+  'dashboard.startPracticing': 'התחילו את התרגול הראשון!',
+  'dashboard.items': '{{count}} פריטים',
+  'dashboard.min': '{{min}}ד׳',
+  'dashboard.hourMin': '{{hours}}ש׳ {{min}}ד׳',
 
   // Settings
   'settings.title': 'הגדרות',
