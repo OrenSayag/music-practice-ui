@@ -34,11 +34,13 @@ export const he: Record<TranslationKey, string> = {
   'dashboard.subtitle': 'לוח תרגול המוזיקה שלכם',
   'dashboard.getStarted': 'התחילו לבנות את אפליקציית התרגול שלכם מכאן.',
   'dashboard.today': 'היום',
-  'dashboard.dailyQuote': 'ציטוט_יומי',
+  'dashboard.dailyQuote': 'ציטוט יומי',
   'dashboard.weeklyActivity': 'פעילות שבועית',
   'dashboard.thisWeek': 'השבוע',
   'dashboard.weekOverWeek': 'מול שבוע שעבר',
   'dashboard.noDataYet': 'אין נתונים עדיין',
+  'dashboard.total': 'סה״כ',
+  'dashboard.totalPracticeTime': 'זמן תרגול כולל',
   'dashboard.recentSessions': 'תרגולים אחרונים',
   'dashboard.noSessions': 'אין תרגולים עדיין',
   'dashboard.startPracticing': 'התחילו את התרגול הראשון!',
@@ -52,6 +54,9 @@ export const he: Record<TranslationKey, string> = {
   'settings.language': 'שפה',
   'settings.hebrew': 'עברית',
   'settings.english': 'English',
+  'settings.weekStartDay': 'השבוע מתחיל ב',
+  'settings.sunday': 'ראשון',
+  'settings.monday': 'שני',
 
   // Sidebar
   'sidebar.guest': 'אורח',
@@ -69,7 +74,6 @@ export const he: Record<TranslationKey, string> = {
 
   // Theme
   'theme.toggle': 'החלפת ערכת נושא',
-  'theme.matrix': 'מטריקס',
   'theme.light': 'בהיר',
   'theme.dark': 'כהה',
 } as const;

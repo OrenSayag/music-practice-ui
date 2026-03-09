@@ -3,7 +3,6 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-@custom-variant matrix (&:is(.matrix *));
 
 @theme inline {
     --font-sans: 'Inter', sans-serif;
@@ -63,7 +62,7 @@
 
 /* ===== LIGHT THEME (default) ===== */
 :root {
-    --radius: 0.625rem;
+    --radius: 0.125rem;
     --background: #FFFFFF;
     --foreground: #0F172A;
     --card: #F9FAFB;
@@ -112,55 +111,6 @@
 
 /* ===== DARK THEME ===== */
 .dark {
-    --radius: 0.625rem;
-    --background: #09090B;
-    --foreground: #FAFAFA;
-    --card: #111114;
-    --card-foreground: #FAFAFA;
-    --popover: #111114;
-    --popover-foreground: #FAFAFA;
-    --primary: #22C55E;
-    --primary-foreground: #09090B;
-    --secondary: #1A1A1E;
-    --secondary-foreground: #FAFAFA;
-    --muted: #1A1A1E;
-    --muted-foreground: #A1A1AA;
-    --accent: #1A1A1E;
-    --accent-foreground: #FAFAFA;
-    --destructive: #F87171;
-    --border: #27272A;
-    --input: #27272A;
-    --ring: #22C55E;
-    --chart-1: #22C55E;
-    --chart-2: #FBBF24;
-    --chart-3: #22D3EE;
-    --chart-4: #F87171;
-    --chart-5: #A1A1AA;
-    --sidebar: #111114;
-    --sidebar-foreground: #FAFAFA;
-    --sidebar-primary: #22C55E;
-    --sidebar-primary-foreground: #09090B;
-    --sidebar-accent: #1A1A1E;
-    --sidebar-accent-foreground: #FAFAFA;
-    --sidebar-border: #27272A;
-    --sidebar-ring: #22C55E;
-
-    /* App accents */
-    --accent-green: #22C55E;
-    --accent-amber: #FBBF24;
-    --accent-cyan: #22D3EE;
-    --accent-red: #F87171;
-    --accent-green-tint: #22C55E10;
-    --accent-amber-tint: #FBBF2420;
-    --accent-red-tint: #F8717120;
-    --heatmap-1: #22C55E25;
-    --heatmap-2: #22C55E50;
-    --heatmap-3: #22C55E75;
-    --heatmap-4: #22C55EA0;
-}
-
-/* ===== MATRIX THEME ===== */
-.matrix {
     --radius: 0.125rem;
     --background: #0A0A0A;
     --foreground: #FAFAFA;
@@ -173,7 +123,7 @@
     --secondary: #1F1F1F;
     --secondary-foreground: #FAFAFA;
     --muted: #1F1F1F;
-    --muted-foreground: #6B7280;
+    --muted-foreground: #8B8B8B;
     --accent: #1F1F1F;
     --accent-foreground: #FAFAFA;
     --destructive: #EF4444;
@@ -208,20 +158,15 @@
     --heatmap-4: #10B981CC;
 }
 
-/* Matrix theme uses monospace font globally */
-.matrix {
-    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground font-sans;
+  html {
+    font-size: 20px;
     }
-  .matrix body,
-  .matrix {
+  body {
+    @apply bg-background text-foreground;
     font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
     }
 }

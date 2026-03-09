@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'matrix' | 'light' | 'dark';
+type Theme = 'dark' | 'light';
 
 interface ThemeContextValue {
   theme: Theme;
@@ -8,7 +8,7 @@ interface ThemeContextValue {
 }
 
 const STORAGE_KEY = 'music-practice-theme';
-const DEFAULT_THEME: Theme = 'matrix';
+const DEFAULT_THEME: Theme = 'dark';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
@@ -20,15 +20,14 @@ export function useTheme(): ThemeContextValue {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    return stored && ['matrix', 'light', 'dark'].includes(stored)
-      ? stored
-      : DEFAULT_THEME;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') return stored;
+    return DEFAULT_THEME;
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('matrix', 'light', 'dark');
+    root.classList.remove('dark', 'light');
     root.classList.add(theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);

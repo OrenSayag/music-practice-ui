@@ -26,4 +26,5 @@ export interface DashboardData {
   heatmap: HeatmapDay[];
   weeklyStats: WeeklyStats;
   recentSessions: RecentSession[];
+  totalPracticeSeconds: number;
 }

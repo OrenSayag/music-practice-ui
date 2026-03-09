@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useAuthUser } from '@/layouts/authenticated-layout';
 import { ThemeToggle } from '@/components/theme-toggle';
 import {
   Card,
@@ -7,9 +8,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useUpdatePreferences } from '@/services/user/user-queries';
 
 export default function SettingsPage() {
+  const { handlers } = useSettingsPage();
   const { t, i18n } = useTranslation();
+  const { user } = useAuthUser();
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,6 +49,42 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.weekStartDay')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Button
+              variant={user.weekStartDay === 0 ? 'default' : 'outline'}
+              onClick={() => handlers.setWeekStartDay(0)}
+            >
+              {t('settings.sunday')}
+            </Button>
+            <Button
+              variant={user.weekStartDay === 1 ? 'default' : 'outline'}
+              onClick={() => handlers.setWeekStartDay(1)}
+            >
+              {t('settings.monday')}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
+}
+
+function useSettingsPage() {
+  const { user, setUser } = useAuthUser();
+  const updatePreferences = useUpdatePreferences();
+
+  const setWeekStartDay = (day: number) => {
+    setUser({ ...user, weekStartDay: day });
+    updatePreferences.mutate({ weekStartDay: day });
+  };
+
+  return {
+    handlers: { setWeekStartDay },
+  };
 }

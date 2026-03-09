@@ -1,18 +1,12 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
 import { ErrorPage } from '@/components/error-page';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { Spinner } from '@/components/ui/spinner';
 import { ApiError } from '@/services/api/api-client';
 import { getMe, logout } from '@/services/auth/auth-api';
 import type { User } from '@/services/auth/auth-types';
 import { LogOut, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -56,49 +50,38 @@ export default function AuthenticatedLayout() {
 
   return (
     <AuthContext value={{ user, setUser }}>
-      <SidebarProvider>
-        <div className="hidden md:contents">
-          <AppSidebar />
-        </div>
-        <SidebarInset>
-          <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <SidebarTrigger className="hidden md:flex" />
-            <span className="text-sm font-medium md:hidden">{t('appName')}</span>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/settings">
-                  <Settings className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Avatar className="h-8 w-8">
-                {user.image && <AvatarImage src={user.image} />}
-                <AvatarFallback>
-                  {user.isGuest ? 'G' : getInitials(`${user.firstName} ${user.lastName}`)}
-                </AvatarFallback>
-              </Avatar>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </header>
-
-          <main className="flex-1 p-6 pb-24 md:pb-6">
+      <div className="flex min-h-screen">
+        <AppSidebar />
+        <div className="flex flex-1 flex-col">
+          <MobileHeader handleLogout={handleLogout} />
+          <main className="flex flex-1 flex-col p-6 pb-24 md:p-10 md:pb-10">
             <Outlet />
           </main>
-        </SidebarInset>
-        <MobileTabBar />
-      </SidebarProvider>
+        </div>
+      </div>
+      <MobileTabBar />
     </AuthContext>
   );
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
+function MobileHeader({ handleLogout }: { handleLogout: () => void }) {
+  const { t } = useTranslation();
+
+  return (
+    <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur md:hidden supports-[backdrop-filter]:bg-background/60">
+      <span className="text-sm font-medium">{t('appName')}</span>
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" asChild>
+          <Link to="/settings">
+            <Settings className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
+        </Button>
+      </div>
+    </header>
+  );
 }
 
 function useAuth() {
@@ -132,11 +115,10 @@ function useAuth() {
   const handleLogout = async () => {
     try {
       await logout();
-    } catch (err) {
-      console.error('Logout failed:', err);
-    } finally {
-      navigate('/login');
+    } catch {
+      // continue to login regardless
     }
+    navigate('/login');
   };
 
   return { user, setUser, error, isLoading, retry: fetchUser, handleLogout };

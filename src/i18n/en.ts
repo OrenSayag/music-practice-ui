@@ -32,11 +32,13 @@ export const en = {
   'dashboard.subtitle': 'Your music practice dashboard',
   'dashboard.getStarted': 'Start building your music practice app from here.',
   'dashboard.today': 'Today',
-  'dashboard.dailyQuote': 'daily_quote',
+  'dashboard.dailyQuote': 'Daily Quote',
   'dashboard.weeklyActivity': 'Weekly Activity',
   'dashboard.thisWeek': 'This Week',
   'dashboard.weekOverWeek': 'vs last week',
   'dashboard.noDataYet': 'No data yet',
+  'dashboard.total': 'total',
+  'dashboard.totalPracticeTime': 'total practice time',
   'dashboard.recentSessions': 'Recent Sessions',
   'dashboard.noSessions': 'No practice sessions yet',
   'dashboard.startPracticing': 'Start your first practice session!',
@@ -50,6 +52,9 @@ export const en = {
   'settings.language': 'Language',
   'settings.hebrew': 'עברית',
   'settings.english': 'English',
+  'settings.weekStartDay': 'Week starts on',
+  'settings.sunday': 'Sunday',
+  'settings.monday': 'Monday',
 
   // Sidebar
   'sidebar.guest': 'Guest',
@@ -67,7 +72,6 @@ export const en = {
 
   // Theme
   'theme.toggle': 'Toggle theme',
-  'theme.matrix': 'Matrix',
   'theme.light': 'Light',
   'theme.dark': 'Dark',
 } as const;

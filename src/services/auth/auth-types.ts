@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   image: string | null;
   isGuest: boolean;
+  weekStartDay: number;
 }
 
 export interface GuestLoginResponse {

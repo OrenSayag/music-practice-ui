@@ -3,14 +3,14 @@ import { apiClient } from '@/services/api/api-client';
 import type { DashboardData } from './dashboard-types';
 
 export const dashboardQueries = {
-  dashboard: () => ({
-    queryKey: ['dashboard'] as const,
+  dashboard: (locale: string) => ({
+    queryKey: ['dashboard', locale] as const,
     queryFn: async () => {
-      return apiClient.get<DashboardData>('/dashboard');
+      return apiClient.get<DashboardData>(`/dashboard?locale=${locale}`);
     },
   }),
 };
 
-export const useDashboard = () => {
-  return useQuery(dashboardQueries.dashboard());
+export const useDashboard = (locale: string) => {
+  return useQuery(dashboardQueries.dashboard(locale));
 };

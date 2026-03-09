@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,6 @@ export function ThemeToggle() {
 
   return (
     <div className="flex gap-2">
-      <Button
-        variant={theme === 'matrix' ? 'default' : 'outline'}
-        size="sm"
-        onClick={() => setTheme('matrix')}
-      >
-        <Monitor className="mr-2 h-4 w-4" />
-        {t('theme.matrix')}
-      </Button>
       <Button
         variant={theme === 'light' ? 'default' : 'outline'}
         size="sm"

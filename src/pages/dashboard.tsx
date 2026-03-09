@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useAuthUser } from '@/layouts/authenticated-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SectionTitle } from '@/components/section-title';
 import { useDashboard } from '@/services/dashboard/dashboard-queries';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type {
   HeatmapDay,
   Quote,
@@ -13,22 +14,28 @@ import type {
 import { ArrowUpRight, ArrowDownRight, Music } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { data, isLoading } = useDashboard();
-  const { greeting, dateString } = useDashboardPage();
+  const { i18n } = useTranslation();
+  const { data, isLoading } = useDashboard(i18n.language);
+  const { user, dateString, totalTimeFormatted } = useDashboardPage(
+    data?.totalPracticeSeconds ?? 0
+  );
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">{greeting}</h1>
-        <p className="text-muted-foreground">{dateString}</p>
-      </div>
+    <div className="flex flex-1 flex-col gap-8">
+      <TopBar
+        name={user.isGuest ? 'Guest' : user.firstName || 'User'}
+        initial={user.isGuest ? 'G' : (user.firstName?.[0] ?? 'U')}
+        image={user.image}
+        totalTime={totalTimeFormatted}
+        date={dateString}
+      />
 
       {isLoading ? <DashboardSkeleton /> : null}
 
       {data ? (
         <>
           <QuoteCard quote={data.quote} />
-          <DashboardGrid
+          <BottomSection
             heatmap={data.heatmap}
             weeklyStats={data.weeklyStats}
             recentSessions={data.recentSessions}
@@ -39,25 +46,55 @@ export default function DashboardPage() {
   );
 }
 
+function TopBar({
+  name,
+  initial,
+  image,
+  totalTime,
+  date,
+}: {
+  name: string;
+  initial: string;
+  image: string | null;
+  totalTime: string;
+  date: string;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Avatar className="h-9 w-9">
+          {image ? <AvatarImage src={image} /> : null}
+          <AvatarFallback>{initial}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <span className="text-sm font-bold">{name}</span>
+          <span className="text-xs text-muted-foreground">{totalTime}</span>
+        </div>
+      </div>
+      <span className="text-sm text-muted-foreground">{date}</span>
+    </div>
+  );
+}
+
 function QuoteCard({ quote }: { quote: Quote }) {
   const { t } = useTranslation();
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <p className="text-xs text-muted-foreground mb-2 font-mono">
-          // {t('dashboard.dailyQuote')}
-        </p>
-        <blockquote className="font-mono text-sm italic text-foreground/90">
-          &ldquo;{quote.text}&rdquo;
-        </blockquote>
-        <p className="mt-2 text-xs text-muted-foreground">&mdash; {quote.author}</p>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-2 rounded-sm border p-6">
+      <span className="text-xs text-muted-foreground">
+        <SectionTitle>{t('dashboard.dailyQuote')}</SectionTitle>
+      </span>
+      <blockquote className="text-base text-foreground/90">
+        &ldquo;{quote.text}&rdquo;
+      </blockquote>
+      <span className="text-xs text-muted-foreground">
+        &mdash; {quote.author}
+      </span>
+    </div>
   );
 }
 
-function DashboardGrid({
+function BottomSection({
   heatmap,
   weeklyStats,
   recentSessions,
@@ -69,18 +106,24 @@ function DashboardGrid({
   const isMobile = useIsMobile();
   const sessionLimit = isMobile ? 2 : 4;
 
-  return (
-    <div className="grid gap-6 md:grid-cols-2">
+  if (isMobile) {
+    return (
       <div className="flex flex-col gap-6">
         <WeeklyStatsCard stats={weeklyStats} />
-        {isMobile ? null : <HeatmapCard heatmap={heatmap} />}
+        <HeatmapCard heatmap={heatmap} />
+        <RecentSessionsList sessions={recentSessions} limit={sessionLimit} />
       </div>
-      <div className="flex flex-col gap-6">
-        {isMobile ? <HeatmapCard heatmap={heatmap} /> : null}
-        <RecentSessionsList
-          sessions={recentSessions}
-          limit={sessionLimit}
-        />
+    );
+  }
+
+  return (
+    <div className="flex flex-1 gap-6">
+      <div className="flex flex-1">
+        <HeatmapCard heatmap={heatmap} />
+      </div>
+      <div className="flex w-xl shrink-0 flex-col gap-6">
+        <WeeklyStatsCard stats={weeklyStats} />
+        <RecentSessionsList sessions={recentSessions} limit={sessionLimit} />
       </div>
     </div>
   );
@@ -91,71 +134,114 @@ function WeeklyStatsCard({ stats }: { stats: WeeklyStats }) {
   const formatted = formatDuration(stats.totalSeconds, t);
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {t('dashboard.thisWeek')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-3xl font-bold">{formatted}</p>
+    <div className="flex flex-col gap-2 rounded-sm border p-6">
+      <span className="text-xs text-muted-foreground">
+        <SectionTitle>{t('dashboard.thisWeek')}</SectionTitle>
+      </span>
+      <div className="flex items-end gap-2">
+        <span className="text-3xl font-bold">{formatted}</span>
         {stats.percentChange !== null ? (
-          <div className="mt-1 flex items-center gap-1 text-sm">
+          <span
+            className={`flex items-center gap-0.5 text-xs ${
+              stats.percentChange >= 0
+                ? 'text-accent-green'
+                : 'text-accent-red'
+            }`}
+          >
             {stats.percentChange >= 0 ? (
-              <ArrowUpRight className="h-4 w-4 text-accent-green" />
+              <ArrowUpRight className="h-3 w-3" />
             ) : (
-              <ArrowDownRight className="h-4 w-4 text-accent-red" />
+              <ArrowDownRight className="h-3 w-3" />
             )}
-            <span
-              className={
-                stats.percentChange >= 0
-                  ? 'text-accent-green'
-                  : 'text-accent-red'
-              }
-            >
-              {stats.percentChange > 0 ? '+' : ''}
-              {stats.percentChange}%
-            </span>
-            <span className="text-muted-foreground">
-              {t('dashboard.weekOverWeek')}
-            </span>
-          </div>
-        ) : (
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t('dashboard.noDataYet')}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+            {stats.percentChange > 0 ? '+' : ''}
+            {stats.percentChange}%
+          </span>
+        ) : null}
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {t('dashboard.totalPracticeTime')}
+      </span>
+    </div>
   );
 }
 
 function HeatmapCard({ heatmap }: { heatmap: HeatmapDay[] }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { user } = useAuthUser();
+  const isMobile = useIsMobile();
+  const weekStartDay = user.weekStartDay ?? 0;
+
+  const dayOrder = Array.from({ length: 7 }, (_, i) => (weekStartDay + i) % 7);
+  const grouped = dayOrder.map((dow) => {
+    const days = heatmap.filter(
+      (d) => new Date(d.date + 'T00:00:00').getDay() === dow
+    );
+    const shortLabel = new Date(2024, 0, dow === 0 ? 7 : dow).toLocaleDateString(
+      i18n.language,
+      { weekday: 'short' }
+    ).replace(/^יום\s*/i, '').toLowerCase();
+    const initial = new Date(2024, 0, dow === 0 ? 7 : dow).toLocaleDateString(
+      i18n.language,
+      { weekday: 'narrow' }
+    ).toLowerCase();
+    return { dow, shortLabel, initial, days };
+  });
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {t('dashboard.weeklyActivity')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex gap-1.5">
-          {heatmap.map((day) => (
-            <HeatmapCell key={day.date} day={day} />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex w-full flex-col gap-4 rounded-sm border p-6">
+      <span className="text-xs text-muted-foreground">
+        <SectionTitle>{t('dashboard.weeklyActivity')}</SectionTitle>
+      </span>
+      {isMobile ? (
+        <MobileHeatmapGrid grouped={grouped} />
+      ) : (
+        <DesktopHeatmapGrid grouped={grouped} />
+      )}
+    </div>
   );
 }
 
-function HeatmapCell({ day }: { day: HeatmapDay }) {
-  const label = new Date(day.date + 'T00:00:00').toLocaleDateString(undefined, {
-    weekday: 'short',
-  });
+function DesktopHeatmapGrid({
+  grouped,
+}: {
+  grouped: { dow: number; shortLabel: string; days: HeatmapDay[] }[];
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      {grouped.map((row) => (
+        <div key={row.dow} className="flex items-center gap-1">
+          <span className="w-7 shrink-0 text-[11px] text-muted-foreground">
+            {row.shortLabel}
+          </span>
+          {row.days.map((day) => (
+            <HeatmapCell key={day.date} day={day} className="w-7" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 
+function MobileHeatmapGrid({
+  grouped,
+}: {
+  grouped: { dow: number; initial: string; days: HeatmapDay[] }[];
+}) {
+  return (
+    <div className="flex justify-between gap-1">
+      {grouped.map((col) => (
+        <div key={col.dow} className="flex flex-1 flex-col items-center gap-1">
+          <span className="text-[9px] text-muted-foreground">{col.initial}</span>
+          {col.days.slice(-4).map((day) => (
+            <HeatmapCell key={day.date} day={day} className="w-full" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HeatmapCell({ day, className = '' }: { day: HeatmapDay; className?: string }) {
   const levelClasses = [
     'bg-muted',
     'bg-heatmap-1',
@@ -165,13 +251,10 @@ function HeatmapCell({ day }: { day: HeatmapDay }) {
   ] as const;
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-1">
-      <div
-        className={`h-8 w-full rounded-sm ${levelClasses[day.level]}`}
-        title={`${label}: ${Math.round(day.totalSeconds / 60)}m`}
-      />
-      <span className="text-[10px] text-muted-foreground">{label}</span>
-    </div>
+    <div
+      className={`aspect-square rounded-sm ${levelClasses[day.level]} ${className}`}
+      title={`${day.date}: ${Math.round(day.totalSeconds / 60)}m`}
+    />
   );
 }
 
@@ -186,32 +269,29 @@ function RecentSessionsList({
   const visible = sessions.slice(0, limit);
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {t('dashboard.recentSessions')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {visible.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <Music className="h-8 w-8 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">
-              {t('dashboard.noSessions')}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t('dashboard.startPracticing')}
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {visible.map((session) => (
-              <RecentSessionRow key={session.id} session={session} />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="flex flex-1 flex-col gap-3 rounded-sm border p-6">
+      <span className="text-xs text-muted-foreground">
+        <SectionTitle>{t('dashboard.recentSessions')}</SectionTitle>
+      </span>
+      {visible.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 py-4 text-center">
+          <Music className="h-8 w-8 text-muted-foreground/50" />
+          <span className="text-sm text-muted-foreground">
+            {t('dashboard.noSessions')}
+          </span>
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          {visible.map((session, i) => (
+            <RecentSessionRow
+              key={session.id}
+              session={session}
+              showSeparator={i < visible.length - 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -222,47 +302,55 @@ const TAG_COLORS = [
   'text-accent-red',
 ] as const;
 
-function RecentSessionRow({ session }: { session: RecentSession }) {
-  const { t } = useTranslation();
-  const dayName = new Date(session.startedAt).toLocaleDateString(undefined, {
-    weekday: 'short',
-  }).toLowerCase();
+function RecentSessionRow({
+  session,
+  showSeparator,
+}: {
+  session: RecentSession;
+  showSeparator: boolean;
+}) {
+  const { t, i18n } = useTranslation();
+  const dayName = new Date(session.startedAt)
+    .toLocaleDateString(i18n.language, { weekday: 'short' })
+    .toLowerCase();
   const duration = formatDuration(session.durationSeconds, t);
 
   return (
-    <div className="flex items-center justify-between rounded-md border px-4 py-3">
-      <div className="flex flex-col gap-1">
-        <span className="text-sm font-bold">{dayName}</span>
-        {session.tags.length > 0 ? (
-          <div className="flex gap-2">
-            {session.tags.map((tag, i) => (
-              <span
-                key={tag}
-                className={`text-xs font-mono ${TAG_COLORS[i % TAG_COLORS.length]}`}
-              >
-                [{tag}]
-              </span>
-            ))}
-          </div>
-        ) : null}
+    <>
+      <div className="flex items-center justify-between py-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-bold">{dayName}</span>
+          {session.tags.length > 0 ? (
+            <div className="flex gap-2">
+              {session.tags.map((tag, i) => (
+                <span
+                  key={tag}
+                  className={`text-xs font-mono ${TAG_COLORS[i % TAG_COLORS.length]}`}
+                >
+                  [{tag}]
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <span className="text-sm text-muted-foreground">{duration}</span>
       </div>
-      <span className="text-sm text-muted-foreground font-mono">
-        {duration}
-      </span>
-    </div>
+      {showSeparator ? <div className="h-px bg-border" /> : null}
+    </>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="flex flex-col gap-6">
-      <Skeleton className="h-24" />
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="flex flex-col gap-6">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-24" />
+    <div className="flex flex-col gap-8">
+      <Skeleton className="h-10" />
+      <Skeleton className="h-28" />
+      <div className="flex gap-6">
+        <Skeleton className="h-64 flex-1" />
+        <div className="flex w-80 shrink-0 flex-col gap-6">
+          <Skeleton className="h-28" />
+          <Skeleton className="h-48" />
         </div>
-        <Skeleton className="h-48" />
       </div>
     </div>
   );
@@ -270,7 +358,7 @@ function DashboardSkeleton() {
 
 function formatDuration(
   totalSeconds: number,
-  t: (key: string, opts?: Record<string, unknown>) => string,
+  t: (key: string, opts?: Record<string, unknown>) => string
 ): string {
   const hours = Math.floor(totalSeconds / 3600);
   const min = Math.floor((totalSeconds % 3600) / 60);
@@ -281,21 +369,19 @@ function formatDuration(
   return t('dashboard.min', { min });
 }
 
-// Hook at bottom of file
-function useDashboardPage() {
-  const { t } = useTranslation();
+function useDashboardPage(totalPracticeSeconds: number) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuthUser();
 
-  const greeting = user.isGuest
-    ? t('dashboard.welcomeGuest')
-    : t('dashboard.welcomeName', { name: user.firstName });
+  const dateString = new Date()
+    .toLocaleDateString(i18n.language, {
+      month: 'short',
+      day: '2-digit',
+      year: '2-digit',
+    })
+    .toLowerCase();
 
-  const dateString = new Date().toLocaleDateString(undefined, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const totalTimeFormatted = `${formatDuration(totalPracticeSeconds, t)} ${t('dashboard.total')}`;
 
-  return { greeting, dateString };
+  return { user, dateString, totalTimeFormatted };
 }
