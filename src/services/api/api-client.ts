@@ -43,6 +43,10 @@ async function request<T>(
     );
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
 
@@ -71,5 +75,9 @@ export const apiClient = {
       method: 'PATCH',
       body: body ? JSON.stringify(body) : undefined,
     });
+  },
+
+  delete<T = void>(path: string): Promise<T> {
+    return request<T>(path, { method: 'DELETE' });
   },
 };

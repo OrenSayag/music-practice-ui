@@ -11,6 +11,7 @@ import '@/i18n';
 const queryClient = new QueryClient();
 import LoginPage from '@/pages/login';
 import DashboardPage from '@/pages/dashboard';
+import PracticePage from '@/pages/practice';
 import SettingsPage from '@/pages/settings';
 import NotFoundPage from '@/pages/not-found';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
@@ -27,6 +28,8 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/login" element={<LoginPage />} />
                 <Route element={<AuthenticatedLayout />}>
                   <Route index element={<DashboardPage />} />
+                  <Route path="practice" element={<PracticePage />} />
+                  <Route path="practice/chat" element={<PracticePage />} />
                   <Route path="settings" element={<SettingsPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

@@ -8,7 +8,7 @@ import type { User } from '@/services/auth/auth-types';
 import { LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 interface AuthContextValue {
@@ -50,17 +50,32 @@ export default function AuthenticatedLayout() {
 
   return (
     <AuthContext value={{ user, setUser }}>
-      <div className="flex min-h-screen">
+      <LayoutShell handleLogout={handleLogout} />
+    </AuthContext>
+  );
+}
+
+function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
+  const { pathname } = useLocation();
+  const isPractice = pathname.startsWith('/practice');
+
+  return (
+    <>
+      <div className="flex h-screen overflow-hidden">
         <AppSidebar />
         <div className="flex flex-1 flex-col">
           <MobileHeader handleLogout={handleLogout} />
-          <main className="flex flex-1 flex-col p-6 pb-24 md:p-10 md:pb-10">
+          <main
+            className={`flex min-h-0 flex-1 flex-col ${
+              isPractice ? '' : 'overflow-y-auto p-6 pb-24 md:p-10 md:pb-10'
+            }`}
+          >
             <Outlet />
           </main>
         </div>
       </div>
       <MobileTabBar />
-    </AuthContext>
+    </>
   );
 }
 
