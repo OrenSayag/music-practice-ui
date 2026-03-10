@@ -3,6 +3,13 @@ import { SectionTitle } from '@/components/section-title';
 import { useActivePlan } from '@/services/plans';
 import type { PlanSection } from '@/services/plans';
 
+function formatMinutes(min: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  if (min < 60) return t('dashboard.min', { min });
+  const hours = Math.floor(min / 60);
+  const m = min % 60;
+  return t('dashboard.hourMin', { hours, min: m });
+}
+
 export function ChatPlanPreview() {
   const { t } = useTranslation();
   const { data: plan } = useActivePlan();
@@ -17,11 +24,22 @@ export function ChatPlanPreview() {
     (sum, s) => sum + s.items.length,
     0
   );
+  const totalMinutes = plan.sections.reduce(
+    (sum, s) => sum + s.items.reduce((s2, i) => s2 + (i.targetDurationMinutes ?? 0), 0),
+    0
+  );
 
   return (
     <div className="flex h-full max-h-full w-[480px] shrink-0 flex-col gap-4 overflow-y-auto bg-card p-6">
       <div className="flex items-center justify-between">
-        <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
+        <div className="flex items-center gap-2">
+          <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
+          {totalMinutes > 0 && (
+            <span className="font-mono text-xs text-muted-foreground">
+              ({formatMinutes(totalMinutes, t)})
+            </span>
+          )}
+        </div>
         <span className="font-mono text-xs text-muted-foreground">
           [{t('practice.progress', { completed: completedCount, total: totalCount })}]
         </span>
@@ -36,11 +54,17 @@ export function ChatPlanPreview() {
 
 function PreviewSection({ section }: { section: PlanSection }) {
   const { t } = useTranslation();
+  const sectionMinutes = section.items.reduce((sum, i) => sum + (i.targetDurationMinutes ?? 0), 0);
 
   return (
     <div className="flex flex-col gap-2">
       <span className="font-mono text-xs font-bold text-accent-green">
         &gt; {section.name}
+        {sectionMinutes > 0 && (
+          <span className="font-normal text-muted-foreground">
+            {' '}({formatMinutes(sectionMinutes, t)})
+          </span>
+        )}
       </span>
       {section.items.map((item) => {
         const durationLabel = item.targetDurationMinutes

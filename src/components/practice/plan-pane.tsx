@@ -54,10 +54,14 @@ export default function PlanPane() {
     (sum, s) => sum + s.items.length,
     0
   );
+  const totalMinutes = plan.sections.reduce(
+    (sum, s) => sum + s.items.reduce((s2, i) => s2 + (i.targetDurationMinutes ?? 0), 0),
+    0
+  );
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <PlanHeader completedCount={completedCount} totalCount={totalCount} />
+      <PlanHeader completedCount={completedCount} totalCount={totalCount} totalMinutes={totalMinutes} />
       <SortableSectionList plan={plan} handlers={handlers} />
       <AddButton
         label={t('practice.addSection')}
@@ -70,15 +74,24 @@ export default function PlanPane() {
 function PlanHeader({
   completedCount,
   totalCount,
+  totalMinutes,
 }: {
   completedCount: number;
   totalCount: number;
+  totalMinutes: number;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-between">
-      <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
+      <div className="flex items-center gap-2">
+        <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
+        {totalMinutes > 0 && (
+          <span className="font-mono text-xs text-muted-foreground">
+            ({formatMinutes(totalMinutes, t)})
+          </span>
+        )}
+      </div>
       {totalCount > 0 ? (
         <span className="font-mono text-xs text-muted-foreground">
           [{t('practice.progress', { completed: completedCount, total: totalCount })}]
@@ -86,6 +99,13 @@ function PlanHeader({
       ) : null}
     </div>
   );
+}
+
+function formatMinutes(min: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  if (min < 60) return t('dashboard.min', { min });
+  const hours = Math.floor(min / 60);
+  const m = min % 60;
+  return t('dashboard.hourMin', { hours, min: m });
 }
 
 function SortableSectionList({
@@ -261,9 +281,11 @@ function SectionHeader({
   dragAttributes?: Record<string, unknown>;
   dragListeners?: Record<string, unknown>;
 }) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(section.name);
   const inputRef = useRef<HTMLInputElement>(null);
+  const sectionMinutes = section.items.reduce((sum, i) => sum + (i.targetDurationMinutes ?? 0), 0);
 
   const handleSave = () => {
     setIsEditing(false);
@@ -308,10 +330,15 @@ function SectionHeader({
         />
       ) : (
         <span
-          className="flex-1 cursor-pointer font-mono text-sm text-accent-green underline"
+          className="cursor-pointer font-mono text-sm text-accent-green underline"
           onDoubleClick={handleStartEdit}
         >
           {section.name}
+        </span>
+      )}
+      {sectionMinutes > 0 && (
+        <span className="font-mono text-xs text-muted-foreground">
+          ({formatMinutes(sectionMinutes, t)})
         </span>
       )}
       <button
