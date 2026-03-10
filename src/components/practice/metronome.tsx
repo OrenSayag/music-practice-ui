@@ -57,7 +57,7 @@ export function Metronome() {
   );
 }
 
-function BpmDisplay({ bpm }: { bpm: number }) {
+export function BpmDisplay({ bpm }: { bpm: number }) {
   return (
     <div className="flex items-end justify-center gap-2">
       <span className="font-mono text-4xl font-bold">{bpm}</span>
@@ -66,7 +66,7 @@ function BpmDisplay({ bpm }: { bpm: number }) {
   );
 }
 
-function BpmSlider({ bpm, onBpmChange }: { bpm: number; onBpmChange: (v: number) => void }) {
+export function BpmSlider({ bpm, onBpmChange }: { bpm: number; onBpmChange: (v: number) => void }) {
   return (
     <div className="flex flex-col gap-1">
       <input
@@ -85,7 +85,7 @@ function BpmSlider({ bpm, onBpmChange }: { bpm: number; onBpmChange: (v: number)
   );
 }
 
-function BeatsCounter({
+export function BeatsCounter({
   beats,
   onBeatsChange,
 }: {
@@ -111,7 +111,7 @@ function BeatsCounter({
   );
 }
 
-function AccentRow({
+export function AccentRow({
   accents,
   currentBeat,
   onToggle,

@@ -7,8 +7,16 @@ const DEFAULT_BEATS = 4;
 const LOOKAHEAD_MS = 25;
 const SCHEDULE_AHEAD_S = 0.1;
 
+const BPM_KEY = 'metronome-bpm';
 const VOLUME_KEY = 'metronome-volume';
 const DEFAULT_VOLUME = 0.8;
+
+function loadBpm(): number {
+  const stored = localStorage.getItem(BPM_KEY);
+  if (stored === null) return DEFAULT_BPM;
+  const parsed = Number(stored);
+  return Number.isFinite(parsed) ? Math.max(MIN_BPM, Math.min(MAX_BPM, parsed)) : DEFAULT_BPM;
+}
 
 function loadVolume(): number {
   const stored = localStorage.getItem(VOLUME_KEY);
@@ -81,7 +89,7 @@ export interface MetronomeActions {
 }
 
 export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState & MetronomeActions {
-  const [bpm, setBpmState] = useState(DEFAULT_BPM);
+  const [bpm, setBpmState] = useState(loadBpm);
   const [beats, setBeatsState] = useState(DEFAULT_BEATS);
   const [accents, setAccents] = useState<boolean[]>(() =>
     Array.from({ length: DEFAULT_BEATS }, (_, i) => i === 0)
@@ -174,7 +182,9 @@ export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState
   }, [isPlaying, getAudioContext, scheduler]);
 
   const setBpm = useCallback((value: number) => {
-    setBpmState(Math.max(MIN_BPM, Math.min(MAX_BPM, value)));
+    const clamped = Math.max(MIN_BPM, Math.min(MAX_BPM, value));
+    setBpmState(clamped);
+    localStorage.setItem(BPM_KEY, String(clamped));
   }, []);
 
   const setBeats = useCallback((value: number) => {

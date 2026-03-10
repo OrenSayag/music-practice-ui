@@ -104,6 +104,8 @@ export const he: Record<TranslationKey, string> = {
   'practice.tapToToggleAccent': 'לחצו להחלפת הדגשה',
   'practice.beats': 'פעימות',
   'practice.target': 'יעד: {{time}}',
+  'practice.done': 'סיום',
+  'practice.timers': 'טיימרים',
   'practice.planChat': 'צ׳אט_תוכנית',
   'practice.clear': '[נקה]',
   'practice.chatPlaceholder': 'בקשו לערוך את התוכנית...',

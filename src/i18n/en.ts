@@ -102,6 +102,8 @@ export const en = {
   'practice.tapToToggleAccent': 'tap to toggle accent',
   'practice.beats': 'beats',
   'practice.target': 'target: {{time}}',
+  'practice.done': 'done',
+  'practice.timers': 'timers',
   'practice.planChat': 'plan_chat',
   'practice.clear': '[clear]',
   'practice.chatPlaceholder': 'ask to edit your plan...',
