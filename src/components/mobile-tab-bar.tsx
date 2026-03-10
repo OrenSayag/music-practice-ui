@@ -8,8 +8,8 @@ export function MobileTabBar() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-      <div className="flex items-center justify-around rounded-full border bg-background/95 px-2 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur md:hidden supports-[backdrop-filter]:bg-background/80">
+      <div className="flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
         {NAV_ITEMS.map((item) => {
           const isActive =
             location.pathname === item.href ||
@@ -20,13 +20,13 @@ export function MobileTabBar() {
               key={item.href}
               to={item.href}
               className={cn(
-                'flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-colors',
+                'flex flex-col items-center gap-0.5 px-3 py-1 text-[10px] font-medium transition-colors',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'text-primary'
                   : 'text-muted-foreground',
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-5 w-5" />
               <span>{t(item.titleKey)}</span>
             </Link>
           );

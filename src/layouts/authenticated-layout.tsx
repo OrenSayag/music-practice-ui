@@ -67,7 +67,7 @@ function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
           <MobileHeader handleLogout={handleLogout} />
           <main
             className={`flex min-h-0 flex-1 flex-col ${
-              isPractice ? '' : 'overflow-y-auto p-6 pb-24 md:p-10 md:pb-10'
+              isPractice ? '' : 'overflow-y-auto p-6 pb-20 md:p-10 md:pb-10'
             }`}
           >
             <Outlet />

@@ -10,7 +10,7 @@ export function MobilePlayerFooter() {
   const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
   return (
-    <div className="flex items-center justify-between border-t border-border px-5 py-3 md:hidden">
+    <div className="flex items-center justify-between border-t border-border px-5 py-3 pb-16 md:hidden">
       <div className="flex items-center gap-3">
         <button
           className="flex h-10 w-10 items-center justify-center bg-accent-green text-white"
