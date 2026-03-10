@@ -13,6 +13,7 @@ import LoginPage from '@/pages/login';
 import DashboardPage from '@/pages/dashboard';
 import PracticePage from '@/pages/practice';
 import SettingsPage from '@/pages/settings';
+import RecordingsPage from '@/pages/recordings';
 import NotFoundPage from '@/pages/not-found';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import './index.css';
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
                   <Route index element={<DashboardPage />} />
                   <Route path="practice" element={<PracticePage />} />
                   <Route path="practice/chat" element={<PracticePage />} />
+                  <Route path="recordings" element={<RecordingsPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

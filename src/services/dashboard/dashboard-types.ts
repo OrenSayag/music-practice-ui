@@ -6,7 +6,6 @@ export interface Quote {
 export interface HeatmapDay {
   date: string;
   totalSeconds: number;
-  level: number;
 }
 
 export interface WeeklyStats {

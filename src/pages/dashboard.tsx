@@ -165,6 +165,31 @@ function WeeklyStatsCard({ stats }: { stats: WeeklyStats }) {
   );
 }
 
+const TILES_PER_STAGE = 8;
+const SECONDS_PER_TILE = 1800;
+const DESKTOP_TILES = 7;
+const MOBILE_TILES = 4;
+
+type TileStage = 'empty' | 'green' | 'blue' | 'purple';
+
+function getTileStage(tileIndex: number, totalSeconds: number): TileStage {
+  const halfHours = Math.min(
+    Math.floor(totalSeconds / SECONDS_PER_TILE),
+    TILES_PER_STAGE * 3
+  );
+  if (halfHours > tileIndex + TILES_PER_STAGE * 2) return 'purple';
+  if (halfHours > tileIndex + TILES_PER_STAGE) return 'blue';
+  if (halfHours > tileIndex) return 'green';
+  return 'empty';
+}
+
+const STAGE_CLASSES: Record<TileStage, string> = {
+  empty: 'bg-muted',
+  green: 'bg-heatmap-green',
+  blue: 'bg-heatmap-blue',
+  purple: 'bg-heatmap-purple',
+};
+
 function HeatmapCard({ heatmap }: { heatmap: HeatmapDay[] }) {
   const { t, i18n } = useTranslation();
   const { user } = useAuthUser();
@@ -172,19 +197,22 @@ function HeatmapCard({ heatmap }: { heatmap: HeatmapDay[] }) {
   const weekStartDay = user.weekStartDay ?? 0;
 
   const dayOrder = Array.from({ length: 7 }, (_, i) => (weekStartDay + i) % 7);
-  const grouped = dayOrder.map((dow) => {
-    const days = heatmap.filter(
-      (d) => new Date(d.date + 'T00:00:00').getDay() === dow
-    );
-    const shortLabel = new Date(2024, 0, dow === 0 ? 7 : dow).toLocaleDateString(
-      i18n.language,
-      { weekday: 'short' }
-    ).replace(/^יום\s*/i, '').toLowerCase();
-    const initial = new Date(2024, 0, dow === 0 ? 7 : dow).toLocaleDateString(
-      i18n.language,
-      { weekday: 'narrow' }
-    ).toLowerCase();
-    return { dow, shortLabel, initial, days };
+
+  const dayMap = new Map<number, HeatmapDay>();
+  for (const day of heatmap) {
+    const dow = new Date(day.date + 'T00:00:00Z').getUTCDay();
+    dayMap.set(dow, day);
+  }
+
+  const days = dayOrder.map((dow) => {
+    const shortLabel = new Date(2024, 0, dow === 0 ? 7 : dow)
+      .toLocaleDateString(i18n.language, { weekday: 'short' })
+      .replace(/^יום\s*/i, '')
+      .toLowerCase();
+    const narrowLabel = new Date(2024, 0, dow === 0 ? 7 : dow)
+      .toLocaleDateString(i18n.language, { weekday: 'narrow' })
+      .toLowerCase();
+    return { dow, shortLabel, narrowLabel, totalSeconds: dayMap.get(dow)?.totalSeconds ?? 0 };
   });
 
   return (
@@ -193,28 +221,31 @@ function HeatmapCard({ heatmap }: { heatmap: HeatmapDay[] }) {
         <SectionTitle>{t('dashboard.weeklyActivity')}</SectionTitle>
       </span>
       {isMobile ? (
-        <MobileHeatmapGrid grouped={grouped} />
+        <MobileHeatmapGrid days={days} />
       ) : (
-        <DesktopHeatmapGrid grouped={grouped} />
+        <DesktopHeatmapGrid days={days} />
       )}
     </div>
   );
 }
 
 function DesktopHeatmapGrid({
-  grouped,
+  days,
 }: {
-  grouped: { dow: number; shortLabel: string; days: HeatmapDay[] }[];
+  days: { dow: number; shortLabel: string; totalSeconds: number }[];
 }) {
   return (
     <div className="flex flex-col gap-1">
-      {grouped.map((row) => (
-        <div key={row.dow} className="flex items-center gap-1">
+      {days.map((day) => (
+        <div key={day.dow} className="flex items-center gap-1">
           <span className="w-7 shrink-0 text-[11px] text-muted-foreground">
-            {row.shortLabel}
+            {day.shortLabel}
           </span>
-          {row.days.map((day) => (
-            <HeatmapCell key={day.date} day={day} className="w-7" />
+          {Array.from({ length: DESKTOP_TILES }, (_, i) => (
+            <div
+              key={i}
+              className={`aspect-square w-7 rounded-sm ${STAGE_CLASSES[getTileStage(i, day.totalSeconds)]}`}
+            />
           ))}
         </div>
       ))}
@@ -223,38 +254,24 @@ function DesktopHeatmapGrid({
 }
 
 function MobileHeatmapGrid({
-  grouped,
+  days,
 }: {
-  grouped: { dow: number; initial: string; days: HeatmapDay[] }[];
+  days: { dow: number; narrowLabel: string; totalSeconds: number }[];
 }) {
   return (
     <div className="flex justify-between gap-1">
-      {grouped.map((col) => (
-        <div key={col.dow} className="flex flex-1 flex-col items-center gap-1">
-          <span className="text-[9px] text-muted-foreground">{col.initial}</span>
-          {col.days.slice(-4).map((day) => (
-            <HeatmapCell key={day.date} day={day} className="w-full" />
+      {days.map((day) => (
+        <div key={day.dow} className="flex flex-1 flex-col items-center gap-1">
+          <span className="text-[9px] text-muted-foreground">{day.narrowLabel}</span>
+          {Array.from({ length: MOBILE_TILES }, (_, i) => (
+            <div
+              key={i}
+              className={`aspect-square w-full rounded-sm ${STAGE_CLASSES[getTileStage(i, day.totalSeconds)]}`}
+            />
           ))}
         </div>
       ))}
     </div>
-  );
-}
-
-function HeatmapCell({ day, className = '' }: { day: HeatmapDay; className?: string }) {
-  const levelClasses = [
-    'bg-muted',
-    'bg-heatmap-1',
-    'bg-heatmap-2',
-    'bg-heatmap-3',
-    'bg-heatmap-4',
-  ] as const;
-
-  return (
-    <div
-      className={`aspect-square rounded-sm ${levelClasses[day.level]} ${className}`}
-      title={`${day.date}: ${Math.round(day.totalSeconds / 60)}m`}
-    />
   );
 }
 

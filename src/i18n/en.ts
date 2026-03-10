@@ -130,6 +130,33 @@ export const en = {
   'practice.you': '> you',
   'practice.assistant': '> assistant',
 
+  // Session Summary
+  'session.complete': 'session_complete',
+  'session.done': 'done',
+  'session.cancel': 'cancel',
+  'session.totalTime': 'total time',
+  'session.itemsDone': 'items done',
+  'session.avgBpm': 'avg bpm',
+  'session.recordings': 'recordings',
+  'session.itemBreakdown': 'item breakdown',
+  'session.notes': 'notes',
+  'session.notesPlaceholder': 'session notes...',
+  'session.tags': 'tags',
+  'session.addTag': 'add',
+  'session.newTagPlaceholder': 'new tag...',
+  'session.statusDone': 'done',
+  'session.statusPartial': 'partial',
+  'session.statusNone': 'none',
+  'session.endSession': 'end',
+  'session.inSession': 'in session',
+
+  // Recordings
+  'recordings.title': 'recordings',
+  'recordings.upload': 'upload',
+  'recordings.noRecordings': 'no recordings yet',
+  'recordings.search': 'search recordings...',
+  'recordings.all': 'all',
+
   // Theme
   'theme.toggle': 'Toggle theme',
   'theme.light': 'Light',

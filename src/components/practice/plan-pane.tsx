@@ -59,10 +59,14 @@ export default function PlanPane() {
     (sum, s) => sum + s.items.reduce((s2, i) => s2 + (i.targetDurationMinutes ?? 0), 0),
     0
   );
+  const completedMinutes = plan.sections.reduce(
+    (sum, s) => sum + s.items.filter((i) => i.status === 'completed').reduce((s2, i) => s2 + (i.targetDurationMinutes ?? 0), 0),
+    0
+  );
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <PlanHeader completedCount={completedCount} totalCount={totalCount} totalMinutes={totalMinutes} planId={plan.id} />
+      <PlanHeader completedCount={completedCount} totalCount={totalCount} totalMinutes={totalMinutes} completedMinutes={completedMinutes} planId={plan.id} />
       <SortableSectionList plan={plan} handlers={handlers} />
       <AddButton
         label={t('practice.addSection')}
@@ -76,11 +80,13 @@ function PlanHeader({
   completedCount,
   totalCount,
   totalMinutes,
+  completedMinutes,
   planId,
 }: {
   completedCount: number;
   totalCount: number;
   totalMinutes: number;
+  completedMinutes: number;
   planId: string;
 }) {
   const { t } = useTranslation();
@@ -94,7 +100,7 @@ function PlanHeader({
           <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
           {totalMinutes > 0 && (
             <span className="font-mono text-xs text-muted-foreground">
-              ({formatMinutes(totalMinutes, t)})
+              ({formatTimeProgress(completedMinutes, totalMinutes)})
             </span>
           )}
           {isMobile && (
@@ -120,6 +126,16 @@ function PlanHeader({
       />
     </>
   );
+}
+
+function formatTimeProgress(completed: number, total: number): string {
+  if (total < 60) return `${completed}m/${total}m`;
+  const fmt = (m: number) => {
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return `${h}:${String(r).padStart(2, '0')}`;
+  };
+  return `${fmt(completed)}/${fmt(total)}`;
 }
 
 function formatMinutes(min: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
@@ -430,7 +446,7 @@ function PlanItemComponent({
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer } = usePracticeSessionContext();
+  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession } = usePracticeSessionContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
   const [isEditingDuration, setIsEditingDuration] = useState(false);
@@ -499,10 +515,11 @@ function PlanItemComponent({
 
       <button
         className="shrink-0"
-        onClick={() => {
+        onClick={async () => {
           if (isActive && selectedTimerId === null) {
             toggleTimer();
           } else {
+            if (!isInSession) await beginSession();
             startItem(item, allItems, undefined, { announce: true });
           }
         }}

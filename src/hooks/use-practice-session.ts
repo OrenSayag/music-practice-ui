@@ -1,5 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { PlanItem, PlanSection } from '@/services/plans';
+import type { SessionItemInput } from '@/services/sessions';
+import {
+  useStartSession,
+  useEndSession,
+  useSaveSessionItems,
+} from '@/services/sessions';
 
 export interface CustomTimer {
   id: string;
@@ -16,6 +22,27 @@ export interface DefaultTimerSettings {
   autoStartNextItem: boolean;
 }
 
+export interface SessionSummaryData {
+  sessionId: string;
+  startedAt: string;
+  endedAt: string;
+  durationSeconds: number;
+  notes: string | null;
+  items: SessionSummaryItem[];
+  totalItems: number;
+  completedItems: number;
+  avgBpm: number | null;
+}
+
+export interface SessionSummaryItem {
+  name: string;
+  section?: string;
+  durationSeconds: number;
+  targetDurationSeconds?: number;
+  bpm?: number;
+  status: 'done' | 'partial' | 'none';
+}
+
 export interface PracticeSessionState {
   activeItem: PlanItem | null;
   remainingSeconds: number;
@@ -24,6 +51,10 @@ export interface PracticeSessionState {
   customTimers: CustomTimer[];
   defaultTimerSettings: DefaultTimerSettings;
   selectedTimerId: string | null; // null = default timer
+  sessionId: string | null;
+  sessionStartedAt: Date | null;
+  isInSession: boolean;
+  itemElapsedMap: Record<string, number>;
 }
 
 export interface PracticeSessionActions {
@@ -37,10 +68,11 @@ export interface PracticeSessionActions {
   toggleCustomTimer: (id: string) => void;
   resetTimer: () => void;
   updateDefaultTimerSettings: (patch: Partial<DefaultTimerSettings>) => void;
-  /** Set a callback to be called when the active item should be marked complete */
   setOnItemComplete: (cb: ((itemId: string) => void) | null) => void;
-  /** Keep sections in sync for announcements */
   setSections: (sections: PlanSection[]) => void;
+  beginSession: () => Promise<void>;
+  endSession: (allItems: PlanItem[], sections: PlanSection[]) => Promise<SessionSummaryData | null>;
+  cancelSession: () => void;
 }
 
 let nextTimerId = 0;
@@ -56,14 +88,25 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     autoStartNextItem: false,
   });
   const [selectedTimerId, setSelectedTimerId] = useState<string | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Store allItems ref for auto-advance
+  // Session persistence state
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
+  const [itemElapsedMap, setItemElapsedMap] = useState<Record<string, number>>({});
+
+  const isInSession = sessionId !== null;
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const allItemsRef = useRef<PlanItem[]>([]);
   const sectionsRef = useRef<PlanSection[]>([]);
   const pendingAnnouncements = useRef<string[]>([]);
   const onItemCompleteRef = useRef<((itemId: string) => void) | null>(null);
   const defaultTimerEndFired = useRef(false);
+
+  // Session mutations
+  const startSessionMutation = useStartSession();
+  const endSessionMutation = useEndSession();
+  const saveItemsMutation = useSaveSessionItems();
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -71,6 +114,14 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       intervalRef.current = null;
     }
   }, []);
+
+  const beginSession = useCallback(async () => {
+    if (sessionId) return;
+    const result = await startSessionMutation.mutateAsync();
+    setSessionId(result.id);
+    setSessionStartedAt(new Date(result.startedAt));
+    setItemElapsedMap({});
+  }, [sessionId, startSessionMutation]);
 
   const startItem = useCallback(
     (item: PlanItem, allItems: PlanItem[], sections?: PlanSection[], options?: { announce?: boolean }) => {
@@ -82,7 +133,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       const pendingAfter = allItems.slice(idx + 1).find((i) => i.status !== 'completed');
       setNextItemName(pendingAfter ? pendingAfter.name : null);
 
-      // Announce on manual start
       if (options?.announce) {
         const section = sectionsRef.current.find((s) => s.id === item.sectionId);
         const text = section
@@ -109,6 +159,92 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     setNextItemName(null);
   }, [clearTimer]);
 
+  const cancelSession = useCallback(() => {
+    stopItem();
+    setSessionId(null);
+    setSessionStartedAt(null);
+    setItemElapsedMap({});
+  }, [stopItem]);
+
+  const endSession = useCallback(
+    async (
+      allItems: PlanItem[],
+      sections: PlanSection[]
+    ): Promise<SessionSummaryData | null> => {
+      if (!sessionId) return null;
+
+      // Stop active item
+      stopItem();
+
+      // Build session items from plan items
+      const currentElapsed = itemElapsedMap;
+      const sessionItems: SessionItemInput[] = allItems.map((item) => {
+        const elapsed = currentElapsed[item.id] ?? 0;
+        let status: 'done' | 'partial' | 'none';
+        if (item.status === 'completed') {
+          status = 'done';
+        } else if (elapsed > 0) {
+          status = 'partial';
+        } else {
+          status = 'none';
+        }
+        const section = sections
+          .find((s) => s.items.some((i) => i.id === item.id));
+        return {
+          name: item.name,
+          section: section?.name,
+          durationSeconds: elapsed,
+          targetDurationSeconds: item.targetDurationMinutes
+            ? item.targetDurationMinutes * 60
+            : undefined,
+          bpm: item.bpm ?? undefined,
+          status,
+        };
+      });
+
+      // Save items then end session
+      if (sessionItems.length > 0) {
+        await saveItemsMutation.mutateAsync({
+          sessionId,
+          items: sessionItems,
+        });
+      }
+
+      const result = await endSessionMutation.mutateAsync({
+        sessionId,
+      });
+
+      // Build summary
+      const completedItems = sessionItems.filter((i) => i.status === 'done').length;
+      const bpms = sessionItems
+        .filter((i) => i.bpm && i.status !== 'none')
+        .map((i) => i.bpm!);
+      const avgBpm = bpms.length > 0
+        ? Math.round(bpms.reduce((a, b) => a + b, 0) / bpms.length)
+        : null;
+
+      const summary: SessionSummaryData = {
+        sessionId: result.id,
+        startedAt: result.startedAt,
+        endedAt: result.endedAt,
+        durationSeconds: result.durationSeconds,
+        notes: result.notes,
+        items: sessionItems,
+        totalItems: allItems.length,
+        completedItems,
+        avgBpm,
+      };
+
+      // Clear session state
+      setSessionId(null);
+      setSessionStartedAt(null);
+      setItemElapsedMap({});
+
+      return summary;
+    },
+    [sessionId, stopItem, itemElapsedMap, saveItemsMutation, endSessionMutation]
+  );
+
   const toggleTimer = useCallback(() => {
     if (selectedTimerId === null) {
       setIsTimerRunning((prev) => !prev);
@@ -124,7 +260,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
   const addCustomTimer = useCallback(() => {
     const id = `custom-${++nextTimerId}`;
     setCustomTimers((prev) => {
-      // Guard against strict-mode double-call: don't add if id already exists
       if (prev.some((t) => t.id === id)) return prev;
       return [
         ...prev,
@@ -183,7 +318,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
   const resetTimer = useCallback(() => {
     if (selectedTimerId === null) {
-      // Reset default timer to active item's duration
       const seconds = (activeItem?.targetDurationMinutes ?? 0) * 60;
       setRemainingSeconds(seconds);
       setIsTimerRunning(false);
@@ -215,7 +349,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
   // Called when default timer hits 0
   const onDefaultTimerEnd = useCallback(() => {
-    // Guard against strict-mode double-fire
     if (defaultTimerEndFired.current) return;
     defaultTimerEndFired.current = true;
     setTimeout(() => { defaultTimerEndFired.current = false; }, 100);
@@ -227,12 +360,10 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     const idx = allItems.findIndex((i) => i.id === activeItem.id);
     const nextPending = allItems.slice(idx + 1).find((i) => i.status !== 'completed');
 
-    // Mark current item as completed
     if (onItemCompleteRef.current) {
       onItemCompleteRef.current(activeItem.id);
     }
 
-    // Announce next item: "next - <section> - <item>"
     if (defaultTimerSettings.announceNextItem && nextPending) {
       const section = sections.find((s) => s.id === nextPending.sectionId);
       const announcement = section
@@ -242,7 +373,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       speechSynthesis.speak(utterance);
     }
 
-    // Auto-start next item or stop
     if (defaultTimerSettings.autoStartNextItem && nextPending) {
       startItem(nextPending, allItems, sections);
     }
@@ -258,13 +388,14 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     }
   }, [customTimers]);
 
-  // Single interval ticks both default and custom timers
+  // Single interval ticks both default and custom timers + elapsed tracking
   useEffect(() => {
     clearTimer();
 
     const anyRunning =
       (isTimerRunning && remainingSeconds > 0) ||
-      customTimers.some((t) => t.isRunning && t.remainingSeconds > 0);
+      customTimers.some((t) => t.isRunning && t.remainingSeconds > 0) ||
+      (isInSession && activeItem !== null);
 
     if (!anyRunning) return clearTimer;
 
@@ -281,7 +412,15 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
         });
       }
 
-      // Tick custom timers — reset ref before updater so strict-mode double-call overwrites instead of appending
+      // Track elapsed time per item when in session
+      if (isInSession && activeItem) {
+        setItemElapsedMap((prev) => ({
+          ...prev,
+          [activeItem.id]: (prev[activeItem.id] ?? 0) + 1,
+        }));
+      }
+
+      // Tick custom timers
       pendingAnnouncements.current = [];
       setCustomTimers((prev) => {
         let changed = false;
@@ -307,6 +446,8 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     isTimerRunning,
     remainingSeconds > 0,
     customTimers.some((t) => t.isRunning && t.remainingSeconds > 0),
+    isInSession,
+    activeItem?.id,
     clearTimer,
     onDefaultTimerEnd,
   ]);
@@ -319,6 +460,10 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     customTimers,
     defaultTimerSettings,
     selectedTimerId,
+    sessionId,
+    sessionStartedAt,
+    isInSession,
+    itemElapsedMap,
     startItem,
     stopItem,
     toggleTimer,
@@ -331,5 +476,8 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     updateDefaultTimerSettings,
     setOnItemComplete,
     setSections,
+    beginSession,
+    endSession,
+    cancelSession,
   };
 }

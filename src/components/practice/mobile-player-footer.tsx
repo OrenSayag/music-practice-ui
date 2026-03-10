@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Play, Pause } from 'lucide-react';
 import { useMetronomeContext } from './metronome';
 import { usePracticeSessionContext } from './practice-session-provider';
@@ -7,9 +8,15 @@ import { MobileTimerConfig } from './mobile-timer-config';
 
 type MobileOverlay = 'metronome' | 'timer' | null;
 
-export function MobilePlayerFooter() {
+interface MobilePlayerFooterProps {
+  onEndSession?: () => void;
+}
+
+export function MobilePlayerFooter({ onEndSession }: MobilePlayerFooterProps) {
+  const { t } = useTranslation();
   const { bpm, isPlaying, togglePlay } = useMetronomeContext();
-  const { remainingSeconds, selectedTimerId, customTimers } = usePracticeSessionContext();
+  const { remainingSeconds, selectedTimerId, customTimers, isInSession } =
+    usePracticeSessionContext();
   const [overlay, setOverlay] = useState<MobileOverlay>(null);
 
   const displaySeconds =
@@ -24,19 +31,34 @@ export function MobilePlayerFooter() {
   return (
     <>
       <div className="flex items-center justify-between border-t border-border px-5 py-3 pb-16 md:hidden">
-        <button
-          className="font-mono text-lg font-bold"
-          onClick={() => setOverlay('timer')}
-        >
-          {timeStr}
-        </button>
         <div className="flex items-center gap-3">
+          <button
+            className="font-mono text-lg font-bold"
+            onClick={() => setOverlay('timer')}
+          >
+            {timeStr}
+          </button>
+          {isInSession && (
+            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-[0.5rem] text-accent-green">
+              {t('practice.inSession')}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {isInSession && (
+            <button
+              className="bg-red-500 px-2 py-1 font-mono text-[0.5rem] text-white"
+              onClick={onEndSession}
+            >
+              {t('session.endSession')}
+            </button>
+          )}
           <button
             className="flex items-center gap-2"
             onClick={() => setOverlay('metronome')}
           >
             <span className="font-mono text-lg font-bold text-muted-foreground">{bpm}</span>
-            <span className="font-mono text-[11px] text-muted-foreground">bpm</span>
+            <span className="font-mono text-[0.55rem] text-muted-foreground">bpm</span>
           </button>
           <button
             className="flex h-10 w-10 items-center justify-center bg-accent-green text-white"

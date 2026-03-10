@@ -132,6 +132,33 @@ export const he: Record<TranslationKey, string> = {
   'practice.you': '> אתה',
   'practice.assistant': '> עוזר',
 
+  // Session Summary
+  'session.complete': 'תרגול הושלם',
+  'session.done': 'סיום',
+  'session.cancel': 'ביטול',
+  'session.totalTime': 'זמן כולל',
+  'session.itemsDone': 'פריטים שהושלמו',
+  'session.avgBpm': 'bpm ממוצע',
+  'session.recordings': 'הקלטות',
+  'session.itemBreakdown': 'פירוט פריטים',
+  'session.notes': 'הערות',
+  'session.notesPlaceholder': 'הערות לתרגול...',
+  'session.tags': 'תגיות',
+  'session.addTag': 'הוסף',
+  'session.newTagPlaceholder': 'תגית חדשה...',
+  'session.statusDone': 'הושלם',
+  'session.statusPartial': 'חלקי',
+  'session.statusNone': 'לא התחיל',
+  'session.endSession': 'סיום',
+  'session.inSession': 'בתרגול',
+
+  // Recordings
+  'recordings.title': 'הקלטות',
+  'recordings.upload': 'העלאה',
+  'recordings.noRecordings': 'אין הקלטות עדיין',
+  'recordings.search': 'חיפוש הקלטות...',
+  'recordings.all': 'הכל',
+
   // Theme
   'theme.toggle': 'החלפת ערכת נושא',
   'theme.light': 'בהיר',
