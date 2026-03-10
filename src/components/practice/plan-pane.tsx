@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SectionTitle } from '@/components/section-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Music, Trash2, Square, CheckSquare, GripVertical, Play } from 'lucide-react';
+import { Music, Trash2, Square, CheckSquare, GripVertical, Play, Pause } from 'lucide-react';
 import { usePracticeSessionContext } from './practice-session-provider';
 import {
   DndContext,
@@ -381,7 +381,7 @@ function PlanItemComponent({
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { activeItem, startItem } = usePracticeSessionContext();
+  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer } = usePracticeSessionContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -426,9 +426,19 @@ function PlanItemComponent({
 
       <button
         className="shrink-0"
-        onClick={() => startItem(item, allItems, undefined, { announce: true })}
+        onClick={() => {
+          if (isActive && selectedTimerId === null) {
+            toggleTimer();
+          } else {
+            startItem(item, allItems, undefined, { announce: true });
+          }
+        }}
       >
-        <Play className={`h-3.5 w-3.5 ${isActive ? 'text-accent-green' : 'text-muted-foreground hover:text-foreground'}`} />
+        {isActive && isTimerRunning && selectedTimerId === null ? (
+          <Pause className="h-3.5 w-3.5 text-accent-green" />
+        ) : (
+          <Play className={`h-3.5 w-3.5 ${isActive ? 'text-accent-green' : 'text-muted-foreground hover:text-foreground'}`} />
+        )}
       </button>
 
       <button onClick={handleToggle} className="shrink-0">

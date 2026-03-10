@@ -125,15 +125,17 @@ export function AccentRow({
       {accents.map((isAccented, i) => (
         <button
           key={i}
-          className={`h-7 w-7 border transition-colors ${
+          className={`flex h-8 w-8 items-center justify-center border font-mono text-xs transition-colors ${
             i === currentBeat
-              ? 'border-accent-green bg-accent-green'
+              ? 'border-accent-green bg-accent-green font-bold text-white'
               : isAccented
-                ? 'border-accent-green bg-accent-green/20'
-                : 'border-border'
+                ? 'border-accent-green bg-accent-green/20 font-bold text-accent-green'
+                : 'border-border text-muted-foreground'
           }`}
           onClick={() => onToggle(i)}
-        />
+        >
+          {i + 1}
+        </button>
       ))}
     </div>
   );
