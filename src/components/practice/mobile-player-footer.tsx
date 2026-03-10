@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { useMetronomeContext } from './metronome';
+import { usePracticeSessionContext } from './practice-session-provider';
 import { MobileMetronomeConfig } from './mobile-metronome-config';
 import { MobileTimerConfig } from './mobile-timer-config';
 
@@ -8,11 +9,16 @@ type MobileOverlay = 'metronome' | 'timer' | null;
 
 export function MobilePlayerFooter() {
   const { bpm, isPlaying, togglePlay } = useMetronomeContext();
+  const { remainingSeconds, selectedTimerId, customTimers } = usePracticeSessionContext();
   const [overlay, setOverlay] = useState<MobileOverlay>(null);
-  const elapsedSeconds = 0;
 
-  const m = Math.floor(elapsedSeconds / 60);
-  const s = elapsedSeconds % 60;
+  const displaySeconds =
+    selectedTimerId === null
+      ? remainingSeconds
+      : customTimers.find((t) => t.id === selectedTimerId)?.remainingSeconds ?? 0;
+
+  const m = Math.floor(displaySeconds / 60);
+  const s = displaySeconds % 60;
   const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
   return (

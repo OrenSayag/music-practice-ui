@@ -5,6 +5,7 @@ import { PracticeToolbar } from '@/components/practice/practice-toolbar';
 import { ToolsPane } from '@/components/practice/tools-pane';
 import { MobilePlayerFooter } from '@/components/practice/mobile-player-footer';
 import { MetronomeProvider } from '@/components/practice/metronome';
+import { PracticeSessionProvider } from '@/components/practice/practice-session-provider';
 import { ChatPane } from '@/components/practice/chat-pane';
 import { ChatPlanPreview } from '@/components/practice/chat-plan-preview';
 
@@ -13,6 +14,7 @@ export default function PracticePage() {
 
   return (
     <MetronomeProvider>
+      <PracticeSessionProvider>
       <div className="flex min-h-0 flex-1 flex-col">
         {!isMobile && (
           <PracticeToolbar view={view} onChatClick={toggleView} />
@@ -36,6 +38,7 @@ export default function PracticePage() {
         </div>
         {isMobile && <MobilePlayerFooter />}
       </div>
+      </PracticeSessionProvider>
     </MetronomeProvider>
   );
 }

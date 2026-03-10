@@ -1,25 +1,45 @@
-import { useState } from 'react';
+import { usePracticeSessionContext } from './practice-session-provider';
 
 export function TimerTabs() {
-  const [activeTab, setActiveTab] = useState(0);
-  const tabs = ['t1', 't2', '5'];
+  const {
+    activeItem,
+    selectedTimerId,
+    customTimers,
+    selectTimer,
+    addCustomTimer,
+  } = usePracticeSessionContext();
+
+  const activeLabel = activeItem ? activeItem.name : '—';
 
   return (
-    <div className="flex justify-center gap-1">
-      {tabs.map((label, i) => (
+    <div className="flex flex-wrap justify-center gap-1">
+      <button
+        className={`px-3 py-1.5 font-mono text-[11px] transition-colors ${
+          selectedTimerId === null
+            ? 'border border-accent-green bg-accent-green text-white'
+            : 'border border-border text-muted-foreground hover:text-foreground'
+        }`}
+        onClick={() => selectTimer(null)}
+      >
+        <span className="max-w-[80px] truncate">{activeLabel}</span>
+      </button>
+      {customTimers.map((timer) => (
         <button
-          key={i}
+          key={timer.id}
           className={`px-3 py-1.5 font-mono text-[11px] transition-colors ${
-            i === activeTab
+            selectedTimerId === timer.id
               ? 'border border-accent-green bg-accent-green text-white'
               : 'border border-border text-muted-foreground hover:text-foreground'
           }`}
-          onClick={() => setActiveTab(i)}
+          onClick={() => selectTimer(timer.id)}
         >
-          {label}
+          <span className="max-w-[80px] truncate">{timer.label}</span>
         </button>
       ))}
-      <button className="border border-border px-3 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground">
+      <button
+        className="border border-border px-3 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+        onClick={addCustomTimer}
+      >
         +
       </button>
     </div>

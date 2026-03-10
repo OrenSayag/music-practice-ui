@@ -1,9 +1,10 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionTitle } from '@/components/section-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Music, Trash2, Square, CheckSquare, GripVertical } from 'lucide-react';
+import { Music, Trash2, Square, CheckSquare, GripVertical, Play } from 'lucide-react';
+import { usePracticeSessionContext } from './practice-session-provider';
 import {
   DndContext,
   closestCenter,
@@ -104,6 +105,11 @@ function SortableSectionList({
     [plan.sections]
   );
 
+  const allItems = useMemo(
+    () => plan.sections.flatMap((s) => s.items),
+    [plan.sections]
+  );
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -173,6 +179,7 @@ function SortableSectionList({
               key={section.id}
               section={section}
               handlers={handlers}
+              allItems={allItems}
             />
           ))}
         </div>
@@ -184,9 +191,11 @@ function SortableSectionList({
 function SortableSectionComponent({
   section,
   handlers,
+  allItems,
 }: {
   section: PlanSection;
   handlers: PracticeHandlers;
+  allItems: PlanItem[];
 }) {
   const { t } = useTranslation();
   const {
@@ -226,6 +235,7 @@ function SortableSectionComponent({
               item={item}
               index={index + 1}
               handlers={handlers}
+              allItems={allItems}
             />
           ))}
         </div>
@@ -318,10 +328,12 @@ function SortableItemComponent({
   item,
   index,
   handlers,
+  allItems,
 }: {
   item: PlanItem;
   index: number;
   handlers: PracticeHandlers;
+  allItems: PlanItem[];
 }) {
   const {
     attributes,
@@ -344,6 +356,7 @@ function SortableItemComponent({
         item={item}
         index={index}
         handlers={handlers}
+        allItems={allItems}
         dragAttributes={attributes}
         dragListeners={listeners}
       />
@@ -355,21 +368,25 @@ function PlanItemComponent({
   item,
   index,
   handlers,
+  allItems,
   dragAttributes,
   dragListeners,
 }: {
   item: PlanItem;
   index: number;
   handlers: PracticeHandlers;
+  allItems: PlanItem[];
   dragAttributes?: Record<string, unknown>;
   dragListeners?: Record<string, unknown>;
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const { activeItem, startItem } = usePracticeSessionContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
   const inputRef = useRef<HTMLInputElement>(null);
   const isCompleted = item.status === 'completed';
+  const isActive = activeItem?.id === item.id;
 
   const handleToggle = () => {
     handlers.toggleItem(item.id, isCompleted ? 'pending' : 'completed');
@@ -398,13 +415,20 @@ function PlanItemComponent({
     : null;
 
   return (
-    <div className="group flex items-center gap-3 py-1.5">
+    <div className={`group flex items-center gap-3 py-1.5 ${isActive ? 'text-accent-green' : ''}`}>
       <button
         className="shrink-0 cursor-grab opacity-0 transition-opacity group-hover:opacity-100"
         {...dragAttributes}
         {...dragListeners}
       >
         <GripVertical className="h-3 w-3 text-muted-foreground" />
+      </button>
+
+      <button
+        className="shrink-0"
+        onClick={() => startItem(item, allItems, undefined, { announce: true })}
+      >
+        <Play className={`h-3.5 w-3.5 ${isActive ? 'text-accent-green' : 'text-muted-foreground hover:text-foreground'}`} />
       </button>
 
       <button onClick={handleToggle} className="shrink-0">
@@ -536,6 +560,7 @@ interface PracticeHandlers {
 
 function usePlanPane() {
   const { t } = useTranslation();
+  const { setOnItemComplete, setSections } = usePracticeSessionContext();
   const { data: plan, isLoading, error } = useActivePlan();
   const createPlanMutation = useCreatePlan();
   const createSectionMutation = useCreateSection();
@@ -545,6 +570,24 @@ function usePlanPane() {
   const updateItemMutation = useUpdateItem();
   const deleteItemMutation = useDeleteItem();
   const reorderPlanMutation = useReorderPlan();
+
+  // Register callback so the timer can mark items complete
+  const completeItem = useCallback(
+    (itemId: string) => {
+      updateItemMutation.mutate({ itemId, status: 'completed' as const });
+    },
+    [updateItemMutation]
+  );
+
+  useEffect(() => {
+    setOnItemComplete(completeItem);
+    return () => setOnItemComplete(null);
+  }, [setOnItemComplete, completeItem]);
+
+  // Keep sections ref in sync for timer announcements
+  useEffect(() => {
+    if (plan) setSections(plan.sections);
+  }, [plan, setSections]);
 
   const handlers: PracticeHandlers = {
     createPlan: () => {
