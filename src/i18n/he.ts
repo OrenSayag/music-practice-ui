@@ -46,6 +46,7 @@ export const he: Record<TranslationKey, string> = {
   'dashboard.startPracticing': 'התחילו את התרגול הראשון!',
   'dashboard.items': '{{count}} פריטים',
   'dashboard.min': '{{min}}ד׳',
+  'dashboard.hour': '{{hours}}ש׳',
   'dashboard.hourMin': '{{hours}}ש׳ {{min}}ד׳',
 
   // Settings

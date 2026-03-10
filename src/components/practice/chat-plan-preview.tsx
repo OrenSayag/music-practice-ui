@@ -7,6 +7,7 @@ function formatMinutes(min: number, t: (key: string, opts?: Record<string, unkno
   if (min < 60) return t('dashboard.min', { min });
   const hours = Math.floor(min / 60);
   const m = min % 60;
+  if (m === 0) return t('dashboard.hour', { hours });
   return t('dashboard.hourMin', { hours, min: m });
 }
 

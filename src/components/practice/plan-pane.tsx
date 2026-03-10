@@ -105,6 +105,7 @@ function formatMinutes(min: number, t: (key: string, opts?: Record<string, unkno
   if (min < 60) return t('dashboard.min', { min });
   const hours = Math.floor(min / 60);
   const m = min % 60;
+  if (m === 0) return t('dashboard.hour', { hours });
   return t('dashboard.hourMin', { hours, min: m });
 }
 
@@ -411,7 +412,10 @@ function PlanItemComponent({
   const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer } = usePracticeSessionContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
+  const [isEditingDuration, setIsEditingDuration] = useState(false);
+  const [durationEditValue, setDurationEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const durationInputRef = useRef<HTMLInputElement>(null);
   const isCompleted = item.status === 'completed';
   const isActive = activeItem?.id === item.id;
 
@@ -433,6 +437,27 @@ function PlanItemComponent({
     setEditValue(item.name);
     setIsEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleStartDurationEdit = () => {
+    setDurationEditValue(item.targetDurationMinutes ? String(item.targetDurationMinutes) : '');
+    setIsEditingDuration(true);
+    setTimeout(() => durationInputRef.current?.focus(), 0);
+  };
+
+  const handleDurationSave = () => {
+    setIsEditingDuration(false);
+    const trimmed = durationEditValue.trim();
+    if (!trimmed) {
+      if (item.targetDurationMinutes !== null) {
+        handlers.updateItem(item.id, { targetDurationMinutes: null });
+      }
+      return;
+    }
+    const minutes = parseInt(trimmed, 10);
+    if (!isNaN(minutes) && minutes > 0 && minutes !== item.targetDurationMinutes) {
+      handlers.updateItem(item.id, { targetDurationMinutes: minutes });
+    }
   };
 
   const durationLabel = item.targetDurationMinutes
@@ -508,13 +533,27 @@ function PlanItemComponent({
         </span>
       )}
 
-      {durationLabel ? (
-        <span
-          className={`shrink-0 font-mono text-xs text-muted-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+      {isEditingDuration ? (
+        <input
+          ref={durationInputRef}
+          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-xs text-muted-foreground outline-none"
+          value={durationEditValue}
+          placeholder="min"
+          onChange={(e) => setDurationEditValue(e.target.value.replace(/[^0-9]/g, ''))}
+          onBlur={handleDurationSave}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleDurationSave();
+            if (e.key === 'Escape') setIsEditingDuration(false);
+          }}
+        />
+      ) : (
+        <button
+          className={`shrink-0 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+          onClick={handleStartDurationEdit}
         >
-          {durationLabel}
-        </span>
-      ) : null}
+          {durationLabel ?? '—'}
+        </button>
+      )}
 
       <button
         className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
@@ -587,7 +626,7 @@ interface PracticeHandlers {
   updateSection: (sectionId: string, input: { name: string }) => void;
   deleteSection: (sectionId: string) => void;
   addItem: (sectionId: string) => void;
-  updateItem: (itemId: string, input: { name?: string }) => void;
+  updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null }) => void;
   toggleItem: (itemId: string, status: 'pending' | 'completed') => void;
   deleteItem: (itemId: string) => void;
   reorderPlan: (planId: string, input: ReorderInput) => void;
@@ -653,7 +692,7 @@ function usePlanPane() {
       });
     },
 
-    updateItem: (itemId: string, input: { name?: string }) => {
+    updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null }) => {
       updateItemMutation.mutate({ itemId, ...input });
     },
 

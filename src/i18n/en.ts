@@ -44,6 +44,7 @@ export const en = {
   'dashboard.startPracticing': 'Start your first practice session!',
   'dashboard.items': '{{count}} items',
   'dashboard.min': '{{min}}m',
+  'dashboard.hour': '{{hours}}h',
   'dashboard.hourMin': '{{hours}}h {{min}}m',
 
   // Settings
