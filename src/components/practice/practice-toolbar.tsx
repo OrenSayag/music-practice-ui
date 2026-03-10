@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Bookmark, Maximize2 } from 'lucide-react';
+import { useActivePlan } from '@/services/plans';
+import { PresetsSheet } from './presets-sheet';
 
 interface PracticeToolbarProps {
   view: 'plan' | 'chat';
@@ -8,6 +11,8 @@ interface PracticeToolbarProps {
 
 export function PracticeToolbar({ view, onChatClick }: PracticeToolbarProps) {
   const { t } = useTranslation();
+  const [presetsOpen, setPresetsOpen] = useState(false);
+  const { data: activePlan } = useActivePlan();
 
   const today = new Date();
   const dateStr = today
@@ -18,33 +23,44 @@ export function PracticeToolbar({ view, onChatClick }: PracticeToolbarProps) {
   const isChatActive = view === 'chat';
 
   return (
-    <div className="flex h-12 items-center justify-between border-b border-border px-6">
-      <div className="flex items-center gap-4">
-        <ToolbarButton
-          onClick={onChatClick}
-          active={isChatActive}
-        >
-          <MessageSquare className="h-3.5 w-3.5" />
-          <span className="font-mono text-xs">
-            {t('practice.chat')}
-          </span>
-        </ToolbarButton>
-        <ToolbarButton bordered>
-          <Bookmark className="h-3.5 w-3.5 text-muted-foreground" />
+    <>
+      <div className="flex h-12 items-center justify-between border-b border-border px-6">
+        <div className="flex items-center gap-4">
+          <ToolbarButton
+            onClick={onChatClick}
+            active={isChatActive}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            <span className="font-mono text-xs">
+              {t('practice.chat')}
+            </span>
+          </ToolbarButton>
+          <ToolbarButton
+            bordered
+            active={presetsOpen}
+            onClick={() => setPresetsOpen(true)}
+          >
+            <Bookmark className="h-3.5 w-3.5" />
+            <span className="font-mono text-xs">
+              {t('practice.presets')}
+            </span>
+          </ToolbarButton>
           <span className="font-mono text-xs text-muted-foreground">
-            {t('practice.presets')}
+            {dateStr}
           </span>
-        </ToolbarButton>
-        <span className="font-mono text-xs text-muted-foreground">
-          {dateStr}
-        </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <ToolbarButton>
+            <Maximize2 className="h-3.5 w-3.5 text-muted-foreground" />
+          </ToolbarButton>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        <ToolbarButton>
-          <Maximize2 className="h-3.5 w-3.5 text-muted-foreground" />
-        </ToolbarButton>
-      </div>
-    </div>
+      <PresetsSheet
+        open={presetsOpen}
+        onOpenChange={setPresetsOpen}
+        activePlanId={activePlan?.id}
+      />
+    </>
   );
 }
 

@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { SectionTitle } from '@/components/section-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Music, Trash2, Square, CheckSquare, GripVertical, Play, Pause } from 'lucide-react';
+import { Music, Trash2, Square, CheckSquare, GripVertical, Play, Pause, Bookmark } from 'lucide-react';
+import { PresetsSheet } from './presets-sheet';
 import { usePracticeSessionContext } from './practice-session-provider';
 import {
   DndContext,
@@ -61,7 +62,7 @@ export default function PlanPane() {
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <PlanHeader completedCount={completedCount} totalCount={totalCount} totalMinutes={totalMinutes} />
+      <PlanHeader completedCount={completedCount} totalCount={totalCount} totalMinutes={totalMinutes} planId={plan.id} />
       <SortableSectionList plan={plan} handlers={handlers} />
       <AddButton
         label={t('practice.addSection')}
@@ -75,29 +76,49 @@ function PlanHeader({
   completedCount,
   totalCount,
   totalMinutes,
+  planId,
 }: {
   completedCount: number;
   totalCount: number;
   totalMinutes: number;
+  planId: string;
 }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const [presetsOpen, setPresetsOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
-        {totalMinutes > 0 && (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
+          {totalMinutes > 0 && (
+            <span className="font-mono text-xs text-muted-foreground">
+              ({formatMinutes(totalMinutes, t)})
+            </span>
+          )}
+          {isMobile && (
+            <button
+              className="flex items-center gap-1.5 border border-border px-2 py-1 text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => setPresetsOpen(true)}
+            >
+              <Bookmark className="h-3.5 w-3.5" />
+              <span className="font-mono text-xs">{t('practice.presets')}</span>
+            </button>
+          )}
+        </div>
+        {totalCount > 0 && (
           <span className="font-mono text-xs text-muted-foreground">
-            ({formatMinutes(totalMinutes, t)})
+            [{t('practice.progress', { completed: completedCount, total: totalCount })}]
           </span>
         )}
       </div>
-      {totalCount > 0 ? (
-        <span className="font-mono text-xs text-muted-foreground">
-          [{t('practice.progress', { completed: completedCount, total: totalCount })}]
-        </span>
-      ) : null}
-    </div>
+      <PresetsSheet
+        open={presetsOpen}
+        onOpenChange={setPresetsOpen}
+        activePlanId={planId}
+      />
+    </>
   );
 }
 
