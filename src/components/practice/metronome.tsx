@@ -32,7 +32,7 @@ export function Metronome() {
     useMetronomeContext();
 
   return (
-    <div className="flex flex-col gap-4 border border-border p-6">
+    <div className="flex flex-col gap-3 border border-border p-4">
       <SectionTitle>{t('practice.metronome')}</SectionTitle>
 
       <BpmDisplay bpm={bpm} />
@@ -60,7 +60,7 @@ export function Metronome() {
 function BpmDisplay({ bpm }: { bpm: number }) {
   return (
     <div className="flex items-end justify-center gap-2">
-      <span className="font-mono text-5xl font-bold">{bpm}</span>
+      <span className="font-mono text-4xl font-bold">{bpm}</span>
       <span className="mb-1 font-mono text-sm text-muted-foreground">bpm</span>
     </div>
   );
@@ -125,7 +125,7 @@ function AccentRow({
       {accents.map((isAccented, i) => (
         <button
           key={i}
-          className={`h-8 w-8 border transition-colors ${
+          className={`h-7 w-7 border transition-colors ${
             i === currentBeat
               ? 'border-accent-green bg-accent-green'
               : isAccented

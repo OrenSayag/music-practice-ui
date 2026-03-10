@@ -11,9 +11,11 @@ export function ToolsPane() {
         <PlayControls />
       </div>
       <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 border border-border p-6">
         <SessionTimer />
         <TimerTabs />
       </div>
+    </div>
     </div>
   );
 }
