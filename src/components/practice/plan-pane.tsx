@@ -4,7 +4,7 @@ import { SectionTitle } from '@/components/section-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Music, Trash2, Square, CheckSquare, GripVertical, Play, Pause, Bookmark } from 'lucide-react';
-import { PresetsSheet } from './presets-sheet';
+import { PresetsDialog } from './presets-dialog';
 import { usePracticeSessionContext } from './practice-session-provider';
 import {
   DndContext,
@@ -119,7 +119,7 @@ function PlanHeader({
           </span>
         )}
       </div>
-      <PresetsSheet
+      <PresetsDialog
         open={presetsOpen}
         onOpenChange={setPresetsOpen}
         activePlanId={planId}

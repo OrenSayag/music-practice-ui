@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Pause, RotateCcw, Settings, Trash2 } from 'lucide-react';
 import { SectionTitle } from '@/components/section-title';
 import { usePracticeSessionContext } from './practice-session-provider';
-import { DefaultTimerConfigSheet, CustomTimerConfigSheet } from './timer-config-modal';
+import { DefaultTimerConfigDialog, CustomTimerConfigDialog } from './timer-config-modal';
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -12,7 +12,7 @@ function formatTime(seconds: number): string {
 }
 
 interface SessionTimerProps {
-  /** On mobile, config opens a sub-view instead of a Sheet */
+  /** On mobile, config opens a sub-view instead of a Dialog */
   onConfigRequest?: (target: 'default' | string) => void;
 }
 
@@ -102,15 +102,15 @@ export function SessionTimer({ onConfigRequest }: SessionTimerProps) {
         </div>
       </div>
 
-      {/* Desktop-only Sheet config */}
+      {/* Desktop-only Dialog config */}
       {!onConfigRequest && (
         <>
-          <DefaultTimerConfigSheet
+          <DefaultTimerConfigDialog
             open={configTarget === 'default'}
             onOpenChange={(open) => !open && setConfigTarget(null)}
           />
           {configTarget !== null && configTarget !== 'default' && (
-            <CustomTimerConfigSheet
+            <CustomTimerConfigDialog
               timerId={configTarget}
               open
               onOpenChange={(open) => !open && setConfigTarget(null)}

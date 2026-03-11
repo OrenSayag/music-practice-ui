@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, Bookmark, Maximize2 } from 'lucide-react';
 import { useActivePlan } from '@/services/plans';
 import { usePracticeSessionContext } from './practice-session-provider';
-import { PresetsSheet } from './presets-sheet';
+import { PresetsDialog } from './presets-dialog';
 
 interface PracticeToolbarProps {
   view: 'plan' | 'chat';
@@ -82,7 +82,7 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
           </>
         )}
       </div>
-      <PresetsSheet
+      <PresetsDialog
         open={presetsOpen}
         onOpenChange={setPresetsOpen}
         activePlanId={activePlan?.id}

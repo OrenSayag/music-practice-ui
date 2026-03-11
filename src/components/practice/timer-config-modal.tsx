@@ -1,37 +1,37 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { usePracticeSessionContext } from './practice-session-provider';
 
 // -- Default timer config --
 
-interface DefaultTimerConfigSheetProps {
+interface DefaultTimerConfigDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function DefaultTimerConfigSheet({ open, onOpenChange }: DefaultTimerConfigSheetProps) {
+export function DefaultTimerConfigDialog({ open, onOpenChange }: DefaultTimerConfigDialogProps) {
   const { t } = useTranslation();
   const { defaultTimerSettings, updateDefaultTimerSettings } = usePracticeSessionContext();
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right">
-        <SheetHeader>
-          <SheetTitle className="font-mono text-sm">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-mono text-sm">
             {t('practice.timerConfig')}
-          </SheetTitle>
-          <SheetDescription className="font-mono text-xs">
+          </DialogTitle>
+          <DialogDescription className="font-mono text-xs">
             {t('practice.defaultTimer')}
-          </SheetDescription>
-        </SheetHeader>
-        <div className="flex flex-col gap-4 p-4">
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
           <label className="flex items-center gap-3 font-mono text-sm">
             <input
               type="checkbox"
@@ -55,20 +55,20 @@ export function DefaultTimerConfigSheet({ open, onOpenChange }: DefaultTimerConf
             {t('practice.autoStartNextItem')}
           </label>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 // -- Custom timer config --
 
-interface CustomTimerConfigSheetProps {
+interface CustomTimerConfigDialogProps {
   timerId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CustomTimerConfigSheet({ timerId, open, onOpenChange }: CustomTimerConfigSheetProps) {
+export function CustomTimerConfigDialog({ timerId, open, onOpenChange }: CustomTimerConfigDialogProps) {
   const { t } = useTranslation();
   const { customTimers, updateCustomTimer } = usePracticeSessionContext();
   const timer = customTimers.find((t) => t.id === timerId);
@@ -92,17 +92,17 @@ export function CustomTimerConfigSheet({ timerId, open, onOpenChange }: CustomTi
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right">
-        <SheetHeader>
-          <SheetTitle className="font-mono text-sm">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-mono text-sm">
             {t('practice.timerConfig')}
-          </SheetTitle>
-          <SheetDescription className="font-mono text-xs">
+          </DialogTitle>
+          <DialogDescription className="font-mono text-xs">
             {timer.label}
-          </SheetDescription>
-        </SheetHeader>
-        <div className="flex flex-col gap-4 p-4">
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label className="font-mono text-xs text-muted-foreground">
               {t('practice.timerLabel')}
@@ -170,7 +170,7 @@ export function CustomTimerConfigSheet({ timerId, open, onOpenChange }: CustomTi
             {t('practice.save')}
           </button>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

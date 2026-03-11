@@ -3,33 +3,33 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePresets, useSavePreset, useDeletePreset, useLoadPreset } from '@/services/presets';
 import type { Preset } from '@/services/presets';
 
-interface PresetsSheetProps {
+interface PresetsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activePlanId: string | undefined;
 }
 
-export function PresetsSheet({ open, onOpenChange, activePlanId }: PresetsSheetProps) {
-  const { presetsList, save, remove, load } = usePresetsSheet(activePlanId, onOpenChange);
+export function PresetsDialog({ open, onOpenChange, activePlanId }: PresetsDialogProps) {
+  const { presetsList, save, remove, load } = usePresetsDialog(activePlanId, onOpenChange);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex flex-col gap-0 p-0">
-        <SheetHeader className="border-b border-border px-4 py-3">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[80vh] flex-col gap-0 p-0">
+        <DialogHeader className="border-b border-border px-4 py-3">
           <div className="flex items-center justify-between">
-            <SheetTitle className="font-mono text-sm">
+            <DialogTitle className="font-mono text-sm">
               {save.t('practice.presets')}
-            </SheetTitle>
+            </DialogTitle>
             {activePlanId && (
               <SavePresetControl
                 isSaving={save.isSaving}
@@ -42,7 +42,7 @@ export function PresetsSheet({ open, onOpenChange, activePlanId }: PresetsSheetP
               />
             )}
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
           {presetsList.length === 0 ? (
@@ -63,8 +63,8 @@ export function PresetsSheet({ open, onOpenChange, activePlanId }: PresetsSheetP
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -151,7 +151,7 @@ function PresetRow({
     >
       <div className="flex flex-col gap-0.5">
         <span className="font-mono text-xs text-foreground">{preset.name}</span>
-        <span className="font-mono text-[10px] text-muted-foreground">
+        <span className="font-mono text-[0.5rem] text-muted-foreground">
           {preset.sections.length}s / {itemCount}i
           {totalMinutes > 0 && ` / ${totalMinutes}m`}
         </span>
@@ -172,7 +172,7 @@ function PresetRow({
   );
 }
 
-function usePresetsSheet(activePlanId: string | undefined, onOpenChange: (open: boolean) => void) {
+function usePresetsDialog(activePlanId: string | undefined, onOpenChange: (open: boolean) => void) {
   const { t } = useTranslation();
   const { data: presetsList = [] } = usePresets();
   const saveMutation = useSavePreset();
