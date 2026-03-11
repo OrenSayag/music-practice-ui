@@ -9,6 +9,8 @@ const SCHEDULE_AHEAD_S = 0.1;
 
 const BPM_KEY = 'metronome-bpm';
 const VOLUME_KEY = 'metronome-volume';
+const BEATS_KEY = 'metronome-beats';
+const ACCENTS_KEY = 'metronome-accents';
 const DEFAULT_VOLUME = 0.8;
 
 function loadBpm(): number {
@@ -23,6 +25,25 @@ function loadVolume(): number {
   if (stored === null) return DEFAULT_VOLUME;
   const parsed = Number(stored);
   return Number.isFinite(parsed) ? Math.max(0, Math.min(1, parsed)) : DEFAULT_VOLUME;
+}
+
+function loadBeats(): number {
+  const stored = localStorage.getItem(BEATS_KEY);
+  if (stored === null) return DEFAULT_BEATS;
+  const parsed = Number(stored);
+  return Number.isFinite(parsed) ? Math.max(1, Math.min(12, parsed)) : DEFAULT_BEATS;
+}
+
+function loadAccents(beats: number): boolean[] {
+  try {
+    const stored = localStorage.getItem(ACCENTS_KEY);
+    if (!stored) return Array.from({ length: beats }, (_, i) => i === 0);
+    const parsed = JSON.parse(stored) as boolean[];
+    if (Array.isArray(parsed) && parsed.length === beats) return parsed;
+    return Array.from({ length: beats }, (_, i) => i === 0);
+  } catch {
+    return Array.from({ length: beats }, (_, i) => i === 0);
+  }
 }
 
 export type MetronomeSound = 'wood' | 'glass' | 'electromagnetic' | 'arcane';
@@ -90,10 +111,8 @@ export interface MetronomeActions {
 
 export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState & MetronomeActions {
   const [bpm, setBpmState] = useState(loadBpm);
-  const [beats, setBeatsState] = useState(DEFAULT_BEATS);
-  const [accents, setAccents] = useState<boolean[]>(() =>
-    Array.from({ length: DEFAULT_BEATS }, (_, i) => i === 0)
-  );
+  const [beats, setBeatsState] = useState(loadBeats);
+  const [accents, setAccents] = useState<boolean[]>(() => loadAccents(loadBeats()));
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
   const [volume, setVolumeState] = useState(loadVolume);
@@ -190,9 +209,11 @@ export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState
   const setBeats = useCallback((value: number) => {
     const clamped = Math.max(1, Math.min(12, value));
     setBeatsState(clamped);
+    localStorage.setItem(BEATS_KEY, String(clamped));
     setAccents((prev) => {
       const next = Array.from({ length: clamped }, (_, i) => prev[i] ?? false);
       if (!next.some(Boolean)) next[0] = true;
+      localStorage.setItem(ACCENTS_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -201,6 +222,7 @@ export function useMetronome(soundType: MetronomeSound = 'wood'): MetronomeState
     setAccents((prev) => {
       const next = [...prev];
       next[index] = !next[index];
+      localStorage.setItem(ACCENTS_KEY, JSON.stringify(next));
       return next;
     });
   }, []);

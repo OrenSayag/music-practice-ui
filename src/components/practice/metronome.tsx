@@ -2,8 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Minus, Plus } from 'lucide-react';
 import { SectionTitle } from '@/components/section-title';
 import { useMetronome, type MetronomeState, type MetronomeActions, type MetronomeSound } from '@/hooks/use-metronome';
-import { useAuthUser } from '@/layouts/authenticated-layout';
-import { createContext, useContext } from 'react';
+import { useAuthUser, usePracticeSync } from '@/layouts/authenticated-layout';
+import { createContext, useContext, useEffect } from 'react';
+import { collectPracticeState } from '@/hooks/use-practice-state-sync';
 
 type MetronomeContextValue = MetronomeState & MetronomeActions;
 const MetronomeContext = createContext<MetronomeContextValue | null>(null);
@@ -17,6 +18,12 @@ function useMetronomeContext() {
 export function MetronomeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuthUser();
   const metronome = useMetronome((user.metronomeSound as MetronomeSound) || 'wood');
+  const { syncToServer } = usePracticeSync();
+
+  useEffect(() => {
+    syncToServer(collectPracticeState());
+  }, [metronome.bpm, metronome.beats, metronome.accents, syncToServer]);
+
   return (
     <MetronomeContext value={metronome}>
       {children}

@@ -24,8 +24,6 @@ export interface DefaultTimerSettings {
 
 export interface SessionSummaryData {
   sessionId: string;
-  startedAt: string;
-  endedAt: string;
   durationSeconds: number;
   notes: string | null;
   items: SessionSummaryItem[];
@@ -54,7 +52,7 @@ export interface PracticeSessionState {
   sessionId: string | null;
   sessionStartedAt: Date | null;
   isInSession: boolean;
-  itemElapsedMap: Record<string, number>;
+  pendingActiveItemId: string | null;
 }
 
 export interface PracticeSessionActions {
@@ -73,6 +71,7 @@ export interface PracticeSessionActions {
   beginSession: () => Promise<void>;
   endSession: (allItems: PlanItem[], sections: PlanSection[]) => Promise<SessionSummaryData | null>;
   cancelSession: () => void;
+  restoreActiveItem: (item: PlanItem, allItems: PlanItem[], sections: PlanSection[]) => void;
 }
 
 let nextTimerId = 0;
@@ -80,6 +79,10 @@ let nextTimerId = 0;
 const STORAGE_KEY_CUSTOM_TIMERS = 'practice-custom-timers';
 const STORAGE_KEY_DEFAULT_TIMER_SETTINGS = 'practice-default-timer-settings';
 const STORAGE_KEY_SELECTED_TIMER = 'practice-selected-timer';
+const STORAGE_KEY_SESSION_ID = 'practice-session-id';
+const STORAGE_KEY_SESSION_STARTED_AT = 'practice-session-started-at';
+const STORAGE_KEY_ACTIVE_ITEM_ID = 'practice-active-item-id';
+const STORAGE_KEY_REMAINING_SECONDS = 'practice-remaining-seconds';
 
 function loadCustomTimers(): CustomTimer[] {
   try {
@@ -115,6 +118,44 @@ function loadSelectedTimerId(): string | null {
   }
 }
 
+function loadSessionId(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_SESSION_ID);
+  } catch {
+    return null;
+  }
+}
+
+function loadSessionStartedAt(): Date | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SESSION_STARTED_AT);
+    if (!raw) return null;
+    const date = new Date(raw);
+    return isNaN(date.getTime()) ? null : date;
+  } catch {
+    return null;
+  }
+}
+
+function loadActiveItemId(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID);
+  } catch {
+    return null;
+  }
+}
+
+function loadRemainingSeconds(): number {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_REMAINING_SECONDS);
+    if (!raw) return 0;
+    const val = parseInt(raw, 10);
+    return isNaN(val) ? 0 : val;
+  } catch {
+    return 0;
+  }
+}
+
 export function usePracticeSession(): PracticeSessionState & PracticeSessionActions {
   const [activeItem, setActiveItem] = useState<PlanItem | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
@@ -124,10 +165,13 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
   const [defaultTimerSettings, setDefaultTimerSettings] = useState<DefaultTimerSettings>(loadDefaultTimerSettings);
   const [selectedTimerId, setSelectedTimerId] = useState<string | null>(loadSelectedTimerId);
 
-  // Session persistence state
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
-  const [itemElapsedMap, setItemElapsedMap] = useState<Record<string, number>>({});
+  // Session persistence state (restored from localStorage)
+  const [sessionId, setSessionId] = useState<string | null>(loadSessionId);
+  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(loadSessionStartedAt);
+
+  // Active item persistence — pendingActiveItemId is consumed once by restoreActiveItem
+  const [pendingActiveItemId, setPendingActiveItemId] = useState<string | null>(loadActiveItemId);
+  const pendingRemainingSeconds = useRef(loadRemainingSeconds());
 
   const isInSession = sessionId !== null;
 
@@ -147,6 +191,30 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       localStorage.setItem(STORAGE_KEY_SELECTED_TIMER, selectedTimerId);
     }
   }, [selectedTimerId]);
+
+  // Persist session state to localStorage
+  useEffect(() => {
+    if (sessionId === null) {
+      localStorage.removeItem(STORAGE_KEY_SESSION_ID);
+      localStorage.removeItem(STORAGE_KEY_SESSION_STARTED_AT);
+    } else {
+      localStorage.setItem(STORAGE_KEY_SESSION_ID, sessionId);
+      if (sessionStartedAt) {
+        localStorage.setItem(STORAGE_KEY_SESSION_STARTED_AT, sessionStartedAt.toISOString());
+      }
+    }
+  }, [sessionId, sessionStartedAt]);
+
+  // Persist active item state to localStorage
+  useEffect(() => {
+    if (activeItem === null) {
+      localStorage.removeItem(STORAGE_KEY_ACTIVE_ITEM_ID);
+      localStorage.removeItem(STORAGE_KEY_REMAINING_SECONDS);
+    } else {
+      localStorage.setItem(STORAGE_KEY_ACTIVE_ITEM_ID, activeItem.id);
+      localStorage.setItem(STORAGE_KEY_REMAINING_SECONDS, String(remainingSeconds));
+    }
+  }, [activeItem, remainingSeconds]);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const allItemsRef = useRef<PlanItem[]>([]);
@@ -172,7 +240,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     const result = await startSessionMutation.mutateAsync();
     setSessionId(result.id);
     setSessionStartedAt(new Date(result.startedAt));
-    setItemElapsedMap({});
   }, [sessionId, startSessionMutation]);
 
   const startItem = useCallback(
@@ -209,13 +276,34 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     setRemainingSeconds(0);
     setIsTimerRunning(false);
     setNextItemName(null);
+    setPendingActiveItemId(null);
   }, [clearTimer]);
+
+  // Restore active item after page refresh (called by consumer with resolved plan data)
+  const restoreActiveItem = useCallback(
+    (item: PlanItem, allItems: PlanItem[], sections: PlanSection[]) => {
+      clearTimer();
+      allItemsRef.current = allItems;
+      sectionsRef.current = sections;
+
+      const idx = allItems.findIndex((i) => i.id === item.id);
+      const pendingAfter = allItems.slice(idx + 1).find((i) => i.status !== 'completed');
+      setNextItemName(pendingAfter ? pendingAfter.name : null);
+
+      setActiveItem(item);
+      const seconds = pendingRemainingSeconds.current;
+      setRemainingSeconds(seconds);
+      setIsTimerRunning(false); // Restored paused
+      setSelectedTimerId(null);
+      setPendingActiveItemId(null);
+    },
+    [clearTimer]
+  );
 
   const cancelSession = useCallback(() => {
     stopItem();
     setSessionId(null);
     setSessionStartedAt(null);
-    setItemElapsedMap({});
   }, [stopItem]);
 
   const endSession = useCallback(
@@ -229,26 +317,22 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       stopItem();
 
       // Build session items from plan items
-      const currentElapsed = itemElapsedMap;
+      // Completed items use target duration; everything else is 0
       const sessionItems: SessionItemInput[] = allItems.map((item) => {
-        const elapsed = currentElapsed[item.id] ?? 0;
-        let status: 'done' | 'partial' | 'none';
-        if (item.status === 'completed') {
-          status = 'done';
-        } else if (elapsed > 0) {
-          status = 'partial';
-        } else {
-          status = 'none';
-        }
+        const status: 'done' | 'partial' | 'none' =
+          item.status === 'completed' ? 'done' : 'none';
+        const targetSeconds = item.targetDurationMinutes
+          ? item.targetDurationMinutes * 60
+          : undefined;
+        const durationSeconds =
+          status === 'done' && targetSeconds ? targetSeconds : 0;
         const section = sections
           .find((s) => s.items.some((i) => i.id === item.id));
         return {
           name: item.name,
           section: section?.name,
-          durationSeconds: elapsed,
-          targetDurationSeconds: item.targetDurationMinutes
-            ? item.targetDurationMinutes * 60
-            : undefined,
+          durationSeconds,
+          targetDurationSeconds: targetSeconds,
           bpm: item.bpm ?? undefined,
           status,
         };
@@ -274,12 +358,14 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       const avgBpm = bpms.length > 0
         ? Math.round(bpms.reduce((a, b) => a + b, 0) / bpms.length)
         : null;
+      const totalDurationSeconds = sessionItems.reduce(
+        (sum, item) => sum + item.durationSeconds,
+        0
+      );
 
       const summary: SessionSummaryData = {
         sessionId: result.id,
-        startedAt: result.startedAt,
-        endedAt: result.endedAt,
-        durationSeconds: result.durationSeconds,
+        durationSeconds: totalDurationSeconds,
         notes: result.notes,
         items: sessionItems,
         totalItems: allItems.length,
@@ -290,11 +376,10 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       // Clear session state
       setSessionId(null);
       setSessionStartedAt(null);
-      setItemElapsedMap({});
 
       return summary;
     },
-    [sessionId, stopItem, itemElapsedMap, saveItemsMutation, endSessionMutation]
+    [sessionId, stopItem, saveItemsMutation, endSessionMutation]
   );
 
   const toggleTimer = useCallback(() => {
@@ -440,14 +525,13 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     }
   }, [customTimers]);
 
-  // Single interval ticks both default and custom timers + elapsed tracking
+  // Single interval ticks both default and custom timers
   useEffect(() => {
     clearTimer();
 
     const anyRunning =
       (isTimerRunning && remainingSeconds > 0) ||
-      customTimers.some((t) => t.isRunning && t.remainingSeconds > 0) ||
-      (isInSession && activeItem !== null);
+      customTimers.some((t) => t.isRunning && t.remainingSeconds > 0);
 
     if (!anyRunning) return clearTimer;
 
@@ -462,14 +546,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
           }
           return prev - 1;
         });
-      }
-
-      // Track elapsed time per item when in session
-      if (isInSession && activeItem) {
-        setItemElapsedMap((prev) => ({
-          ...prev,
-          [activeItem.id]: (prev[activeItem.id] ?? 0) + 1,
-        }));
       }
 
       // Tick custom timers
@@ -498,8 +574,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     isTimerRunning,
     remainingSeconds > 0,
     customTimers.some((t) => t.isRunning && t.remainingSeconds > 0),
-    isInSession,
-    activeItem?.id,
     clearTimer,
     onDefaultTimerEnd,
   ]);
@@ -515,7 +589,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     sessionId,
     sessionStartedAt,
     isInSession,
-    itemElapsedMap,
+    pendingActiveItemId,
     startItem,
     stopItem,
     toggleTimer,
@@ -531,5 +605,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     beginSession,
     endSession,
     cancelSession,
+    restoreActiveItem,
   };
 }

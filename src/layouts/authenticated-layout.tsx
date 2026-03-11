@@ -8,6 +8,8 @@ import { getMe, logout } from '@/services/auth/auth-api';
 import type { User } from '@/services/auth/auth-types';
 import { MetronomeProvider } from '@/components/practice/metronome';
 import { PracticeSessionProvider } from '@/components/practice/practice-session-provider';
+import { usePracticeStateSync } from '@/hooks/use-practice-state-sync';
+import type { PracticeState } from '@/services/user/practice-state-types';
 import { LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
@@ -25,6 +27,36 @@ export function useAuthUser(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuthUser must be used within AuthenticatedLayout');
   return ctx;
+}
+
+interface PracticeStateSyncContextValue {
+  syncToServer: (state: PracticeState) => void;
+}
+
+const PracticeStateSyncContext = createContext<PracticeStateSyncContextValue | null>(null);
+
+export function usePracticeSync() {
+  const ctx = useContext(PracticeStateSyncContext);
+  if (!ctx) throw new Error('usePracticeSync must be used within PracticeStateSyncProvider');
+  return ctx;
+}
+
+function PracticeStateSyncProvider({ children }: { children: React.ReactNode }) {
+  const { serverLoaded, syncToServer } = usePracticeStateSync();
+
+  if (!serverLoaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+
+  return (
+    <PracticeStateSyncContext value={{ syncToServer }}>
+      {children}
+    </PracticeStateSyncContext>
+  );
 }
 
 export default function AuthenticatedLayout() {
@@ -53,11 +85,13 @@ export default function AuthenticatedLayout() {
 
   return (
     <AuthContext value={{ user, setUser }}>
-      <MetronomeProvider>
-        <PracticeSessionProvider>
-          <LayoutShell handleLogout={handleLogout} />
-        </PracticeSessionProvider>
-      </MetronomeProvider>
+      <PracticeStateSyncProvider>
+        <MetronomeProvider>
+          <PracticeSessionProvider>
+            <LayoutShell handleLogout={handleLogout} />
+          </PracticeSessionProvider>
+        </MetronomeProvider>
+      </PracticeStateSyncProvider>
     </AuthContext>
   );
 }

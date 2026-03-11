@@ -22,7 +22,7 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
     ? `${totalHours}h ${remainingMinutes}m`
     : `${totalMinutes}m`;
 
-  const dateStr = new Date(data.startedAt)
+  const dateStr = new Date()
     .toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: '2-digit' })
     .toLowerCase()
     .replace(',', '');

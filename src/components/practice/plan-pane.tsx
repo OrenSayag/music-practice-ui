@@ -674,7 +674,7 @@ interface PracticeHandlers {
 
 function usePlanPane() {
   const { t } = useTranslation();
-  const { setOnItemComplete, setSections } = usePracticeSessionContext();
+  const { setOnItemComplete, setSections, pendingActiveItemId, restoreActiveItem } = usePracticeSessionContext();
   const { data: plan, isLoading, error } = useActivePlan();
   const createPlanMutation = useCreatePlan();
   const createSectionMutation = useCreateSection();
@@ -702,6 +702,16 @@ function usePlanPane() {
   useEffect(() => {
     if (plan) setSections(plan.sections);
   }, [plan, setSections]);
+
+  // Restore active item after page refresh
+  useEffect(() => {
+    if (!plan || !pendingActiveItemId) return;
+    const allItems = plan.sections.flatMap((s) => s.items);
+    const item = allItems.find((i) => i.id === pendingActiveItemId);
+    if (item) {
+      restoreActiveItem(item, allItems, plan.sections);
+    }
+  }, [plan, pendingActiveItemId, restoreActiveItem]);
 
   const handlers: PracticeHandlers = {
     createPlan: () => {

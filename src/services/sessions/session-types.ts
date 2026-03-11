@@ -6,7 +6,6 @@ export interface StartSessionResponse {
 export interface EndSessionResponse {
   id: string;
   startedAt: string;
-  endedAt: string;
   durationSeconds: number;
   notes: string | null;
 }
