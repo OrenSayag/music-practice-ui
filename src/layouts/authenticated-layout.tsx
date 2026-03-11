@@ -1,10 +1,13 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
+import { FloatingPlayer } from '@/components/floating-player';
 import { ErrorPage } from '@/components/error-page';
 import { Spinner } from '@/components/ui/spinner';
 import { ApiError } from '@/services/api/api-client';
 import { getMe, logout } from '@/services/auth/auth-api';
 import type { User } from '@/services/auth/auth-types';
+import { MetronomeProvider } from '@/components/practice/metronome';
+import { PracticeSessionProvider } from '@/components/practice/practice-session-provider';
 import { LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
@@ -50,7 +53,11 @@ export default function AuthenticatedLayout() {
 
   return (
     <AuthContext value={{ user, setUser }}>
-      <LayoutShell handleLogout={handleLogout} />
+      <MetronomeProvider>
+        <PracticeSessionProvider>
+          <LayoutShell handleLogout={handleLogout} />
+        </PracticeSessionProvider>
+      </MetronomeProvider>
     </AuthContext>
   );
 }
@@ -74,6 +81,7 @@ function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
           </main>
         </div>
       </div>
+      <FloatingPlayer />
       <MobileTabBar />
     </>
   );
