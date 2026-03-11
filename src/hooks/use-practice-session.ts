@@ -77,17 +77,52 @@ export interface PracticeSessionActions {
 
 let nextTimerId = 0;
 
+const STORAGE_KEY_CUSTOM_TIMERS = 'practice-custom-timers';
+const STORAGE_KEY_DEFAULT_TIMER_SETTINGS = 'practice-default-timer-settings';
+const STORAGE_KEY_SELECTED_TIMER = 'practice-selected-timer';
+
+function loadCustomTimers(): CustomTimer[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CUSTOM_TIMERS);
+    if (!raw) return [];
+    const timers = JSON.parse(raw) as CustomTimer[];
+    // Restore with paused state, update nextTimerId to avoid collisions
+    return timers.map((t) => {
+      const num = parseInt(t.id.replace('custom-', ''), 10);
+      if (!isNaN(num) && num >= nextTimerId) nextTimerId = num + 1;
+      return { ...t, isRunning: false };
+    });
+  } catch {
+    return [];
+  }
+}
+
+function loadDefaultTimerSettings(): DefaultTimerSettings {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_DEFAULT_TIMER_SETTINGS);
+    if (!raw) return { announceNextItem: true, autoStartNextItem: true };
+    return JSON.parse(raw) as DefaultTimerSettings;
+  } catch {
+    return { announceNextItem: true, autoStartNextItem: true };
+  }
+}
+
+function loadSelectedTimerId(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY_SELECTED_TIMER);
+  } catch {
+    return null;
+  }
+}
+
 export function usePracticeSession(): PracticeSessionState & PracticeSessionActions {
   const [activeItem, setActiveItem] = useState<PlanItem | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [nextItemName, setNextItemName] = useState<string | null>(null);
-  const [customTimers, setCustomTimers] = useState<CustomTimer[]>([]);
-  const [defaultTimerSettings, setDefaultTimerSettings] = useState<DefaultTimerSettings>({
-    announceNextItem: true,
-    autoStartNextItem: false,
-  });
-  const [selectedTimerId, setSelectedTimerId] = useState<string | null>(null);
+  const [customTimers, setCustomTimers] = useState<CustomTimer[]>(loadCustomTimers);
+  const [defaultTimerSettings, setDefaultTimerSettings] = useState<DefaultTimerSettings>(loadDefaultTimerSettings);
+  const [selectedTimerId, setSelectedTimerId] = useState<string | null>(loadSelectedTimerId);
 
   // Session persistence state
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -95,6 +130,23 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
   const [itemElapsedMap, setItemElapsedMap] = useState<Record<string, number>>({});
 
   const isInSession = sessionId !== null;
+
+  // Persist timers to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_CUSTOM_TIMERS, JSON.stringify(customTimers));
+  }, [customTimers]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_DEFAULT_TIMER_SETTINGS, JSON.stringify(defaultTimerSettings));
+  }, [defaultTimerSettings]);
+
+  useEffect(() => {
+    if (selectedTimerId === null) {
+      localStorage.removeItem(STORAGE_KEY_SELECTED_TIMER);
+    } else {
+      localStorage.setItem(STORAGE_KEY_SELECTED_TIMER, selectedTimerId);
+    }
+  }, [selectedTimerId]);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const allItemsRef = useRef<PlanItem[]>([]);
