@@ -102,7 +102,7 @@ function usePracticeShell() {
   const view = pathname === '/practice/chat' ? 'chat' : 'plan';
 
   const toggleView = () => {
-    navigate(view === 'plan' ? '/practice/chat' : '/practice', { replace: true });
+    navigate(view === 'plan' ? '/practice/chat' : '/practice');
   };
 
   return { view, toggleView, isMobile };
