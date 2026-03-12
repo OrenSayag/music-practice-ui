@@ -167,8 +167,7 @@ function WeeklyStatsCard({ stats }: { stats: WeeklyStats }) {
 
 const TILES_PER_STAGE = 8;
 const SECONDS_PER_TILE = 1800;
-const DESKTOP_TILES = 7;
-const MOBILE_TILES = 4;
+const TILE_COUNT = 8;
 
 type TileStage = 'empty' | 'green' | 'blue' | 'purple';
 
@@ -241,7 +240,7 @@ function DesktopHeatmapGrid({
           <span className="w-7 shrink-0 text-[11px] text-muted-foreground">
             {day.shortLabel}
           </span>
-          {Array.from({ length: DESKTOP_TILES }, (_, i) => (
+          {Array.from({ length: TILE_COUNT }, (_, i) => (
             <div
               key={i}
               className={`aspect-square w-7 rounded-sm ${STAGE_CLASSES[getTileStage(i, day.totalSeconds)]}`}
@@ -261,9 +260,9 @@ function MobileHeatmapGrid({
   return (
     <div className="flex justify-between gap-1">
       {days.map((day) => (
-        <div key={day.dow} className="flex flex-1 flex-col items-center gap-1">
+        <div key={day.dow} className="flex flex-1 flex-col-reverse items-center gap-1">
           <span className="text-[9px] text-muted-foreground">{day.narrowLabel}</span>
-          {Array.from({ length: MOBILE_TILES }, (_, i) => (
+          {Array.from({ length: TILE_COUNT }, (_, i) => (
             <div
               key={i}
               className={`aspect-square w-full rounded-sm ${STAGE_CLASSES[getTileStage(i, day.totalSeconds)]}`}
