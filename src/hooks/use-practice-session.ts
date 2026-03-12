@@ -25,6 +25,7 @@ export interface DefaultTimerSettings {
 export interface SessionSummaryData {
   sessionId: string;
   durationSeconds: number;
+  name: string | null;
   notes: string | null;
   items: SessionSummaryItem[];
   totalItems: number;
@@ -238,9 +239,13 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
   const beginSession = useCallback(async () => {
     if (sessionId) return;
-    const result = await startSessionMutation.mutateAsync();
-    setSessionId(result.id);
-    setSessionStartedAt(new Date(result.startedAt));
+    try {
+      const result = await startSessionMutation.mutateAsync();
+      setSessionId(result.id);
+      setSessionStartedAt(new Date(result.startedAt));
+    } catch {
+      // Global onError handles toast
+    }
   }, [sessionId, startSessionMutation]);
 
   const startItem = useCallback(
@@ -367,6 +372,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       const summary: SessionSummaryData = {
         sessionId: result.id,
         durationSeconds: totalDurationSeconds,
+        name: result.name,
         notes: result.notes,
         items: sessionItems,
         totalItems: allItems.length,

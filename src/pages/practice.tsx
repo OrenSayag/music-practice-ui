@@ -26,20 +26,27 @@ function PracticePageInner() {
 
   const handleEndSession = useCallback(async () => {
     if (!activePlan) return;
-    const allItems = activePlan.sections.flatMap((s) => s.items);
-    const summary = await endSession(allItems, activePlan.sections);
-    if (summary) {
-      setSummaryData(summary);
+    try {
+      const allItems = activePlan.sections.flatMap((s) => s.items);
+      const summary = await endSession(allItems, activePlan.sections);
+      if (summary) {
+        setSummaryData(summary);
+      }
+    } catch {
+      // Global onError handles toast
     }
   }, [endSession, activePlan]);
 
   const handleSummaryDone = useCallback(
-    async (notes: string) => {
-      // Save notes if changed
-      if (summaryData && notes !== (summaryData.notes ?? '')) {
+    async (notes: string, name: string) => {
+      if (!summaryData) return;
+      const nameChanged = name !== (summaryData.name ?? '');
+      const notesChanged = notes !== (summaryData.notes ?? '');
+      if (nameChanged || notesChanged) {
         await endSessionMutation.mutateAsync({
           sessionId: summaryData.sessionId,
-          notes,
+          ...(nameChanged && { name }),
+          ...(notesChanged && { notes }),
         });
       }
       setSummaryData(null);

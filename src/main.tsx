@@ -2,13 +2,22 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { DirProvider } from '@/components/dir-provider';
-import '@/i18n';
+import i18n from '@/i18n';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    mutations: {
+      onError: () => {
+        toast.error(i18n.t('error.defaultTitle'));
+      },
+    },
+  },
+});
 import LoginPage from '@/pages/login';
 import DashboardPage from '@/pages/dashboard';
 import PracticePage from '@/pages/practice';

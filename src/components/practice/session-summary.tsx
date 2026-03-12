@@ -6,11 +6,12 @@ import { SessionTagChip, SessionTagsDialog } from './session-tags-dialog';
 
 interface SessionSummaryProps {
   data: SessionSummaryData;
-  onDone: (notes: string) => void;
+  onDone: (notes: string, name: string) => void;
 }
 
 export function SessionSummary({ data, onDone }: SessionSummaryProps) {
   const { t } = useTranslation();
+  const [name, setName] = useState(data.name ?? '');
   const [notes, setNotes] = useState(data.notes ?? '');
   const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
   const { data: sessionTagsList = [] } = useSessionTags(data.sessionId);
@@ -30,19 +31,23 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-6 md:p-8">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-mono text-lg font-bold">
-            {'>'} {t('session.complete')}
-          </h1>
+      <div className="mb-6 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
           <p className="font-mono text-xs text-muted-foreground">{dateStr}</p>
+          <button
+            className="bg-accent-green px-4 py-1.5 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
+            onClick={() => onDone(notes, name)}
+          >
+            $ {t('session.done')}
+          </button>
         </div>
-        <button
-          className="bg-accent-green px-4 py-1.5 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
-          onClick={() => onDone(notes)}
-        >
-          $ {t('session.done')}
-        </button>
+        <input
+          type="text"
+          className="w-full border-b border-border bg-transparent font-mono text-lg font-bold text-foreground placeholder:text-muted-foreground focus:outline-none"
+          placeholder={t('session.namePlaceholder')}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </div>
 
       {/* Stats grid */}

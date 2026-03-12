@@ -131,6 +131,7 @@ export const en = {
   'practice.assistant': '> assistant',
 
   // Session Summary
+  'session.namePlaceholder': 'session name...',
   'session.complete': 'session_complete',
   'session.done': 'done',
   'session.cancel': 'cancel',

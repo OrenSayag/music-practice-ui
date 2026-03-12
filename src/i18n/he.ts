@@ -133,6 +133,7 @@ export const he: Record<TranslationKey, string> = {
   'practice.assistant': '> עוזר',
 
   // Session Summary
+  'session.namePlaceholder': 'שם התרגול...',
   'session.complete': 'תרגול הושלם',
   'session.done': 'סיום',
   'session.cancel': 'ביטול',

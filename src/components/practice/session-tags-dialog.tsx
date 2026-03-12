@@ -58,17 +58,25 @@ export function SessionTagsDialog({
   const handleCreate = async () => {
     const trimmed = newTagName.trim();
     if (!trimmed) return;
-    const tag = await createTag.mutateAsync({ name: trimmed, color: newTagColor });
-    await linkTag.mutateAsync({ sessionId, tagId: tag.id });
-    setNewTagName('');
-    setNewTagColor('green');
+    try {
+      const tag = await createTag.mutateAsync({ name: trimmed, color: newTagColor });
+      await linkTag.mutateAsync({ sessionId, tagId: tag.id });
+      setNewTagName('');
+      setNewTagColor('green');
+    } catch {
+      // Global onError handles toast
+    }
   };
 
   const handleToggleLink = async (tag: UserTag) => {
-    if (linkedIds.has(tag.id)) {
-      await unlinkTag.mutateAsync({ sessionId, tagId: tag.id });
-    } else {
-      await linkTag.mutateAsync({ sessionId, tagId: tag.id });
+    try {
+      if (linkedIds.has(tag.id)) {
+        await unlinkTag.mutateAsync({ sessionId, tagId: tag.id });
+      } else {
+        await linkTag.mutateAsync({ sessionId, tagId: tag.id });
+      }
+    } catch {
+      // Global onError handles toast
     }
   };
 
@@ -80,16 +88,24 @@ export function SessionTagsDialog({
 
   const handleSaveEdit = async () => {
     if (!editingTag) return;
-    await updateTag.mutateAsync({
-      tagId: editingTag.id,
-      name: editName.trim() || editingTag.name,
-      color: editColor,
-    });
-    setEditingTag(null);
+    try {
+      await updateTag.mutateAsync({
+        tagId: editingTag.id,
+        name: editName.trim() || editingTag.name,
+        color: editColor,
+      });
+      setEditingTag(null);
+    } catch {
+      // Global onError handles toast
+    }
   };
 
   const handleDelete = async (tagId: string) => {
-    await deleteTag.mutateAsync(tagId);
+    try {
+      await deleteTag.mutateAsync(tagId);
+    } catch {
+      // Global onError handles toast
+    }
   };
 
   return (

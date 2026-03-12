@@ -17,12 +17,15 @@ export const useEndSession = () => {
   return useMutation({
     mutationFn: ({
       sessionId,
+      name,
       notes,
     }: {
       sessionId: string;
+      name?: string;
       notes?: string;
     }) =>
       apiClient.patch<EndSessionResponse>(`/sessions/${sessionId}`, {
+        name,
         notes,
       }),
   });

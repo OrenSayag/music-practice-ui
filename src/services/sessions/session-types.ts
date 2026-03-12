@@ -7,6 +7,7 @@ export interface EndSessionResponse {
   id: string;
   startedAt: string;
   durationSeconds: number;
+  name: string | null;
   notes: string | null;
 }
 
