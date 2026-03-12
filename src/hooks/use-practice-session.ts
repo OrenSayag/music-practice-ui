@@ -217,6 +217,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
   }, [activeItem, remainingSeconds]);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastTickTime = useRef<number>(Date.now());
   const allItemsRef = useRef<PlanItem[]>([]);
   const sectionsRef = useRef<PlanSection[]>([]);
   const pendingAnnouncements = useRef<string[]>([]);
@@ -525,7 +526,8 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     }
   }, [customTimers]);
 
-  // Single interval ticks both default and custom timers
+  // Single interval ticks both default and custom timers.
+  // Uses wall-clock elapsed time so background-tab throttling doesn't lose seconds.
   useEffect(() => {
     clearTimer();
 
@@ -535,16 +537,22 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
     if (!anyRunning) return clearTimer;
 
+    lastTickTime.current = Date.now();
+
     intervalRef.current = setInterval(() => {
+      const now = Date.now();
+      const elapsed = Math.max(1, Math.round((now - lastTickTime.current) / 1000));
+      lastTickTime.current = now;
+
       // Tick default timer
       if (isTimerRunning) {
         setRemainingSeconds((prev) => {
-          if (prev <= 1) {
+          if (prev <= elapsed) {
             setIsTimerRunning(false);
             setTimeout(onDefaultTimerEnd, 0);
             return 0;
           }
-          return prev - 1;
+          return prev - elapsed;
         });
       }
 
@@ -556,13 +564,13 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
         const next = prev.map((t) => {
           if (!t.isRunning || t.remainingSeconds <= 0) return t;
           changed = true;
-          if (t.remainingSeconds <= 1) {
+          if (t.remainingSeconds <= elapsed) {
             if (t.announceEnabled && t.announceText) {
               announcements.push(t.announceText);
             }
             return { ...t, remainingSeconds: t.totalSeconds, isRunning: false };
           }
-          return { ...t, remainingSeconds: t.remainingSeconds - 1 };
+          return { ...t, remainingSeconds: t.remainingSeconds - elapsed };
         });
         pendingAnnouncements.current = announcements;
         return changed ? next : prev;
