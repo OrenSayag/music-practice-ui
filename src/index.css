@@ -160,7 +160,10 @@
     @apply border-border outline-ring/50;
     }
   html {
-    font-size: 20px;
+    font-size: 16px;
+    @media (min-width: 768px) {
+      font-size: 20px;
+    }
     }
   body {
     @apply bg-background text-foreground;
