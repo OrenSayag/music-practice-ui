@@ -1,8 +1,22 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Trash2 } from 'lucide-react';
 import type { SessionSummaryData } from '@/hooks/use-practice-session';
 import { useSessionTags } from '@/services/tags';
+import { useSessionRecordings, useDeleteRecording, useRenameRecording } from '@/services/recordings';
+import type { Recording } from '@/services/recordings';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
 import { SessionTagChip, SessionTagsDialog } from './session-tags-dialog';
+import { AudioPlayer } from './audio-player';
 
 interface SessionSummaryProps {
   data: SessionSummaryData;
@@ -15,6 +29,7 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
   const [notes, setNotes] = useState(data.notes ?? '');
   const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
   const { data: sessionTagsList = [] } = useSessionTags(data.sessionId);
+  const { data: recordings = [] } = useSessionRecordings(data.sessionId);
 
   const totalMinutes = Math.floor(data.durationSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
@@ -61,7 +76,7 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
           label={t('session.avgBpm')}
           value={data.avgBpm !== null ? String(data.avgBpm) : '—'}
         />
-        <StatCard label={t('session.recordings')} value="0" />
+        <StatCard label={t('session.recordings')} value={String(recordings.length)} />
       </div>
 
       {/* Two columns */}
@@ -117,9 +132,21 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
             <h2 className="mb-2 font-mono text-xs font-bold text-muted-foreground">
               {t('session.recordings')}
             </h2>
-            <p className="font-mono text-xs text-muted-foreground">
-              0 {t('session.recordings').toLowerCase()}
-            </p>
+            {recordings.length === 0 ? (
+              <p className="font-mono text-xs text-muted-foreground">
+                {t('recording.noRecordings')}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {recordings.map((rec) => (
+                  <RecordingRow
+                    key={rec.id}
+                    recording={rec}
+                    sessionId={data.sessionId}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -180,6 +207,100 @@ function SessionItemRow({
         </span>
       </div>
     </div>
+  );
+}
+
+function RecordingRow({
+  recording,
+  sessionId,
+}: {
+  recording: Recording;
+  sessionId: string;
+}) {
+  const { t } = useTranslation();
+  const renameRecording = useRenameRecording();
+  const deleteRecording = useDeleteRecording();
+  const [editName, setEditName] = useState(recording.fileName);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleNameBlur = () => {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== recording.fileName) {
+      renameRecording.mutate({ sessionId, recordingId: recording.id, fileName: trimmed });
+    } else {
+      setEditName(recording.fileName);
+    }
+  };
+
+  const handleDelete = () => {
+    deleteRecording.mutate({ sessionId, recordingId: recording.id });
+    setDeleteOpen(false);
+  };
+
+  return (
+    <div className="flex flex-col gap-1.5 border border-border p-2">
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onBlur={handleNameBlur}
+          onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+          placeholder={t('recording.namePlaceholder')}
+        />
+        <button
+          className="shrink-0 text-muted-foreground transition-colors hover:text-red-500"
+          onClick={() => setDeleteOpen(true)}
+          title={t('recording.delete')}
+        >
+          <Trash2 className="h-3 w-3" />
+        </button>
+      </div>
+      <AudioPlayer
+        src={`/api/sessions/${recording.sessionId}/recordings/${recording.id}/stream`}
+        durationHint={recording.durationSeconds}
+      />
+      <DeleteRecordingDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDelete}
+      />
+    </div>
+  );
+}
+
+function DeleteRecordingDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent size="sm" className="font-mono">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-mono text-sm">
+            {'> '}
+            {t('recording.deleteTitle')}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-xs">
+            {t('recording.deleteDescription')}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t('recording.cancel')}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={onConfirm}>
+            {t('recording.confirmDelete')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

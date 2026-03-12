@@ -10,9 +10,19 @@ interface PracticeToolbarProps {
   view: 'plan' | 'chat';
   onChatClick: () => void;
   onEndSession?: () => void;
+  isRecording?: boolean;
+  recordingDuration?: number;
+  onRecordToggle?: () => void;
 }
 
-export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToolbarProps) {
+export function PracticeToolbar({
+  view,
+  onChatClick,
+  onEndSession,
+  isRecording,
+  recordingDuration = 0,
+  onRecordToggle,
+}: PracticeToolbarProps) {
   const { t } = useTranslation();
   const [presetsOpen, setPresetsOpen] = useState(false);
   const { data: activePlan } = useActivePlan();
@@ -41,8 +51,18 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-1.5 border border-red-500/50 px-2 py-1 font-mono text-xs text-red-500">
-                {t('practice.rec')}
+              <button
+                className={`flex items-center gap-1.5 border px-2 py-1 font-mono text-xs transition-colors ${
+                  isRecording
+                    ? 'border-red-500 bg-red-500/20 text-red-500'
+                    : 'border-red-500/50 text-red-500 hover:bg-red-500/10'
+                }`}
+                onClick={onRecordToggle}
+              >
+                {isRecording && (
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                )}
+                {isRecording ? formatRecordingDuration(recordingDuration) : t('practice.rec')}
               </button>
               <button
                 className="flex items-center gap-1.5 bg-red-500 px-3 py-1 font-mono text-xs text-white transition-colors hover:bg-red-600"
@@ -96,6 +116,12 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
       />
     </>
   );
+}
+
+function formatRecordingDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 function ToolbarButton({

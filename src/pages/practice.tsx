@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useActivePlan } from '@/services/plans';
 import { useEndSession as useEndSessionMutation } from '@/services/sessions';
+import { useUploadRecording } from '@/services/recordings';
+import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import PlanPane from '@/components/practice/plan-pane';
 import { PracticeToolbar } from '@/components/practice/practice-toolbar';
 import { ToolsPane } from '@/components/practice/tools-pane';
@@ -11,31 +13,75 @@ import { usePracticeSessionContext } from '@/components/practice/practice-sessio
 import { ChatPane } from '@/components/practice/chat-pane';
 import { ChatPlanPreview } from '@/components/practice/chat-plan-preview';
 import { SessionSummary } from '@/components/practice/session-summary';
+import { RecordingPreviewDialog } from '@/components/practice/recording-preview-dialog';
 import type { SessionSummaryData } from '@/hooks/use-practice-session';
 
 export default function PracticePage() {
   return <PracticePageInner />;
 }
 
+interface PendingRecording {
+  blob: Blob;
+  durationSeconds: number;
+}
+
 function PracticePageInner() {
   const { view, toggleView, isMobile } = usePracticeShell();
   const [summaryData, setSummaryData] = useState<SessionSummaryData | null>(null);
+  const [pendingRecording, setPendingRecording] = useState<PendingRecording | null>(null);
   const { endSession, isInSession, sessionId } = usePracticeSessionContext();
   const { data: activePlan } = useActivePlan();
   const endSessionMutation = useEndSessionMutation();
+  const { isRecording, durationSeconds: recordingDuration, startRecording, stopRecording } = useAudioRecorder();
+  const uploadRecording = useUploadRecording();
+
+  const handleRecordToggle = useCallback(async () => {
+    if (isRecording) {
+      const result = await stopRecording();
+      if (result.blob.size > 0) {
+        setPendingRecording(result);
+      }
+    } else {
+      await startRecording();
+    }
+  }, [isRecording, stopRecording, startRecording]);
+
+  const handleSaveRecording = useCallback((name: string) => {
+    if (!pendingRecording || !sessionId) return;
+    const fileName = name.trim() || undefined;
+    uploadRecording.mutate(
+      { sessionId, blob: pendingRecording.blob, durationSeconds: pendingRecording.durationSeconds, fileName },
+      { onSuccess: () => setPendingRecording(null) },
+    );
+  }, [pendingRecording, sessionId, uploadRecording]);
+
+  const handleDiscardRecording = useCallback(() => {
+    setPendingRecording(null);
+  }, []);
 
   const handleEndSession = useCallback(async () => {
     if (!activePlan) return;
     try {
+      if (isRecording) {
+        const result = await stopRecording();
+        if (result.blob.size > 0 && sessionId) {
+          await uploadRecording.mutateAsync({
+            sessionId,
+            blob: result.blob,
+            durationSeconds: result.durationSeconds,
+          });
+        }
+      }
       const allItems = activePlan.sections.flatMap((s) => s.items);
       const summary = await endSession(allItems, activePlan.sections);
       if (summary) {
+        setPendingRecording(null);
         setSummaryData(summary);
       }
     } catch {
       // Global onError handles toast
     }
-  }, [endSession, activePlan]);
+  }, [endSession, activePlan, isRecording, stopRecording, sessionId, uploadRecording]);
 
   const handleSummaryDone = useCallback(
     async (notes: string, name: string) => {
@@ -69,6 +115,9 @@ function PracticePageInner() {
           view={view}
           onChatClick={toggleView}
           onEndSession={handleEndSession}
+          isRecording={isRecording}
+          recordingDuration={recordingDuration}
+          onRecordToggle={handleRecordToggle}
         />
       )}
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -89,6 +138,14 @@ function PracticePageInner() {
         )}
       </div>
       {isMobile && <MobilePlayerFooter onEndSession={handleEndSession} />}
+      <RecordingPreviewDialog
+        open={pendingRecording !== null}
+        blob={pendingRecording?.blob ?? null}
+        durationSeconds={pendingRecording?.durationSeconds ?? 0}
+        saving={uploadRecording.isPending}
+        onSave={handleSaveRecording}
+        onDiscard={handleDiscardRecording}
+      />
     </div>
   );
 }

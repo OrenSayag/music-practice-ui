@@ -159,6 +159,26 @@ export const he: Record<TranslationKey, string> = {
   'recordings.noRecordings': 'אין הקלטות עדיין',
   'recordings.search': 'חיפוש הקלטות...',
   'recordings.all': 'הכל',
+  'recording.recording': 'מקליט',
+  'recording.noRecordings': 'אין הקלטות',
+  'recording.delete': 'מחק',
+  'recording.preview': 'תצוגה מקדימה של הקלטה',
+  'recording.save': '$ שמור',
+  'recording.discard': 'מחק',
+  'recording.namePlaceholder': 'שם ההקלטה...',
+  'recording.deleteTitle': 'מחיקת הקלטה',
+  'recording.deleteDescription': 'ההקלטה תימחק לצמיתות.',
+  'recording.cancel': 'ביטול',
+  'recording.confirmDelete': 'מחק',
+
+  // Audio Settings
+  'settings.audioInput': 'קלט שמע',
+  'settings.audioInputSettings': 'הגדרות קלט שמע',
+  'settings.audioInputDescription': 'הגדרת קלט שמע להקלטה בזמן תרגול.',
+  'settings.inputDevice': 'מכשיר_קלט',
+  'settings.connected': 'מחובר',
+  'settings.done': 'סיום',
+  'settings.noDevices': 'לא נמצאו מכשירי שמע',
 
   // Theme
   'theme.toggle': 'החלפת ערכת נושא',

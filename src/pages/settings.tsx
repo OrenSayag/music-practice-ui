@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { useUpdatePreferences } from '@/services/user/user-queries';
 import { playPreviewClick } from '@/hooks/use-metronome';
 import type { MetronomeSound } from '@/services/auth/auth-types';
+import { AudioInputDialog } from '@/components/settings/audio-input-dialog';
 
 const METRONOME_SOUNDS: MetronomeSound[] = ['wood', 'glass', 'electromagnetic', 'arcane'];
 
 export default function SettingsPage() {
-  const { handlers } = useSettingsPage();
+  const { handlers, audioDialogOpen, setAudioDialogOpen } = useSettingsPage();
   const { t, i18n } = useTranslation();
   const { user } = useAuthUser();
 
@@ -116,6 +117,21 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.audioInput')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => setAudioDialogOpen(true)}>
+            {t('settings.audioInputSettings')}
+          </Button>
+        </CardContent>
+      </Card>
+      <AudioInputDialog
+        open={audioDialogOpen}
+        onOpenChange={setAudioDialogOpen}
+      />
     </div>
   );
 }
@@ -125,6 +141,7 @@ const VOLUME_KEY = 'metronome-volume';
 function useSettingsPage() {
   const { user, setUser } = useAuthUser();
   const updatePreferences = useUpdatePreferences();
+  const [audioDialogOpen, setAudioDialogOpen] = useState(false);
   const [volume, setVolumeState] = useState(() => {
     const stored = localStorage.getItem(VOLUME_KEY);
     return stored !== null ? Number(stored) : 0.8;
@@ -149,5 +166,7 @@ function useSettingsPage() {
 
   return {
     handlers: { setWeekStartDay, setMetronomeSound, volume, setVolume },
+    audioDialogOpen,
+    setAudioDialogOpen,
   };
 }

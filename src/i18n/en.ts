@@ -157,6 +157,26 @@ export const en = {
   'recordings.noRecordings': 'no recordings yet',
   'recordings.search': 'search recordings...',
   'recordings.all': 'all',
+  'recording.recording': 'recording',
+  'recording.noRecordings': 'no recordings',
+  'recording.delete': 'delete',
+  'recording.preview': 'recording preview',
+  'recording.save': '$ save',
+  'recording.discard': 'discard',
+  'recording.namePlaceholder': 'recording name...',
+  'recording.deleteTitle': 'delete recording',
+  'recording.deleteDescription': 'this recording will be permanently deleted.',
+  'recording.cancel': 'cancel',
+  'recording.confirmDelete': 'delete',
+
+  // Audio Settings
+  'settings.audioInput': 'Audio Input',
+  'settings.audioInputSettings': 'Audio Input Settings',
+  'settings.audioInputDescription': 'configure audio input for recording during practice.',
+  'settings.inputDevice': 'input_device',
+  'settings.connected': 'connected',
+  'settings.done': 'done',
+  'settings.noDevices': 'no audio devices found',
 
   // Theme
   'theme.toggle': 'Toggle theme',

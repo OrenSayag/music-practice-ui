@@ -80,4 +80,28 @@ export const apiClient = {
   delete<T = void>(path: string): Promise<T> {
     return request<T>(path, { method: 'DELETE' });
   },
+
+  async upload<T>(path: string, formData: FormData): Promise<T> {
+    const response = await fetch(`/api${path}`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+
+    if (response.status === 401) {
+      window.location.href = '/login';
+      throw new ApiError('Unauthenticated', 401);
+    }
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new ApiError(
+        (data as { error?: string })?.error ?? response.statusText,
+        response.status,
+        data,
+      );
+    }
+
+    return response.json() as Promise<T>;
+  },
 };
