@@ -12,6 +12,7 @@ import { usePracticeStateSync } from '@/hooks/use-practice-state-sync';
 import type { PracticeState } from '@/services/user/practice-state-types';
 import { LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useFullscreen } from '@/hooks/use-fullscreen';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -99,13 +100,15 @@ export default function AuthenticatedLayout() {
 function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
   const { pathname } = useLocation();
   const isPractice = pathname.startsWith('/practice');
+  const { isFullscreen } = useFullscreen();
+  const hideChrome = isPractice && isFullscreen;
 
   return (
     <>
       <div className="flex h-screen overflow-hidden">
-        <AppSidebar />
+        {!hideChrome && <AppSidebar />}
         <div className="flex flex-1 flex-col">
-          <MobileHeader handleLogout={handleLogout} />
+          {!hideChrome && <MobileHeader handleLogout={handleLogout} />}
           <main
             className={`flex min-h-0 flex-1 flex-col ${
               isPractice ? '' : 'overflow-y-auto p-6 pb-20 md:p-10 md:pb-10'
@@ -116,7 +119,7 @@ function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
         </div>
       </div>
       <FloatingPlayer />
-      <MobileTabBar />
+      {!hideChrome && <MobileTabBar />}
     </>
   );
 }

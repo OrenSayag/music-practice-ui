@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Bookmark, Maximize2 } from 'lucide-react';
+import { MessageSquare, Bookmark, Maximize2, Minimize2 } from 'lucide-react';
+import { useFullscreen } from '@/hooks/use-fullscreen';
 import { useActivePlan } from '@/services/plans';
 import { usePracticeSessionContext } from './practice-session-provider';
 import { PresetsDialog } from './presets-dialog';
@@ -16,6 +17,9 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
   const [presetsOpen, setPresetsOpen] = useState(false);
   const { data: activePlan } = useActivePlan();
   const { isInSession } = usePracticeSessionContext();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
+
+  const FullscreenIcon = isFullscreen ? Minimize2 : Maximize2;
 
   const today = new Date();
   const dateStr = today
@@ -46,6 +50,9 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
               >
                 {t('practice.endSession')}
               </button>
+              <ToolbarButton onClick={toggleFullscreen}>
+                <FullscreenIcon className="h-3.5 w-3.5 text-muted-foreground" />
+              </ToolbarButton>
             </div>
           </>
         ) : (
@@ -75,8 +82,8 @@ export function PracticeToolbar({ view, onChatClick, onEndSession }: PracticeToo
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <ToolbarButton>
-                <Maximize2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <ToolbarButton onClick={toggleFullscreen}>
+                <FullscreenIcon className="h-3.5 w-3.5 text-muted-foreground" />
               </ToolbarButton>
             </div>
           </>
