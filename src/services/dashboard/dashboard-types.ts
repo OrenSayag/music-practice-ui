@@ -15,6 +15,7 @@ export interface WeeklyStats {
 
 export interface RecentSession {
   id: string;
+  name: string | null;
   startedAt: string;
   durationSeconds: number;
   tags: string[];

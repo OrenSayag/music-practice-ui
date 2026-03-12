@@ -327,16 +327,24 @@ function RecentSessionRow({
   showSeparator: boolean;
 }) {
   const { t, i18n } = useTranslation();
-  const dayName = new Date(session.startedAt)
+  const sessionDate = new Date(session.startedAt);
+  const dayName = sessionDate
     .toLocaleDateString(i18n.language, { weekday: 'short' })
     .toLowerCase();
+  const timeStr = sessionDate
+    .toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
   const duration = formatDuration(session.durationSeconds, t);
 
   return (
     <>
       <div className="flex items-center justify-between py-3">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-bold">{dayName}</span>
+          <span className="text-sm font-bold">{dayName} <span className="font-normal text-muted-foreground">{timeStr}</span></span>
+          {session.name ? (
+            <span className="font-mono text-xs text-muted-foreground">
+              {session.name}
+            </span>
+          ) : null}
           {session.tags.length > 0 ? (
             <div className="flex gap-2">
               {session.tags.map((tag, i) => (
