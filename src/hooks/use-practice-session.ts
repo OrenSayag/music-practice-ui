@@ -502,17 +502,22 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       onItemCompleteRef.current(activeItem.id);
     }
 
-    if (defaultTimerSettings.announceNextItem && nextPending) {
-      const section = sections.find((s) => s.id === nextPending.sectionId);
-      const announcement = section
-        ? `next - ${section.name} - ${nextPending.name}`
-        : `next - ${nextPending.name}`;
-      const utterance = new SpeechSynthesisUtterance(announcement);
-      speechSynthesis.speak(utterance);
-    }
+    if (nextPending) {
+      if (defaultTimerSettings.announceNextItem) {
+        const section = sections.find((s) => s.id === nextPending.sectionId);
+        const announcement = section
+          ? `next - ${section.name} - ${nextPending.name}`
+          : `next - ${nextPending.name}`;
+        const utterance = new SpeechSynthesisUtterance(announcement);
+        speechSynthesis.speak(utterance);
+      }
 
-    if (defaultTimerSettings.autoStartNextItem && nextPending) {
-      startItem(nextPending, allItems, sections);
+      if (defaultTimerSettings.autoStartNextItem) {
+        startItem(nextPending, allItems, sections);
+      }
+    } else {
+      const utterance = new SpeechSynthesisUtterance('done');
+      speechSynthesis.speak(utterance);
     }
   }, [activeItem, defaultTimerSettings.announceNextItem, defaultTimerSettings.autoStartNextItem, startItem]);
 
