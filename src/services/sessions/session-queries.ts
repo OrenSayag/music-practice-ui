@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import { apiClient } from '@/services/api/api-client';
 import type {
+  ActiveSessionResponse,
   StartSessionResponse,
   EndSessionResponse,
   SessionItemInput,
@@ -14,6 +15,10 @@ import type {
 } from './session-types';
 
 export const sessionQueries = {
+  active: () => ({
+    queryKey: ['sessions', 'active'] as const,
+    queryFn: () => apiClient.get<ActiveSessionResponse>('/sessions/active'),
+  }),
   list: () => ({
     queryKey: ['sessions'] as const,
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
@@ -33,6 +38,10 @@ export const sessionQueries = {
     queryFn: () => apiClient.get<SessionDetail>(`/sessions/${sessionId}`),
     enabled: !!sessionId,
   }),
+};
+
+export const useActiveSession = () => {
+  return useQuery(sessionQueries.active());
 };
 
 export const useListSessions = () => {
@@ -80,6 +89,17 @@ export const useEndSession = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
+    },
+  });
+};
+
+export const useCancelSession = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      apiClient.delete(`/sessions/${sessionId}/cancel`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions', 'active'] });
     },
   });
 };

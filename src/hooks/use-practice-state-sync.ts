@@ -4,10 +4,6 @@ import type { PracticeState } from '@/services/user/practice-state-types';
 
 const THROTTLE_MS = 5000;
 
-const STORAGE_KEY_SESSION_ID = 'practice-session-id';
-const STORAGE_KEY_SESSION_STARTED_AT = 'practice-session-started-at';
-const STORAGE_KEY_ACTIVE_ITEM_ID = 'practice-active-item-id';
-const STORAGE_KEY_REMAINING_SECONDS = 'practice-remaining-seconds';
 const STORAGE_KEY_CUSTOM_TIMERS = 'practice-custom-timers';
 const STORAGE_KEY_DEFAULT_TIMER_SETTINGS = 'practice-default-timer-settings';
 const STORAGE_KEY_SELECTED_TIMER = 'practice-selected-timer';
@@ -16,26 +12,6 @@ const BEATS_KEY = 'metronome-beats';
 const ACCENTS_KEY = 'metronome-accents';
 
 function writeServerStateToLocalStorage(state: PracticeState) {
-  if (state.sessionId) {
-    localStorage.setItem(STORAGE_KEY_SESSION_ID, state.sessionId);
-  } else {
-    localStorage.removeItem(STORAGE_KEY_SESSION_ID);
-  }
-
-  if (state.sessionStartedAt) {
-    localStorage.setItem(STORAGE_KEY_SESSION_STARTED_AT, state.sessionStartedAt);
-  } else {
-    localStorage.removeItem(STORAGE_KEY_SESSION_STARTED_AT);
-  }
-
-  if (state.activeItemId) {
-    localStorage.setItem(STORAGE_KEY_ACTIVE_ITEM_ID, state.activeItemId);
-  } else {
-    localStorage.removeItem(STORAGE_KEY_ACTIVE_ITEM_ID);
-  }
-
-  localStorage.setItem(STORAGE_KEY_REMAINING_SECONDS, String(state.remainingSeconds));
-
   const timersForStorage = state.customTimers.map((t) => ({
     ...t,
     isRunning: false,
@@ -158,23 +134,16 @@ export function usePracticeStateSync() {
 }
 
 /**
- * Reads all localStorage keys and assembles a full PracticeState snapshot.
- * Called by providers to build the state blob for server sync.
+ * Assembles a full PracticeState snapshot from localStorage (timers/metronome).
  */
 export function collectPracticeState(): PracticeState {
-  const sessionId = localStorage.getItem(STORAGE_KEY_SESSION_ID);
-  const sessionStartedAt = localStorage.getItem(STORAGE_KEY_SESSION_STARTED_AT);
-  const activeItemId = localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID);
-  const remainingRaw = localStorage.getItem(STORAGE_KEY_REMAINING_SECONDS);
-  const remainingSeconds = remainingRaw ? parseInt(remainingRaw, 10) || 0 : 0;
-
   let customTimers: PracticeState['customTimers'] = [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CUSTOM_TIMERS);
     if (raw) {
       customTimers = (JSON.parse(raw) as Array<PracticeState['customTimers'][number] & { isRunning?: boolean }>).map(
-        ({ id, label, totalSeconds, remainingSeconds: rs, announceEnabled, announceText }) => ({
-          id, label, totalSeconds, remainingSeconds: rs, announceEnabled, announceText,
+        ({ id, label, totalSeconds, remainingSeconds, announceEnabled, announceText }) => ({
+          id, label, totalSeconds, remainingSeconds, announceEnabled, announceText,
         })
       );
     }
@@ -205,10 +174,6 @@ export function collectPracticeState(): PracticeState {
   } catch { /* empty */ }
 
   return {
-    sessionId,
-    sessionStartedAt,
-    activeItemId,
-    remainingSeconds,
     customTimers,
     defaultTimerSettings,
     selectedTimerId,

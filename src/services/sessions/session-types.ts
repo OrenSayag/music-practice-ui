@@ -1,5 +1,9 @@
 import type { TagColor } from '@/services/tags/tag-types';
 
+export interface ActiveSessionResponse {
+  session: { id: string; startedAt: string } | null;
+}
+
 export interface StartSessionResponse {
   id: string;
   startedAt: string;

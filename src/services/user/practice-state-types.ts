@@ -19,10 +19,6 @@ export interface PracticeStateMetronome {
 }
 
 export interface PracticeState {
-  sessionId: string | null;
-  sessionStartedAt: string | null;
-  activeItemId: string | null;
-  remainingSeconds: number;
   customTimers: PracticeStateCustomTimer[];
   defaultTimerSettings: PracticeStateDefaultTimerSettings;
   selectedTimerId: string | null;

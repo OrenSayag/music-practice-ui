@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useActivePlan, useResetPlanItems } from '@/services/plans';
-import { useEndSession as useEndSessionMutation } from '@/services/sessions';
+import { useEndSession as useEndSessionMutation, useCancelSession as useCancelSessionMutation } from '@/services/sessions';
 import { useUploadRecording } from '@/services/recordings';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import PlanPane from '@/components/practice/plan-pane';
@@ -34,6 +34,7 @@ function PracticePageInner() {
   const metronome = useMetronomeContext();
   const { data: activePlan } = useActivePlan();
   const endSessionMutation = useEndSessionMutation();
+  const cancelSessionMutation = useCancelSessionMutation();
   const { isRecording, durationSeconds: recordingDuration, startRecording, stopRecording } = useAudioRecorder();
   const uploadRecording = useUploadRecording();
   const resetPlanItems = useResetPlanItems();
@@ -87,9 +88,12 @@ function PracticePageInner() {
     }
   }, [endSession, activePlan, isRecording, stopRecording, sessionId, uploadRecording, metronome]);
 
-  const handleCancelSession = useCallback(() => {
+  const handleCancelSession = useCallback(async () => {
     if (isRecording) {
       stopRecording();
+    }
+    if (sessionId) {
+      await cancelSessionMutation.mutateAsync(sessionId);
     }
     cancelSession();
     setPendingRecording(null);
@@ -97,7 +101,7 @@ function PracticePageInner() {
     if (activePlan) {
       resetPlanItems.mutate(activePlan.id);
     }
-  }, [cancelSession, isRecording, stopRecording, activePlan, resetPlanItems]);
+  }, [cancelSession, isRecording, stopRecording, activePlan, resetPlanItems, sessionId, cancelSessionMutation]);
 
   const handleSummaryDone = useCallback(
     async (notes: string, name: string) => {

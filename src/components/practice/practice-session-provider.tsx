@@ -3,9 +3,11 @@ import {
   usePracticeSession,
   type PracticeSessionState,
   type PracticeSessionActions,
+  type InitialSession,
 } from '@/hooks/use-practice-session';
 import { usePracticeSync } from '@/layouts/authenticated-layout';
 import { collectPracticeState } from '@/hooks/use-practice-state-sync';
+import { useActiveSession } from '@/services/sessions';
 
 type PracticeSessionContextValue = PracticeSessionState & PracticeSessionActions;
 const PracticeSessionContext = createContext<PracticeSessionContextValue | null>(null);
@@ -18,7 +20,28 @@ export function usePracticeSessionContext() {
 }
 
 export function PracticeSessionProvider({ children }: { children: React.ReactNode }) {
-  const session = usePracticeSession();
+  const { data } = useActiveSession();
+
+  const initialSession: InitialSession | undefined =
+    data?.session
+      ? { id: data.session.id, startedAt: new Date(data.session.startedAt) }
+      : undefined;
+
+  return (
+    <PracticeSessionInner key={initialSession?.id ?? 'none'} initialSession={initialSession}>
+      {children}
+    </PracticeSessionInner>
+  );
+}
+
+function PracticeSessionInner({
+  initialSession,
+  children,
+}: {
+  initialSession?: InitialSession;
+  children: React.ReactNode;
+}) {
+  const session = usePracticeSession(initialSession);
   const { syncToServer } = usePracticeSync();
 
   useSyncSessionState(session, syncToServer);
@@ -37,10 +60,6 @@ function useSyncSessionState(
   useEffect(() => {
     syncToServer(collectPracticeState());
   }, [
-    session.sessionId,
-    session.sessionStartedAt,
-    session.activeItem?.id,
-    session.remainingSeconds,
     session.customTimers,
     session.defaultTimerSettings,
     session.selectedTimerId,

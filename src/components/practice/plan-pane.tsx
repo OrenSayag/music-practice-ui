@@ -447,7 +447,7 @@ function PlanItemComponent({
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession, setItemBpm } = usePracticeSessionContext();
+  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession } = usePracticeSessionContext();
   const { bpm: metronomeBpm, setBpm } = useMetronomeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
@@ -460,13 +460,6 @@ function PlanItemComponent({
   const bpmInputRef = useRef<HTMLInputElement>(null);
   const isCompleted = item.status === 'completed';
   const isActive = activeItem?.id === item.id;
-
-  // Track metronome BPM changes while this item is active
-  useEffect(() => {
-    if (isActive) {
-      setItemBpm(item.id, metronomeBpm);
-    }
-  }, [isActive, metronomeBpm, item.id, setItemBpm]);
 
   const handleToggle = () => {
     handlers.toggleItem(item.id, isCompleted ? 'pending' : 'completed');
@@ -557,8 +550,6 @@ function PlanItemComponent({
             if (!isInSession) await beginSession();
             if (item.bpm) setBpm(item.bpm);
             startItem(item, allItems, undefined, { announce: true });
-            const bpmToRecord = item.bpm ?? metronomeBpm;
-            setItemBpm(item.id, bpmToRecord);
           }
         }}
       >

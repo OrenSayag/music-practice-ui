@@ -76,15 +76,16 @@ export interface PracticeSessionActions {
   restoreActiveItem: (item: PlanItem, allItems: PlanItem[], sections: PlanSection[]) => void;
 }
 
+export interface InitialSession {
+  id: string;
+  startedAt: Date;
+}
+
 let nextTimerId = 0;
 
 const STORAGE_KEY_CUSTOM_TIMERS = 'practice-custom-timers';
 const STORAGE_KEY_DEFAULT_TIMER_SETTINGS = 'practice-default-timer-settings';
 const STORAGE_KEY_SELECTED_TIMER = 'practice-selected-timer';
-const STORAGE_KEY_SESSION_ID = 'practice-session-id';
-const STORAGE_KEY_SESSION_STARTED_AT = 'practice-session-started-at';
-const STORAGE_KEY_ACTIVE_ITEM_ID = 'practice-active-item-id';
-const STORAGE_KEY_REMAINING_SECONDS = 'practice-remaining-seconds';
 
 function loadCustomTimers(): CustomTimer[] {
   try {
@@ -120,45 +121,7 @@ function loadSelectedTimerId(): string | null {
   }
 }
 
-function loadSessionId(): string | null {
-  try {
-    return localStorage.getItem(STORAGE_KEY_SESSION_ID);
-  } catch {
-    return null;
-  }
-}
-
-function loadSessionStartedAt(): Date | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_SESSION_STARTED_AT);
-    if (!raw) return null;
-    const date = new Date(raw);
-    return isNaN(date.getTime()) ? null : date;
-  } catch {
-    return null;
-  }
-}
-
-function loadActiveItemId(): string | null {
-  try {
-    return localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID);
-  } catch {
-    return null;
-  }
-}
-
-function loadRemainingSeconds(): number {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_REMAINING_SECONDS);
-    if (!raw) return 0;
-    const val = parseInt(raw, 10);
-    return isNaN(val) ? 0 : val;
-  } catch {
-    return 0;
-  }
-}
-
-export function usePracticeSession(): PracticeSessionState & PracticeSessionActions {
+export function usePracticeSession(initialSession?: InitialSession): PracticeSessionState & PracticeSessionActions {
   const [activeItem, setActiveItem] = useState<PlanItem | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -167,13 +130,9 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
   const [defaultTimerSettings, setDefaultTimerSettings] = useState<DefaultTimerSettings>(loadDefaultTimerSettings);
   const [selectedTimerId, setSelectedTimerId] = useState<string | null>(loadSelectedTimerId);
 
-  // Session persistence state (restored from localStorage)
-  const [sessionId, setSessionId] = useState<string | null>(loadSessionId);
-  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(loadSessionStartedAt);
-
-  // Active item persistence — pendingActiveItemId is consumed once by restoreActiveItem
-  const [pendingActiveItemId, setPendingActiveItemId] = useState<string | null>(loadActiveItemId);
-  const pendingRemainingSeconds = useRef(loadRemainingSeconds());
+  const [sessionId, setSessionId] = useState<string | null>(initialSession?.id ?? null);
+  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(initialSession?.startedAt ?? null);
+  const [pendingActiveItemId, setPendingActiveItemId] = useState<string | null>(null);
 
   const isInSession = sessionId !== null;
 
@@ -193,31 +152,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       localStorage.setItem(STORAGE_KEY_SELECTED_TIMER, selectedTimerId);
     }
   }, [selectedTimerId]);
-
-  // Persist session state to localStorage
-  useEffect(() => {
-    if (sessionId === null) {
-      localStorage.removeItem(STORAGE_KEY_SESSION_ID);
-      localStorage.removeItem(STORAGE_KEY_SESSION_STARTED_AT);
-    } else {
-      localStorage.setItem(STORAGE_KEY_SESSION_ID, sessionId);
-      if (sessionStartedAt) {
-        localStorage.setItem(STORAGE_KEY_SESSION_STARTED_AT, sessionStartedAt.toISOString());
-      }
-    }
-  }, [sessionId, sessionStartedAt]);
-
-  // Persist active item state to localStorage
-  useEffect(() => {
-    if (activeItem === null) {
-      localStorage.removeItem(STORAGE_KEY_ACTIVE_ITEM_ID);
-      localStorage.removeItem(STORAGE_KEY_REMAINING_SECONDS);
-    } else {
-      localStorage.setItem(STORAGE_KEY_ACTIVE_ITEM_ID, activeItem.id);
-      localStorage.setItem(STORAGE_KEY_REMAINING_SECONDS, String(remainingSeconds));
-    }
-  }, [activeItem, remainingSeconds]);
-
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTickTime = useRef<number>(Date.now());
@@ -299,7 +233,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
       setNextItemName(pendingAfter ? pendingAfter.name : null);
 
       setActiveItem(item);
-      const seconds = pendingRemainingSeconds.current;
+      const seconds = (item.targetDurationMinutes ?? 0) * 60;
       setRemainingSeconds(seconds);
       setIsTimerRunning(false); // Restored paused
       setSelectedTimerId(null);
