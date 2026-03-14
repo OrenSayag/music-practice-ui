@@ -21,6 +21,8 @@ const queryClient = new QueryClient({
 import LoginPage from '@/pages/login';
 import DashboardPage from '@/pages/dashboard';
 import PracticePage from '@/pages/practice';
+import SessionsPage from '@/pages/sessions';
+import SessionDetailPage from '@/pages/session-detail';
 import SettingsPage from '@/pages/settings';
 import RecordingsPage from '@/pages/recordings';
 import NotFoundPage from '@/pages/not-found';
@@ -40,6 +42,8 @@ createRoot(document.getElementById('root')!).render(
                   <Route index element={<DashboardPage />} />
                   <Route path="practice" element={<PracticePage />} />
                   <Route path="practice/chat" element={<PracticePage />} />
+                  <Route path="sessions" element={<SessionsPage />} />
+                  <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
                   <Route path="recordings" element={<RecordingsPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                   <Route path="*" element={<NotFoundPage />} />
