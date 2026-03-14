@@ -17,7 +17,6 @@ import {
     Shuffle,
     Sun,
     Tags,
-    Timer
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
@@ -88,7 +87,7 @@ function HeroSection() {
   const { t } = useTranslation();
 
   return (
-    <section className="flex flex-col items-center gap-8 px-6 py-24 text-center md:py-32">
+    <section className="flex flex-col items-center gap-8 px-6 pb-32 pt-24 text-center md:pb-40 md:pt-32">
       <h1 className="max-w-3xl text-3xl font-bold leading-tight md:text-5xl">
         {t('landing.heroTitle')}
       </h1>
@@ -102,6 +101,26 @@ function HeroSection() {
         <Button variant="outline" asChild size="lg">
           <Link to="/login">{t('landing.signIn')}</Link>
         </Button>
+      </div>
+
+      <div className="relative mx-auto w-full max-w-4xl">
+        <img
+          src="/screenshots/dashboard_desktop.png"
+          alt="Practice Helper Dashboard"
+          width={1280}
+          height={800}
+          loading="eager"
+          className="w-full rounded-lg border shadow-2xl"
+        />
+        <img
+          src="/screenshots/practice_mobile.png"
+          alt="Practice Helper Mobile"
+          width={375}
+          height={812}
+          loading="eager"
+          className="w-[20%] rounded-lg border shadow-2xl md:w-[18%] ltr:right-[-3%] rtl:left-[-3%] ltr:md:right-[-5%] rtl:md:left-[-5%] bottom-[-10%] md:bottom-[-15%]"
+          style={{ position: 'absolute' }}
+        />
       </div>
     </section>
   );
@@ -153,45 +172,115 @@ function ProblemCard({
 function FeaturesSection() {
   const { t } = useTranslation();
 
-  const features = [
-    { icon: ListChecks, title: t('landing.featurePlans'), desc: t('landing.featurePlansDesc') },
-    { icon: Timer, title: t('landing.featureTimer'), desc: t('landing.featureTimerDesc') },
-    { icon: BotMessageSquare, title: t('landing.featureAI'), desc: t('landing.featureAIDesc') },
-    { icon: Mic, title: t('landing.featureRecording'), desc: t('landing.featureRecordingDesc') },
-    { icon: BarChart3, title: t('landing.featureDashboard'), desc: t('landing.featureDashboardDesc') },
-    { icon: Tags, title: t('landing.featureNotes'), desc: t('landing.featureNotesDesc') },
+  const screenshotFeatures: {
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    desc: string;
+    desktop: string;
+    mobile: string;
+  }[] = [
+    {
+      icon: ListChecks,
+      title: t('landing.featurePlans'),
+      desc: t('landing.featurePlansDesc') + ' ' + t('landing.featureTimerDesc'),
+      desktop: '/screenshots/practice_desktop.png',
+      mobile: '/screenshots/practice_mobile.png',
+    },
+    {
+      icon: BarChart3,
+      title: t('landing.featureDashboard'),
+      desc: t('landing.featureDashboardDesc'),
+      desktop: '/screenshots/dashboard_desktop.png',
+      mobile: '/screenshots/dashboard_mobile.png',
+    },
+    {
+      icon: Tags,
+      title: t('landing.featureNotes'),
+      desc: t('landing.featureNotesDesc'),
+      desktop: '/screenshots/sessions_desktop.png',
+      mobile: '/screenshots/sessions_mobile.png',
+    },
+    {
+      icon: Mic,
+      title: t('landing.featureRecording'),
+      desc: t('landing.featureRecordingDesc'),
+      desktop: '/screenshots/recordings_desktop.png',
+      mobile: '/screenshots/recordings_mobile.png',
+    },
   ];
 
   return (
     <section className="px-6 py-20">
-      <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-center text-2xl font-bold md:text-3xl">
+      <div className="mx-auto flex max-w-5xl flex-col gap-24">
+        <h2 className="text-center text-2xl font-bold md:text-3xl">
           {t('landing.featuresTitle')}
         </h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <FeatureCard key={f.title} icon={f.icon} title={f.title} description={f.desc} />
-          ))}
+
+        {screenshotFeatures.map((f, i) => (
+          <ScreenshotFeature
+            key={f.title}
+            icon={f.icon}
+            title={f.title}
+            description={f.desc}
+            desktopSrc={f.desktop}
+            mobileSrc={f.mobile}
+            reversed={i % 2 === 1}
+          />
+        ))}
+
+        <div className="mx-auto max-w-md rounded-sm border bg-card p-6 text-center">
+          <BotMessageSquare className="mx-auto mb-3 h-8 w-8 text-primary" />
+          <h3 className="mb-2 font-semibold">{t('landing.featureAI')}</h3>
+          <p className="text-sm text-muted-foreground">{t('landing.featureAIDesc')}</p>
         </div>
       </div>
     </section>
   );
 }
 
-function FeatureCard({
+function ScreenshotFeature({
   icon: Icon,
   title,
   description,
+  desktopSrc,
+  mobileSrc,
+  reversed,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
+  desktopSrc: string;
+  mobileSrc: string;
+  reversed: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-sm border bg-card p-6">
-      <Icon className="h-6 w-6 text-primary" />
-      <h3 className="font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+    <div
+      className={`flex flex-col items-center gap-8 md:flex-row md:gap-12 ${reversed ? 'md:flex-row-reverse' : ''}`}
+    >
+      <div className="relative w-full md:w-3/5">
+        <img
+          src={desktopSrc}
+          alt={title}
+          width={1280}
+          height={800}
+          loading="lazy"
+          className="w-full rounded-lg border shadow-lg"
+        />
+        <img
+          src={mobileSrc}
+          alt={`${title} mobile`}
+          width={375}
+          height={812}
+          loading="lazy"
+          className="w-[22%] rounded-lg border shadow-lg ltr:right-[-5%] rtl:left-[-5%] bottom-[-10%]"
+          style={{ position: 'absolute' }}
+        />
+      </div>
+      <div className="flex flex-col gap-3 md:w-2/5">
+        <Icon className="h-6 w-6 text-primary" />
+        <h3 className="text-xl font-semibold">{title}</h3>
+        <p className="text-muted-foreground">{description}</p>
+      </div>
     </div>
   );
 }
