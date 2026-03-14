@@ -133,7 +133,7 @@ function useLoginForm() {
     try {
       const guestId = getOrCreateGuestId();
       await guestLogin(guestId);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       const message =
         error instanceof ApiError

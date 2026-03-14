@@ -227,6 +227,52 @@ export const en = {
   'theme.toggle': 'Toggle theme',
   'theme.light': 'Light',
   'theme.dark': 'Dark',
+
+  // Landing
+  'landing.login': 'Log In',
+  'landing.heroTitle': 'Structure Your Practice. Track Your Progress.',
+  'landing.heroSubtitle':
+    'A focused practice companion for disciplined musicians — plan sessions, record yourself, and see real progress over time.',
+  'landing.startFree': 'Start Practicing Free',
+  'landing.signIn': 'Sign In',
+  'landing.problemTitle': 'Practice Without Direction Wastes Time',
+  'landing.noStructure': 'No structure',
+  'landing.noStructureDesc': 'Jumping between pieces without a plan leads to scattered sessions',
+  'landing.noTracking': 'No tracking',
+  'landing.noTrackingDesc': "Without logging, it's impossible to see what's working",
+  'landing.noAccountability': 'No accountability',
+  'landing.noAccountabilityDesc': "Easy to skip tough exercises when no one's watching the clock",
+  'landing.featuresTitle': 'Everything You Need for Focused Practice',
+  'landing.featurePlans': 'Structured Plans',
+  'landing.featurePlansDesc':
+    'Create practice plans with sections, timed items, drag-and-drop reordering, and reusable preset templates.',
+  'landing.featureTimer': 'Timer & Metronome',
+  'landing.featureTimerDesc':
+    'Session timer with per-item countdowns. Adjustable BPM with beat accents. Stay on tempo and on schedule.',
+  'landing.featureAI': 'AI Practice Assistant',
+  'landing.featureAIDesc':
+    'Chat with AI to build or refine your practice plan. Get suggestions based on your goals.',
+  'landing.featureRecording': 'Audio Recording',
+  'landing.featureRecordingDesc':
+    'Record yourself during practice. Recordings auto-tagged to session & item. Star your best takes.',
+  'landing.featureDashboard': 'Progress Dashboard',
+  'landing.featureDashboardDesc':
+    'Weekly activity heatmap, week-over-week stats comparison, and full session history.',
+  'landing.featureNotes': 'Tags & Notes',
+  'landing.featureNotesDesc':
+    'Tag sessions, add notes and observations. Review patterns in your practice habits.',
+  'landing.howItWorksTitle': 'Three Steps to Better Practice',
+  'landing.stepPlan': 'Plan',
+  'landing.stepPlanDesc': 'Build a structured practice session — or let AI help',
+  'landing.stepPractice': 'Practice',
+  'landing.stepPracticeDesc': 'Follow your plan with timers, metronome, and recording',
+  'landing.stepReview': 'Review',
+  'landing.stepReviewDesc': 'Check your dashboard, listen to recordings, track growth',
+  'landing.pricingTitle': 'Free to Use. No Credit Card.',
+  'landing.pricingGuest': 'Guest mode — try instantly, no sign-up needed',
+  'landing.pricingEmail': 'Email sign-in — access from any device',
+  'landing.pricingAll': 'All features included, no paywalls',
+  'landing.footerTagline': 'Built for musicians who take practice seriously.',
 } as const;
 
 export type TranslationKey = keyof typeof en;

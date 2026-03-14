@@ -31,7 +31,7 @@ export function AppSidebar() {
       )}
     >
       <div className="flex flex-col gap-8">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/home" className="flex items-center gap-2">
           <span className="text-xl font-bold text-accent-green">&gt;</span>
           <span className="text-lg font-medium">{t('appName')}</span>
         </Link>

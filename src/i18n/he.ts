@@ -229,4 +229,50 @@ export const he: Record<TranslationKey, string> = {
   'theme.toggle': 'החלפת ערכת נושא',
   'theme.light': 'בהיר',
   'theme.dark': 'כהה',
+
+  // Landing
+  'landing.login': 'התחברות',
+  'landing.heroTitle': 'תכננו את התרגול. עקבו אחרי ההתקדמות.',
+  'landing.heroSubtitle':
+    'עוזר תרגול ממוקד למוזיקאים — תכננו תרגולים, הקליטו את עצמכם, וראו התקדמות אמיתית לאורך זמן.',
+  'landing.startFree': 'התחילו בחינם',
+  'landing.signIn': 'התחברות',
+  'landing.problemTitle': 'תרגול בלי כיוון מבזבז זמן',
+  'landing.noStructure': 'בלי מבנה',
+  'landing.noStructureDesc': 'קפיצה בין תרגילים בלי תוכנית מובילה לתרגול מפוזר',
+  'landing.noTracking': 'בלי מעקב',
+  'landing.noTrackingDesc': 'בלי תיעוד, אי אפשר לדעת מה עובד',
+  'landing.noAccountability': 'בלי אחריות',
+  'landing.noAccountabilityDesc': 'קל לדלג על תרגילים קשים כשאף אחד לא עוקב',
+  'landing.featuresTitle': 'כל מה שצריך לתרגול ממוקד',
+  'landing.featurePlans': 'תוכניות מובנות',
+  'landing.featurePlansDesc':
+    'צרו תוכניות תרגול עם חלקים, פריטים מתוזמנים, סדר, ותבניות לשימוש חוזר.',
+  'landing.featureTimer': 'טיימר ומטרונום',
+  'landing.featureTimerDesc':
+    'טיימר תרגול עם ספירה לאחור לכל תרגיל. BPM מתכוונן עם הדגשות. שמרו על קצב ולוח זמנים.',
+  'landing.featureAI': 'עוזר AI לתרגול',
+  'landing.featureAIDesc':
+    'שוחחו עם AI כדי לבנות או לשפר את תוכנית התרגול. קבלו המלצות מותאמות.',
+  'landing.featureRecording': 'הקלטת שמע',
+  'landing.featureRecordingDesc':
+    'הקליטו את עצמכם בזמן תרגול. ההקלטות מתויגות אוטומטית. סמנו את ההקלטות הטובות.',
+  'landing.featureDashboard': 'לוח התקדמות',
+  'landing.featureDashboardDesc':
+    'טבלת מעקב שבועית, השוואה שבוע מול שבוע, והיסטוריית תרגולים מלאה.',
+  'landing.featureNotes': 'תגיות והערות',
+  'landing.featureNotesDesc':
+    'תייגו תרגולים, הוסיפו הערות ותצפיות. עקבו אחרי דפוסים בהרגלי התרגול.',
+  'landing.howItWorksTitle': 'שלושה צעדים לתרגול טוב יותר',
+  'landing.stepPlan': 'תכננו',
+  'landing.stepPlanDesc': 'בנו תרגול מובנה — או תנו ל-AI לעזור',
+  'landing.stepPractice': 'תרגלו',
+  'landing.stepPracticeDesc': 'עקבו אחרי התוכנית עם טיימרים, מטרונום והקלטה',
+  'landing.stepReview': 'סקרו',
+  'landing.stepReviewDesc': 'בדקו את לוח ההתקדמות, האזינו להקלטות, עקבו אחרי צמיחה',
+  'landing.pricingTitle': 'השימוש חינם. ללא כרטיס אשראי.',
+  'landing.pricingGuest': 'מצב אורח — נסו מיד, בלי הרשמה',
+  'landing.pricingEmail': 'התחברות באימייל — גישה מכל מכשיר',
+  'landing.pricingAll': 'כל הפיצ׳רים כלולים, בלי תשלום',
+  'landing.footerTagline': 'נבנה למוזיקאים שלוקחים תרגול ברצינות.',
 } as const;

@@ -18,6 +18,7 @@ const queryClient = new QueryClient({
     },
   },
 });
+import LandingPage from '@/pages/landing';
 import LoginPage from '@/pages/login';
 import DashboardPage from '@/pages/dashboard';
 import PracticePage from '@/pages/practice';
@@ -37,9 +38,10 @@ createRoot(document.getElementById('root')!).render(
           <DirProvider>
             <BrowserRouter>
               <Routes>
+                <Route index element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route element={<AuthenticatedLayout />}>
-                  <Route index element={<DashboardPage />} />
+                  <Route path="home" element={<DashboardPage />} />
                   <Route path="practice" element={<PracticePage />} />
                   <Route path="practice/chat" element={<PracticePage />} />
                   <Route path="sessions" element={<SessionsPage />} />

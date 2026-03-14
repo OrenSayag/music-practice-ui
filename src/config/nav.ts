@@ -10,7 +10,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   {
     titleKey: 'nav.home',
-    href: '/',
+    href: '/home',
     icon: Home,
   },
   {

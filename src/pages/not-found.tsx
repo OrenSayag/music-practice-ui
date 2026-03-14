@@ -18,7 +18,7 @@ export default function NotFoundPage() {
         </p>
       </div>
       <Button variant="outline" asChild>
-        <Link to="/">{t('error.goHome')}</Link>
+        <Link to="/home">{t('error.goHome')}</Link>
       </Button>
     </div>
   );

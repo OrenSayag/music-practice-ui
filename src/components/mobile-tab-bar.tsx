@@ -13,7 +13,7 @@ export function MobileTabBar() {
         {NAV_ITEMS.map((item) => {
           const isActive =
             location.pathname === item.href ||
-            (item.href !== '/' && location.pathname.startsWith(item.href + '/'));
+            location.pathname.startsWith(item.href + '/');
 
           return (
             <Link
