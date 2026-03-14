@@ -231,7 +231,7 @@ function ItemRow({
     : null;
 
   return (
-    <div className="flex items-center justify-between border-t border-border py-3">
+    <div className="flex flex-col gap-1 border-t border-border py-3 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-col gap-0.5">
         <span className="font-mono text-base">
           {index} — {item.name}

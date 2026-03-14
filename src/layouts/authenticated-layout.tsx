@@ -107,7 +107,7 @@ function LayoutShell() {
     <>
       <div className="flex h-screen overflow-hidden">
         {!hideChrome && <AppSidebar />}
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           {!hideChrome && <MobileHeader />}
           <main
             className={`flex min-h-0 flex-1 flex-col ${

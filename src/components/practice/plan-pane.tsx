@@ -534,124 +534,128 @@ function PlanItemComponent({
   const bpmLabel = item.bpm ? t('practice.bpm', { bpm: item.bpm }) : null;
 
   return (
-    <div className={`group flex items-center gap-3 py-1.5 ${isActive ? 'text-accent-green' : ''}`}>
-      <button
-        className="shrink-0 cursor-grab opacity-0 transition-opacity group-hover:opacity-100"
-        {...dragAttributes}
-        {...dragListeners}
-      >
-        <GripVertical className="h-3 w-3 text-muted-foreground" />
-      </button>
+    <div className={`group flex flex-col gap-1 py-1.5 md:flex-row md:items-center md:gap-3 ${isActive ? 'text-accent-green' : ''}`}>
+      <div className="flex items-center gap-3">
+        <button
+          className="shrink-0 cursor-grab opacity-0 transition-opacity group-hover:opacity-100"
+          {...dragAttributes}
+          {...dragListeners}
+        >
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </button>
 
-      <button
-        className="shrink-0"
-        onClick={async () => {
-          if (isActive && selectedTimerId === null) {
-            toggleTimer();
-          } else {
-            if (!isInSession) await beginSession();
-            if (item.bpm) setBpm(item.bpm);
-            startItem(item, allItems, undefined, { announce: true });
-          }
-        }}
-      >
-        {isActive && isTimerRunning && selectedTimerId === null ? (
-          <Pause className="h-3.5 w-3.5 text-accent-green" />
-        ) : (
-          <Play className={`h-3.5 w-3.5 ${isActive ? 'text-accent-green' : 'text-muted-foreground hover:text-foreground'}`} />
-        )}
-      </button>
-
-      <button onClick={handleToggle} className="shrink-0">
-        {isCompleted ? (
-          <CheckSquare className="h-4 w-4 text-accent-green" />
-        ) : (
-          <Square className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
-
-      <span
-        className={`font-mono text-sm text-muted-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
-      >
-        {index}
-      </span>
-
-      <span className="font-mono text-sm text-muted-foreground">&mdash;</span>
-
-      {isEditing ? (
-        <input
-          ref={inputRef}
-          className="flex-1 border-b border-border bg-transparent font-mono text-base outline-none"
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSave();
-            if (e.key === 'Escape') {
-              setEditValue(item.name);
-              setIsEditing(false);
+        <button
+          className="shrink-0"
+          onClick={async () => {
+            if (isActive && selectedTimerId === null) {
+              toggleTimer();
+            } else {
+              if (!isInSession) await beginSession();
+              if (item.bpm) setBpm(item.bpm);
+              startItem(item, allItems, undefined, { announce: true });
             }
           }}
-        />
-      ) : (
+        >
+          {isActive && isTimerRunning && selectedTimerId === null ? (
+            <Pause className="h-3.5 w-3.5 text-accent-green" />
+          ) : (
+            <Play className={`h-3.5 w-3.5 ${isActive ? 'text-accent-green' : 'text-muted-foreground hover:text-foreground'}`} />
+          )}
+        </button>
+
+        <button onClick={handleToggle} className="shrink-0">
+          {isCompleted ? (
+            <CheckSquare className="h-4 w-4 text-accent-green" />
+          ) : (
+            <Square className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+
         <span
-          className={`flex-1 cursor-pointer font-mono text-base ${isCompleted ? 'line-through opacity-50' : ''}`}
-          onDoubleClick={handleStartEdit}
+          className={`font-mono text-sm text-muted-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
         >
-          {item.name}
+          {index}
         </span>
-      )}
 
-      {isEditingDuration ? (
-        <input
-          ref={durationInputRef}
-          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
-          value={durationEditValue}
-          placeholder="min"
-          onChange={(e) => setDurationEditValue(e.target.value.replace(/[^0-9]/g, ''))}
-          onBlur={handleDurationSave}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleDurationSave();
-            if (e.key === 'Escape') setIsEditingDuration(false);
-          }}
-        />
-      ) : (
+        <span className="font-mono text-sm text-muted-foreground">&mdash;</span>
+
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            className="flex-1 border-b border-border bg-transparent font-mono text-base outline-none"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSave();
+              if (e.key === 'Escape') {
+                setEditValue(item.name);
+                setIsEditing(false);
+              }
+            }}
+          />
+        ) : (
+          <span
+            className={`flex-1 cursor-pointer font-mono text-base ${isCompleted ? 'line-through opacity-50' : ''}`}
+            onDoubleClick={handleStartEdit}
+          >
+            {item.name}
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 ps-[4.75rem] md:ps-0">
+        {isEditingDuration ? (
+          <input
+            ref={durationInputRef}
+            className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
+            value={durationEditValue}
+            placeholder="min"
+            onChange={(e) => setDurationEditValue(e.target.value.replace(/[^0-9]/g, ''))}
+            onBlur={handleDurationSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleDurationSave();
+              if (e.key === 'Escape') setIsEditingDuration(false);
+            }}
+          />
+        ) : (
+          <button
+            className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+            onClick={handleStartDurationEdit}
+          >
+            {durationLabel ?? '—'}
+          </button>
+        )}
+
+        {isEditingBpm ? (
+          <input
+            ref={bpmInputRef}
+            className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
+            value={bpmEditValue}
+            placeholder="bpm"
+            onChange={(e) => setBpmEditValue(e.target.value.replace(/[^0-9]/g, ''))}
+            onBlur={handleBpmSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleBpmSave();
+              if (e.key === 'Escape') setIsEditingBpm(false);
+            }}
+          />
+        ) : (
+          <button
+            className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+            onClick={handleStartBpmEdit}
+          >
+            {bpmLabel ?? '—'}
+          </button>
+        )}
+
         <button
-          className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
-          onClick={handleStartDurationEdit}
+          className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+          onClick={() => handlers.deleteItem(item.id)}
         >
-          {durationLabel ?? '—'}
+          <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive" />
         </button>
-      )}
-
-      {isEditingBpm ? (
-        <input
-          ref={bpmInputRef}
-          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
-          value={bpmEditValue}
-          placeholder="bpm"
-          onChange={(e) => setBpmEditValue(e.target.value.replace(/[^0-9]/g, ''))}
-          onBlur={handleBpmSave}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleBpmSave();
-            if (e.key === 'Escape') setIsEditingBpm(false);
-          }}
-        />
-      ) : (
-        <button
-          className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
-          onClick={handleStartBpmEdit}
-        >
-          {bpmLabel ?? '—'}
-        </button>
-      )}
-
-      <button
-        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-        onClick={() => handlers.deleteItem(item.id)}
-      >
-        <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive" />
-      </button>
+      </div>
     </div>
   );
 }

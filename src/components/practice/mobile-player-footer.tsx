@@ -33,23 +33,23 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
 
   return (
     <>
-      <div className="flex items-center justify-between border-t border-border px-5 py-3 pb-16 md:hidden">
-        <div className="flex items-center gap-3">
-          <button
-            className="font-mono text-xl font-bold"
-            onClick={() => setOverlay('timer')}
-          >
-            {timeStr}
-          </button>
+      <div className="flex flex-col gap-2 border-t border-border px-5 py-3 pb-16 md:hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              className="font-mono text-xl font-bold"
+              onClick={() => setOverlay('timer')}
+            >
+              {timeStr}
+            </button>
+            {isInSession && (
+              <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-2xs text-accent-green">
+                {t('practice.inSession')}
+              </span>
+            )}
+          </div>
           {isInSession && (
-            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-2xs text-accent-green">
-              {t('practice.inSession')}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          {isInSession && (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 className="border border-border px-2 py-1 font-mono text-2xs text-muted-foreground"
                 onClick={() => setCancelOpen(true)}
@@ -62,8 +62,10 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
               >
                 {t('session.endSession')}
               </button>
-            </>
+            </div>
           )}
+        </div>
+        <div className="flex items-center justify-between">
           <button
             className="flex items-center gap-2"
             onClick={() => setOverlay('metronome')}

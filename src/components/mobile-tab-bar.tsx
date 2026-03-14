@@ -9,7 +9,7 @@ export function MobileTabBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur md:hidden supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
+      <div className="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] pt-1.5">
         {NAV_ITEMS.map((item) => {
           const isActive =
             location.pathname === item.href ||

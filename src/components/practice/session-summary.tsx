@@ -199,14 +199,14 @@ function SessionItemRow({
         : 'text-muted-foreground bg-muted';
 
   return (
-    <div className="flex items-center justify-between py-1.5">
+    <div className="flex flex-col gap-1 py-1.5 md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-2">
         <span className="font-mono text-base text-muted-foreground">
           {String(index).padStart(2, '0')}
         </span>
         <span className="font-mono text-base">— {item.name}</span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ps-7 md:ps-0">
         <span className="font-mono text-xs text-muted-foreground">
           {elapsed}{target ? `/${target}` : ''}
         </span>
