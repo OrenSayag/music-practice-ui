@@ -46,15 +46,44 @@ export function PracticeToolbar({
   return (
     <>
       <div className="flex h-12 items-center justify-between border-b border-border px-6">
-        {isInSession ? (
-          <>
-            <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <ToolbarButton
+            onClick={onChatClick}
+            active={isChatActive}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            <span className="font-mono text-xs">
+              {t('practice.chat')}
+            </span>
+          </ToolbarButton>
+          {!isInSession && (
+            <ToolbarButton
+              bordered
+              active={presetsOpen}
+              onClick={() => setPresetsOpen(true)}
+            >
+              <Bookmark className="h-3.5 w-3.5" />
+              <span className="font-mono text-xs">
+                {t('practice.presets')}
+              </span>
+            </ToolbarButton>
+          )}
+          {isInSession ? (
+            <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-accent-green" />
               <span className="rounded bg-accent-green/20 px-2 py-0.5 font-mono text-xs text-accent-green">
                 {t('practice.inSession')}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+          ) : (
+            <span className="font-mono text-xs text-muted-foreground">
+              {dateStr}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {isInSession && (
+            <>
               <button
                 className={`flex items-center gap-1.5 border px-2 py-1 font-mono text-xs transition-colors ${
                   isRecording
@@ -80,44 +109,12 @@ export function PracticeToolbar({
               >
                 {t('practice.endSession')}
               </button>
-              <ToolbarButton onClick={toggleFullscreen}>
-                <FullscreenIcon className="h-3.5 w-3.5 text-muted-foreground" />
-              </ToolbarButton>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center gap-4">
-              <ToolbarButton
-                onClick={onChatClick}
-                active={isChatActive}
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-                <span className="font-mono text-xs">
-                  {t('practice.chat')}
-                </span>
-              </ToolbarButton>
-              <ToolbarButton
-                bordered
-                active={presetsOpen}
-                onClick={() => setPresetsOpen(true)}
-              >
-                <Bookmark className="h-3.5 w-3.5" />
-                <span className="font-mono text-xs">
-                  {t('practice.presets')}
-                </span>
-              </ToolbarButton>
-              <span className="font-mono text-xs text-muted-foreground">
-                {dateStr}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <ToolbarButton onClick={toggleFullscreen}>
-                <FullscreenIcon className="h-3.5 w-3.5 text-muted-foreground" />
-              </ToolbarButton>
-            </div>
-          </>
-        )}
+            </>
+          )}
+          <ToolbarButton onClick={toggleFullscreen}>
+            <FullscreenIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          </ToolbarButton>
+        </div>
       </div>
       <PresetsDialog
         open={presetsOpen}
