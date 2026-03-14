@@ -169,6 +169,8 @@ export const he: Record<TranslationKey, string> = {
   'recordings.noRecordings': 'אין הקלטות עדיין',
   'recordings.search': 'חיפוש הקלטות...',
   'recordings.all': 'הכל',
+  'recordings.starred': 'מסומנים',
+  'recordings.sessionOn': 'תרגול ב-{{date}}',
   'recording.recording': 'מקליט',
   'recording.noRecordings': 'אין הקלטות',
   'recording.delete': 'מחק',

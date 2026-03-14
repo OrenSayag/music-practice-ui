@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
 import type { SessionSummaryData } from '@/hooks/use-practice-session';
 import { useSessionTags } from '@/services/tags';
-import { useSessionRecordings, useDeleteRecording, useRenameRecording } from '@/services/recordings';
+import { useSessionRecordings, useDeleteRecording, useRenameRecording, useToggleRecordingStar } from '@/services/recordings';
 import type { Recording } from '@/services/recordings';
 import {
   AlertDialog,
@@ -228,6 +228,7 @@ function RecordingRow({
   const { t } = useTranslation();
   const renameRecording = useRenameRecording();
   const deleteRecording = useDeleteRecording();
+  const toggleStarMutation = useToggleRecordingStar();
   const [editName, setEditName] = useState(recording.fileName);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -257,13 +258,27 @@ function RecordingRow({
           onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
           placeholder={t('recording.namePlaceholder')}
         />
-        <button
-          className="shrink-0 text-muted-foreground transition-colors hover:text-red-500"
-          onClick={() => setDeleteOpen(true)}
-          title={t('recording.delete')}
-        >
-          <Trash2 className="h-3 w-3" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            className="shrink-0 p-0.5 transition-colors"
+            onClick={() => toggleStarMutation.mutate(recording.id)}
+          >
+            <Star
+              className={`h-3 w-3 ${
+                recording.isStarred
+                  ? 'fill-current text-accent-amber'
+                  : 'text-muted-foreground/40 hover:text-muted-foreground'
+              }`}
+            />
+          </button>
+          <button
+            className="shrink-0 text-muted-foreground transition-colors hover:text-red-500"
+            onClick={() => setDeleteOpen(true)}
+            title={t('recording.delete')}
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </div>
       </div>
       <AudioPlayer
         src={`/api/sessions/${recording.sessionId}/recordings/${recording.id}/stream`}

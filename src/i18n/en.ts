@@ -167,6 +167,8 @@ export const en = {
   'recordings.noRecordings': 'no recordings yet',
   'recordings.search': 'search recordings...',
   'recordings.all': 'all',
+  'recordings.starred': 'starred',
+  'recordings.sessionOn': 'session on {{date}}',
   'recording.recording': 'recording',
   'recording.noRecordings': 'no recordings',
   'recording.delete': 'delete',

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SectionTitle } from '@/components/section-title';
@@ -17,6 +17,7 @@ import {
   useSessionRecordings,
   useDeleteRecording,
   useRenameRecording,
+  useToggleRecordingStar,
 } from '@/services/recordings';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { SessionDetail, SessionDetailItem } from '@/services/sessions';
@@ -358,6 +359,7 @@ function RecordingRow({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const renameMutation = useRenameRecording();
   const deleteMutation = useDeleteRecording();
+  const toggleStarMutation = useToggleRecordingStar();
   const streamUrl = `/api/sessions/${sessionId}/recordings/${recording.id}/stream`;
 
   const handleRename = () => {
@@ -396,12 +398,26 @@ function RecordingRow({
             &gt; {recording.fileName}
           </button>
         )}
-        <button
-          className="text-muted-foreground/50 hover:text-muted-foreground"
-          onClick={() => setConfirmOpen(true)}
-        >
-          <Trash2 className="h-3 w-3" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            className="p-0.5 transition-colors"
+            onClick={() => toggleStarMutation.mutate(recording.id)}
+          >
+            <Star
+              className={`h-3 w-3 ${
+                recording.isStarred
+                  ? 'fill-current text-accent-amber'
+                  : 'text-muted-foreground/40 hover:text-muted-foreground'
+              }`}
+            />
+          </button>
+          <button
+            className="text-muted-foreground/50 hover:text-muted-foreground"
+            onClick={() => setConfirmOpen(true)}
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </div>
       </div>
       <AudioPlayer
         src={streamUrl}

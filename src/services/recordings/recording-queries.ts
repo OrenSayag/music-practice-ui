@@ -1,6 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { apiClient } from '../api/api-client';
-import type { Recording } from './recording-types';
+import type {
+  Recording,
+  RecordingsListResponse,
+  RecordingsListFilters,
+} from './recording-types';
 
 export function useSessionRecordings(sessionId: string | undefined) {
   return useQuery({
@@ -8,6 +17,40 @@ export function useSessionRecordings(sessionId: string | undefined) {
     queryFn: () =>
       apiClient.get<Recording[]>(`/sessions/${sessionId}/recordings`),
     enabled: !!sessionId,
+  });
+}
+
+export function useAllRecordings(filters: RecordingsListFilters) {
+  return useInfiniteQuery({
+    queryKey: ['allRecordings', filters] as const,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams();
+      if (pageParam) params.set('cursor', pageParam);
+      if (filters.starred) params.set('starred', 'true');
+      if (filters.tagId) params.set('tagId', filters.tagId);
+      const qs = params.toString();
+      return apiClient.get<RecordingsListResponse>(
+        `/recordings${qs ? `?${qs}` : ''}`
+      );
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  });
+}
+
+export function useToggleRecordingStar() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (recordingId: string) => {
+      return apiClient.patch<{ id: string; isStarred: boolean }>(
+        `/recordings/${recordingId}/star`
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allRecordings'] });
+      queryClient.invalidateQueries({ queryKey: ['recordings'] });
+    },
   });
 }
 
