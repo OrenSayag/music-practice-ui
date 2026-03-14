@@ -34,11 +34,11 @@ export function ConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent size="sm" className="font-mono">
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-mono text-sm">
+          <AlertDialogTitle className="font-mono text-base">
             {'> '}
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-xs">
+          <AlertDialogDescription className="text-sm">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>

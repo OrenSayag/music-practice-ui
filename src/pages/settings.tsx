@@ -31,7 +31,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
+      <h1 className="text-3xl font-bold">{t('settings.title')}</h1>
 
       {!user.isGuest && (
         <ProfileCard
@@ -125,7 +125,7 @@ export default function SettingsPage() {
               onChange={(e) => handlers.setVolume(Number(e.target.value) / 100)}
               className="flex-1 accent-accent-green"
             />
-            <span className="w-10 text-end font-mono text-sm text-muted-foreground">
+            <span className="w-10 text-end font-mono text-base text-muted-foreground">
               {Math.round(handlers.volume * 100)}%
             </span>
           </div>
@@ -173,7 +173,7 @@ function ProfileCard({
           <div className="group relative cursor-pointer" onClick={() => fileInputRef.current?.click()}>
             <Avatar className="h-16 w-16">
               {avatarSrc ? <AvatarImage src={avatarSrc} /> : null}
-              <AvatarFallback className="text-lg">{initial}</AvatarFallback>
+              <AvatarFallback className="text-xl">{initial}</AvatarFallback>
             </Avatar>
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
               <Camera className="h-5 w-5 text-white" />
@@ -213,7 +213,7 @@ function ProfileCard({
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-muted-foreground">{t('settings.firstName')}</label>
+            <label className="text-base text-muted-foreground">{t('settings.firstName')}</label>
             <Input
               defaultValue={user.firstName || ''}
               onBlur={(e) => handlers.handleNameBlur('firstName', e.target.value)}
@@ -221,7 +221,7 @@ function ProfileCard({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-muted-foreground">{t('settings.lastName')}</label>
+            <label className="text-base text-muted-foreground">{t('settings.lastName')}</label>
             <Input
               defaultValue={user.lastName || ''}
               onBlur={(e) => handlers.handleNameBlur('lastName', e.target.value)}
@@ -229,7 +229,7 @@ function ProfileCard({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-muted-foreground">{t('settings.email')}</label>
+            <label className="text-base text-muted-foreground">{t('settings.email')}</label>
             <Input
               value={user.email || ''}
               readOnly

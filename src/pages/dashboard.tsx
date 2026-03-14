@@ -68,11 +68,11 @@ function TopBar({
           <AvatarFallback>{initial}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="text-sm font-bold">{name}</span>
-          <span className="text-xs text-muted-foreground">{totalTime}</span>
+          <span className="text-base font-bold">{name}</span>
+          <span className="text-sm text-muted-foreground">{totalTime}</span>
         </div>
       </div>
-      <span className="text-sm text-muted-foreground">{date}</span>
+      <span className="text-base text-muted-foreground">{date}</span>
     </div>
   );
 }
@@ -82,13 +82,13 @@ function QuoteCard({ quote }: { quote: Quote }) {
 
   return (
     <div className="flex flex-col gap-2 rounded-sm border p-6">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         <SectionTitle>{t('dashboard.dailyQuote')}</SectionTitle>
       </span>
-      <blockquote className="text-base text-foreground/90">
+      <blockquote className="text-lg text-foreground/90">
         &ldquo;{quote.text}&rdquo;
       </blockquote>
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         &mdash; {quote.author}
       </span>
     </div>
@@ -136,14 +136,14 @@ function WeeklyStatsCard({ stats }: { stats: WeeklyStats }) {
 
   return (
     <div className="flex flex-col gap-2 rounded-sm border p-6">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         <SectionTitle>{t('dashboard.thisWeek')}</SectionTitle>
       </span>
       <div className="flex items-end gap-2">
-        <span className="text-3xl font-bold">{formatted}</span>
+        <span className="text-4xl font-bold">{formatted}</span>
         {stats.percentChange !== null ? (
           <span
-            className={`flex items-center gap-0.5 text-xs ${
+            className={`flex items-center gap-0.5 text-sm ${
               stats.percentChange >= 0
                 ? 'text-accent-green'
                 : 'text-accent-red'
@@ -159,7 +159,7 @@ function WeeklyStatsCard({ stats }: { stats: WeeklyStats }) {
           </span>
         ) : null}
       </div>
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         {t('dashboard.totalPracticeTime')}
       </span>
     </div>
@@ -217,7 +217,7 @@ function HeatmapCard({ heatmap }: { heatmap: HeatmapDay[] }) {
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-sm border p-6">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         <SectionTitle>{t('dashboard.weeklyActivity')}</SectionTitle>
       </span>
       {isMobile ? (
@@ -238,7 +238,7 @@ function DesktopHeatmapGrid({
     <div className="flex flex-col gap-1">
       {days.map((day) => (
         <div key={day.dow} className="flex items-center gap-1">
-          <span className="w-7 shrink-0 text-xs text-muted-foreground">
+          <span className="w-7 shrink-0 text-sm text-muted-foreground">
             {day.shortLabel}
           </span>
           {Array.from({ length: TILE_COUNT }, (_, i) => (
@@ -262,7 +262,7 @@ function MobileHeatmapGrid({
     <div className="flex justify-between gap-1">
       {days.map((day) => (
         <div key={day.dow} className="flex flex-1 flex-col-reverse items-center gap-1">
-          <span className="text-3xs text-muted-foreground">{day.narrowLabel}</span>
+          <span className="text-2xs text-muted-foreground">{day.narrowLabel}</span>
           {Array.from({ length: TILE_COUNT }, (_, i) => (
             <div
               key={i}
@@ -287,13 +287,13 @@ function RecentSessionsList({
 
   return (
     <div className="flex flex-1 flex-col gap-3 rounded-sm border p-6">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         <SectionTitle>{t('dashboard.recentSessions')}</SectionTitle>
       </span>
       {visible.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-4 text-center">
           <Music className="h-8 w-8 text-muted-foreground/50" />
-          <span className="text-sm text-muted-foreground">
+          <span className="text-base text-muted-foreground">
             {t('dashboard.noSessions')}
           </span>
         </div>
@@ -343,9 +343,9 @@ function RecentSessionRow({
         onClick={() => navigate(`/sessions/${session.id}`)}
       >
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-bold">{dayName} <span className="font-normal text-muted-foreground">{timeStr}</span></span>
+          <span className="text-base font-bold">{dayName} <span className="font-normal text-muted-foreground">{timeStr}</span></span>
           {session.name ? (
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               {session.name}
             </span>
           ) : null}
@@ -354,7 +354,7 @@ function RecentSessionRow({
               {session.tags.map((tag, i) => (
                 <span
                   key={tag}
-                  className={`text-xs font-mono ${TAG_COLORS[i % TAG_COLORS.length]}`}
+                  className={`text-sm font-mono ${TAG_COLORS[i % TAG_COLORS.length]}`}
                 >
                   [{tag}]
                 </span>
@@ -362,7 +362,7 @@ function RecentSessionRow({
             </div>
           ) : null}
         </div>
-        <span className="text-sm text-muted-foreground">{duration}</span>
+        <span className="text-base text-muted-foreground">{duration}</span>
       </div>
       {showSeparator ? <div className="h-px bg-border" /> : null}
     </>

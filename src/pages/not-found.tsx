@@ -12,8 +12,8 @@ export default function NotFoundPage() {
         <FileQuestion className="h-6 w-6 text-muted-foreground" />
       </div>
       <div className="flex flex-col gap-1">
-        <h3 className="text-lg font-semibold">{t('error.notFoundTitle')}</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="text-xl font-semibold">{t('error.notFoundTitle')}</h3>
+        <p className="text-base text-muted-foreground">
           {t('error.notFoundMessage')}
         </p>
       </div>

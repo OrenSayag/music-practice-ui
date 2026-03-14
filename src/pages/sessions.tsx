@@ -81,14 +81,14 @@ function SessionsHeader() {
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-col">
-        <span className="font-mono text-sm font-bold">
+        <span className="font-mono text-base font-bold">
           &gt; {t('sessions.title')}
         </span>
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-sm text-muted-foreground">
           {t('sessions.subtitle')}
         </span>
       </div>
-      <button className="font-mono text-xs text-muted-foreground">
+      <button className="font-mono text-sm text-muted-foreground">
         <Filter className="h-4 w-4" />
       </button>
     </div>
@@ -141,10 +141,10 @@ function StatsRow({
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-1 flex-col gap-1 rounded-sm border p-4">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{label}</SectionTitle>
       </span>
-      <span className="font-mono text-lg font-bold">{value}</span>
+      <span className="font-mono text-xl font-bold">{value}</span>
     </div>
   );
 }
@@ -167,13 +167,13 @@ function SessionsList({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.recentSessions')}</SectionTitle>
       </span>
       {sessions.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
           <Music className="h-8 w-8 text-muted-foreground/50" />
-          <span className="font-mono text-sm text-muted-foreground">
+          <span className="font-mono text-base text-muted-foreground">
             {t('sessions.noSessions')}
           </span>
         </div>
@@ -223,11 +223,11 @@ function SessionCard({
       onClick={() => navigate(`/sessions/${session.id}`)}
     >
       <div className="flex flex-col gap-1">
-        <span className="font-mono text-sm">
+        <span className="font-mono text-base">
           &gt; {dateStr}
           {session.name ? ` — ${session.name}` : ''}
         </span>
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-sm text-muted-foreground">
           {session.itemCount > 0
             ? `${session.itemCount} items`
             : ''}
@@ -237,7 +237,7 @@ function SessionCard({
             {session.tags.map((tag) => (
               <span
                 key={tag.id}
-                className={`font-mono text-xs ${colorMap[tag.color]}`}
+                className={`font-mono text-sm ${colorMap[tag.color]}`}
               >
                 [{tag.name}]
               </span>
@@ -246,7 +246,7 @@ function SessionCard({
         ) : null}
       </div>
       <div className="flex items-center gap-3">
-        <span className="font-mono text-sm text-accent-green">{duration}</span>
+        <span className="font-mono text-base text-accent-green">{duration}</span>
         {session.recordingCount > 0 ? (
           <span className="h-2 w-2 rounded-full bg-accent-red" />
         ) : null}
@@ -302,14 +302,14 @@ function DeleteSessionDialog({
         </AlertDialogHeader>
 
         <div className="flex flex-col gap-1 rounded-sm border p-4">
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-sm text-muted-foreground">
             <SectionTitle>{t('sessions.sessionToDelete')}</SectionTitle>
           </span>
-          <span className="font-mono text-sm font-bold">
+          <span className="font-mono text-base font-bold">
             &gt; {date}
             {session.name ? ` — ${session.name}` : ''}
           </span>
-          <div className="flex items-center gap-3 font-mono text-xs">
+          <div className="flex items-center gap-3 font-mono text-sm">
             <span className="text-accent-green">{duration}</span>
             <span className="text-muted-foreground">
               {session.itemCount} items
@@ -326,17 +326,17 @@ function DeleteSessionDialog({
         </div>
 
         {session.recordingCount > 0 ? (
-          <p className="font-mono text-xs text-accent-amber">
+          <p className="font-mono text-sm text-accent-amber">
             &#9650; {t('sessions.recordingsWarning')}
           </p>
         ) : null}
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="font-mono text-xs">
+          <AlertDialogCancel className="font-mono text-sm">
             {t('sessions.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-accent-red font-mono text-xs text-white hover:bg-accent-red/80"
+            className="bg-accent-red font-mono text-sm text-white hover:bg-accent-red/80"
             onClick={onConfirm}
             disabled={isDeleting}
           >

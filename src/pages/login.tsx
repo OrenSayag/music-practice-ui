@@ -36,7 +36,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               {t('login.checkSpam')}
             </p>
           </CardContent>
@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
+          <CardTitle className="text-3xl">{t('login.title')}</CardTitle>
           <CardDescription>
             {t('login.description')}
           </CardDescription>
@@ -82,7 +82,7 @@ export default function LoginPage() {
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-sm text-muted-foreground">{t('login.or')}</span>
+            <span className="text-base text-muted-foreground">{t('login.or')}</span>
             <Separator className="flex-1" />
           </div>
 

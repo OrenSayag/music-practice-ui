@@ -52,7 +52,7 @@ export function PracticeToolbar({
             active={isChatActive}
           >
             <MessageSquare className="h-3.5 w-3.5" />
-            <span className="font-mono text-xs">
+            <span className="font-mono text-sm">
               {t('practice.chat')}
             </span>
           </ToolbarButton>
@@ -63,7 +63,7 @@ export function PracticeToolbar({
               onClick={() => setPresetsOpen(true)}
             >
               <Bookmark className="h-3.5 w-3.5" />
-              <span className="font-mono text-xs">
+              <span className="font-mono text-sm">
                 {t('practice.presets')}
               </span>
             </ToolbarButton>
@@ -71,12 +71,12 @@ export function PracticeToolbar({
           {isInSession ? (
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-accent-green" />
-              <span className="rounded bg-accent-green/20 px-2 py-0.5 font-mono text-xs text-accent-green">
+              <span className="rounded bg-accent-green/20 px-2 py-0.5 font-mono text-sm text-accent-green">
                 {t('practice.inSession')}
               </span>
             </div>
           ) : (
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               {dateStr}
             </span>
           )}
@@ -85,7 +85,7 @@ export function PracticeToolbar({
           {isInSession && (
             <>
               <button
-                className={`flex items-center gap-1.5 border px-2 py-1 font-mono text-xs transition-colors ${
+                className={`flex items-center gap-1.5 border px-2 py-1 font-mono text-sm transition-colors ${
                   isRecording
                     ? 'border-red-500 bg-red-500/20 text-red-500'
                     : 'border-red-500/50 text-red-500 hover:bg-red-500/10'
@@ -98,13 +98,13 @@ export function PracticeToolbar({
                 {isRecording ? formatRecordingDuration(recordingDuration) : t('practice.rec')}
               </button>
               <button
-                className="border border-border px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="border border-border px-2 py-1 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
                 onClick={() => setCancelOpen(true)}
               >
                 {t('session.cancel')}
               </button>
               <button
-                className="flex items-center gap-1.5 bg-red-500 px-3 py-1 font-mono text-xs text-white transition-colors hover:bg-red-600"
+                className="flex items-center gap-1.5 bg-red-500 px-3 py-1 font-mono text-sm text-white transition-colors hover:bg-red-600"
                 onClick={onEndSession}
               >
                 {t('practice.endSession')}

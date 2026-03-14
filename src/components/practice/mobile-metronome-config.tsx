@@ -32,7 +32,7 @@ export function MobileMetronomeConfig({ onClose }: MobileMetronomeConfigProps) {
         <BpmSlider bpm={bpm} onBpmChange={setBpm} />
 
         <div className="flex items-center justify-between">
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-sm text-muted-foreground">
             {t('practice.beats')}
           </span>
           <BeatsCounter beats={beats} onBeatsChange={setBeats} />
@@ -43,7 +43,7 @@ export function MobileMetronomeConfig({ onClose }: MobileMetronomeConfigProps) {
           currentBeat={isPlaying ? currentBeat : -1}
           onToggle={toggleAccent}
         />
-        <span className="font-mono text-2xs text-muted-foreground/60">
+        <span className="font-mono text-xs text-muted-foreground/60">
           {t('practice.tapToToggleAccent')}
         </span>
       </div>
@@ -76,7 +76,7 @@ function MobileConfigToolbar({
   return (
     <div className="flex items-center justify-between border-b border-border px-4 py-3">
       <button
-        className="flex items-center gap-1 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="flex items-center gap-1 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
         onClick={onBack}
       >
         <ChevronLeft className="h-4 w-4" />
@@ -84,7 +84,7 @@ function MobileConfigToolbar({
       </button>
       <SectionTitle>{title}</SectionTitle>
       <button
-        className="font-mono text-sm text-accent-green transition-opacity hover:opacity-80"
+        className="font-mono text-base text-accent-green transition-opacity hover:opacity-80"
         onClick={onAction}
       >
         {actionLabel}

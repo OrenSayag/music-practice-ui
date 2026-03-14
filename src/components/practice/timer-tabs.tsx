@@ -14,7 +14,7 @@ export function TimerTabs() {
   return (
     <div className="flex flex-wrap justify-center gap-1">
       <button
-        className={`px-3 py-1.5 font-mono text-xs transition-colors ${
+        className={`px-3 py-1.5 font-mono text-sm transition-colors ${
           selectedTimerId === null
             ? 'border border-accent-green bg-accent-green text-white'
             : 'border border-border text-muted-foreground hover:text-foreground'
@@ -26,7 +26,7 @@ export function TimerTabs() {
       {customTimers.map((timer) => (
         <button
           key={timer.id}
-          className={`px-3 py-1.5 font-mono text-xs transition-colors ${
+          className={`px-3 py-1.5 font-mono text-sm transition-colors ${
             selectedTimerId === timer.id
               ? 'border border-accent-green bg-accent-green text-white'
               : 'border border-border text-muted-foreground hover:text-foreground'
@@ -37,7 +37,7 @@ export function TimerTabs() {
         </button>
       ))}
       <button
-        className="border border-border px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+        className="border border-border px-3 py-1.5 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
         onClick={addCustomTimer}
       >
         +

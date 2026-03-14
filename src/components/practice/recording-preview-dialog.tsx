@@ -53,18 +53,18 @@ export function RecordingPreviewDialog({
     <AlertDialog open={open}>
       <AlertDialogContent className="font-mono sm:max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-mono text-sm">
+          <AlertDialogTitle className="font-mono text-base">
             {'> '}
             {t('recording.preview')}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-xs">
+          <AlertDialogDescription className="text-sm">
             // {durationStr}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <input
           type="text"
-          className="w-full border-b border-border bg-transparent py-1.5 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+          className="w-full border-b border-border bg-transparent py-1.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           placeholder={t('recording.namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}

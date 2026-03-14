@@ -36,13 +36,13 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
       <div className="flex items-center justify-between border-t border-border px-5 py-3 pb-16 md:hidden">
         <div className="flex items-center gap-3">
           <button
-            className="font-mono text-lg font-bold"
+            className="font-mono text-xl font-bold"
             onClick={() => setOverlay('timer')}
           >
             {timeStr}
           </button>
           {isInSession && (
-            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-3xs text-accent-green">
+            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-2xs text-accent-green">
               {t('practice.inSession')}
             </span>
           )}
@@ -51,13 +51,13 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
           {isInSession && (
             <>
               <button
-                className="border border-border px-2 py-1 font-mono text-3xs text-muted-foreground"
+                className="border border-border px-2 py-1 font-mono text-2xs text-muted-foreground"
                 onClick={() => setCancelOpen(true)}
               >
                 {t('session.cancel')}
               </button>
               <button
-                className="bg-red-500 px-2 py-1 font-mono text-3xs text-white"
+                className="bg-red-500 px-2 py-1 font-mono text-2xs text-white"
                 onClick={onEndSession}
               >
                 {t('session.endSession')}
@@ -68,8 +68,8 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
             className="flex items-center gap-2"
             onClick={() => setOverlay('metronome')}
           >
-            <span className="font-mono text-lg font-bold text-muted-foreground">{bpm}</span>
-            <span className="font-mono text-3xs text-muted-foreground">bpm</span>
+            <span className="font-mono text-xl font-bold text-muted-foreground">{bpm}</span>
+            <span className="font-mono text-2xs text-muted-foreground">bpm</span>
           </button>
           <button
             className="flex h-10 w-10 items-center justify-center bg-accent-green text-white"

@@ -59,7 +59,7 @@ function MobileTimerToolbar({ onBack }: { onBack: () => void }) {
   return (
     <div className="flex items-center justify-between border-b border-border px-4 py-3">
       <button
-        className="flex items-center gap-1 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="flex items-center gap-1 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
         onClick={onBack}
       >
         <ChevronLeft className="h-4 w-4" />
@@ -86,7 +86,7 @@ function MobileDefaultTimerConfig({ onBack }: { onBack: () => void }) {
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <button
-          className="flex items-center gap-1 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
           onClick={onBack}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -94,7 +94,7 @@ function MobileDefaultTimerConfig({ onBack }: { onBack: () => void }) {
         <SectionTitle>{t('practice.timerConfig')}</SectionTitle>
       </div>
       <div className="flex flex-col gap-4 p-6">
-        <label className="flex items-center gap-3 font-mono text-sm">
+        <label className="flex items-center gap-3 font-mono text-base">
           <input
             type="checkbox"
             checked={defaultTimerSettings.announceNextItem}
@@ -105,7 +105,7 @@ function MobileDefaultTimerConfig({ onBack }: { onBack: () => void }) {
           />
           {t('practice.announceNextItem')}
         </label>
-        <label className="flex items-center gap-3 font-mono text-sm">
+        <label className="flex items-center gap-3 font-mono text-base">
           <input
             type="checkbox"
             checked={defaultTimerSettings.autoStartNextItem}
@@ -150,7 +150,7 @@ function MobileCustomTimerConfig({ timerId, onBack }: { timerId: string; onBack:
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <button
-          className="flex items-center gap-1 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
           onClick={onBack}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -159,18 +159,18 @@ function MobileCustomTimerConfig({ timerId, onBack }: { timerId: string; onBack:
       </div>
       <div className="flex flex-col gap-4 p-6">
         <div className="flex flex-col gap-1">
-          <label className="font-mono text-xs text-muted-foreground">
+          <label className="font-mono text-sm text-muted-foreground">
             {t('practice.timerLabel')}
           </label>
           <input
             type="text"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className="border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+            className="border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="font-mono text-xs text-muted-foreground">
+          <label className="font-mono text-sm text-muted-foreground">
             {t('practice.timerDuration')}
           </label>
           <div className="flex items-center gap-2">
@@ -180,9 +180,9 @@ function MobileCustomTimerConfig({ timerId, onBack }: { timerId: string; onBack:
               max={999}
               value={minutes}
               onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-              className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+              className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
             />
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               {t('practice.minutes')}
             </span>
             <input
@@ -191,15 +191,15 @@ function MobileCustomTimerConfig({ timerId, onBack }: { timerId: string; onBack:
               max={59}
               value={seconds}
               onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-              className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+              className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
             />
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               {t('practice.seconds')}
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-3 font-mono text-sm">
+          <label className="flex items-center gap-3 font-mono text-base">
             <input
               type="checkbox"
               checked={announceEnabled}
@@ -214,12 +214,12 @@ function MobileCustomTimerConfig({ timerId, onBack }: { timerId: string; onBack:
               value={announceText}
               onChange={(e) => setAnnounceText(e.target.value)}
               placeholder={t('practice.announceTextPlaceholder')}
-              className="border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+              className="border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
             />
           )}
         </div>
         <button
-          className="mt-2 border border-accent-green bg-accent-green px-4 py-2 font-mono text-sm text-white transition-colors hover:bg-accent-green/90"
+          className="mt-2 border border-accent-green bg-accent-green px-4 py-2 font-mono text-base text-white transition-colors hover:bg-accent-green/90"
           onClick={handleSave}
         >
           {t('practice.save')}

@@ -49,8 +49,8 @@ function LandingHeader() {
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold text-primary">&gt;</span>
-          <span className="text-lg font-medium">{t('appName')}</span>
+          <span className="text-2xl font-bold text-primary">&gt;</span>
+          <span className="text-xl font-medium">{t('appName')}</span>
         </Link>
 
         <div className="flex items-center gap-3">
@@ -59,7 +59,7 @@ function LandingHeader() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-1.5 font-mono text-xs">
+              <Button variant="ghost" size="sm" className="gap-1.5 font-mono text-sm">
                 <span>{currentFlag}</span>
               </Button>
             </DropdownMenuTrigger>
@@ -88,10 +88,10 @@ function HeroSection() {
 
   return (
     <section className="flex flex-col items-center gap-8 px-6 pb-32 pt-24 text-center md:pb-40 md:pt-32">
-      <h1 className="max-w-3xl text-3xl font-bold leading-tight md:text-5xl">
+      <h1 className="max-w-3xl text-4xl font-bold leading-tight md:text-6xl">
         {t('landing.heroTitle')}
       </h1>
-      <p className="max-w-xl text-muted-foreground md:text-lg">
+      <p className="max-w-xl text-muted-foreground md:text-xl">
         {t('landing.heroSubtitle')}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-4">
@@ -138,7 +138,7 @@ function ProblemSection() {
   return (
     <section className="border-y bg-card px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-center text-2xl font-bold md:text-3xl">
+        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
           {t('landing.problemTitle')}
         </h2>
         <div className="grid gap-8 md:grid-cols-3">
@@ -163,8 +163,8 @@ function ProblemCard({
   return (
     <div className="flex flex-col gap-3">
       <Icon className="h-6 w-6 text-accent-red" />
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-xl font-semibold">{title}</h3>
+      <p className="text-base text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -212,7 +212,7 @@ function FeaturesSection() {
   return (
     <section className="px-6 py-20">
       <div className="mx-auto flex max-w-5xl flex-col gap-24">
-        <h2 className="text-center text-2xl font-bold md:text-3xl">
+        <h2 className="text-center text-3xl font-bold md:text-4xl">
           {t('landing.featuresTitle')}
         </h2>
 
@@ -231,7 +231,7 @@ function FeaturesSection() {
         <div className="mx-auto max-w-md rounded-sm border bg-card p-6 text-center">
           <BotMessageSquare className="mx-auto mb-3 h-8 w-8 text-primary" />
           <h3 className="mb-2 font-semibold">{t('landing.featureAI')}</h3>
-          <p className="text-sm text-muted-foreground">{t('landing.featureAIDesc')}</p>
+          <p className="text-base text-muted-foreground">{t('landing.featureAIDesc')}</p>
         </div>
       </div>
     </section>
@@ -278,7 +278,7 @@ function ScreenshotFeature({
       </div>
       <div className="flex flex-col gap-3 md:w-2/5">
         <Icon className="h-6 w-6 text-primary" />
-        <h3 className="text-xl font-semibold">{title}</h3>
+        <h3 className="text-2xl font-semibold">{title}</h3>
         <p className="text-muted-foreground">{description}</p>
       </div>
     </div>
@@ -297,17 +297,17 @@ function HowItWorksSection() {
   return (
     <section className="border-y bg-card px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-center text-2xl font-bold md:text-3xl">
+        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
           {t('landing.howItWorksTitle')}
         </h2>
         <div className="grid gap-8 md:grid-cols-3">
           {steps.map((s) => (
             <div key={s.num} className="flex flex-col items-center gap-3 text-center">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
                 {s.num}
               </span>
-              <h3 className="text-lg font-semibold">{s.title}</h3>
-              <p className="text-sm text-muted-foreground">{s.desc}</p>
+              <h3 className="text-xl font-semibold">{s.title}</h3>
+              <p className="text-base text-muted-foreground">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -321,8 +321,8 @@ function PricingSection() {
 
   return (
     <section className="flex flex-col items-center gap-8 px-6 py-20 text-center">
-      <h2 className="text-2xl font-bold md:text-3xl">{t('landing.pricingTitle')}</h2>
-      <ul className="flex flex-col gap-3 text-sm text-muted-foreground">
+      <h2 className="text-3xl font-bold md:text-4xl">{t('landing.pricingTitle')}</h2>
+      <ul className="flex flex-col gap-3 text-base text-muted-foreground">
         <li>{t('landing.pricingGuest')}</li>
         <li>{t('landing.pricingEmail')}</li>
         <li>{t('landing.pricingAll')}</li>
@@ -344,7 +344,7 @@ function LandingFooter() {
           <span className="font-bold text-primary">&gt;</span>
           <span className="font-medium">{t('appName')}</span>
         </div>
-        <p className="text-sm text-muted-foreground">{t('landing.footerTagline')}</p>
+        <p className="text-base text-muted-foreground">{t('landing.footerTagline')}</p>
       </div>
     </footer>
   );

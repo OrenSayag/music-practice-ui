@@ -28,20 +28,20 @@ export function AudioInputDialog({ open, onOpenChange }: AudioInputDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-background font-mono sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-mono text-sm">
+          <DialogTitle className="font-mono text-base">
             {'> '}
             {t('settings.audioInputSettings').toLowerCase()}
           </DialogTitle>
         </DialogHeader>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t('settings.audioInputDescription')}
         </p>
         <div className="mt-2">
-          <p className="mb-2 text-xs text-muted-foreground">
+          <p className="mb-2 text-sm text-muted-foreground">
             // {t('settings.inputDevice')}
           </p>
           {devices.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t('settings.noDevices')}
             </p>
           ) : (
@@ -58,7 +58,7 @@ export function AudioInputDialog({ open, onOpenChange }: AudioInputDialogProps) 
           )}
         </div>
         <button
-          className="mt-4 w-full bg-accent-green py-2 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
+          className="mt-4 w-full bg-accent-green py-2 font-mono text-sm text-white transition-colors hover:bg-accent-green/90"
           onClick={() => onOpenChange(false)}
         >
           $ {t('settings.done')}
@@ -87,7 +87,7 @@ function AudioDeviceOption({
       onClick={onClick}
     >
       <Mic className="h-3.5 w-3.5 shrink-0" />
-      <span className="flex-1 truncate text-xs">{label}</span>
+      <span className="flex-1 truncate text-sm">{label}</span>
       {selected && <Check className="h-3.5 w-3.5 shrink-0 text-accent-green" />}
     </button>
   );

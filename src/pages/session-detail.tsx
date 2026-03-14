@@ -69,10 +69,10 @@ function SessionDetailContent({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-sm font-bold">
+          <span className="font-mono text-base font-bold">
             &gt; {t('sessions.sessionComplete')}
           </span>
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-sm text-muted-foreground">
             {date}
             {name ? ` — ${name}` : ''}
           </span>
@@ -168,10 +168,10 @@ function SessionDetailContent({
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-1 flex-col gap-1 rounded-sm border p-4">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{label}</SectionTitle>
       </span>
-      <span className="font-mono text-lg font-bold">{value}</span>
+      <span className="font-mono text-xl font-bold">{value}</span>
     </div>
   );
 }
@@ -189,11 +189,11 @@ function NameSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.sessionComplete')}</SectionTitle>
       </span>
       <input
-        className="border-b border-border bg-transparent font-mono text-sm focus:outline-none"
+        className="border-b border-border bg-transparent font-mono text-base focus:outline-none"
         placeholder={t('session.namePlaceholder')}
         value={name}
         onChange={(e) => onChange(e.target.value)}
@@ -208,7 +208,7 @@ function ItemBreakdown({ items }: { items: SessionDetailItem[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.itemBreakdown')}</SectionTitle>
       </span>
       {items.map((item, i) => (
@@ -233,16 +233,16 @@ function ItemRow({
   return (
     <div className="flex items-center justify-between border-t border-border py-3">
       <div className="flex flex-col gap-0.5">
-        <span className="font-mono text-sm">
+        <span className="font-mono text-base">
           {index} — {item.name}
         </span>
         {item.section ? (
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-sm text-muted-foreground">
             {item.section}
           </span>
         ) : null}
       </div>
-      <div className="flex items-center gap-3 font-mono text-xs text-muted-foreground">
+      <div className="flex items-center gap-3 font-mono text-sm text-muted-foreground">
         <span>
           {duration}
           {target ? ` / ${target}` : ''}
@@ -261,7 +261,7 @@ function StatusBadge({ status }: { status: string }) {
       : status === 'partial'
         ? 'text-accent-amber'
         : 'text-muted-foreground';
-  return <span className={`font-mono text-xs ${colorClass}`}>[{status}]</span>;
+  return <span className={`font-mono text-sm ${colorClass}`}>[{status}]</span>;
 }
 
 function NotesSection({
@@ -277,11 +277,11 @@ function NotesSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.practiceNotes')}</SectionTitle>
       </span>
       <textarea
-        className="min-h-20 resize-none border border-border bg-transparent p-2 font-mono text-xs focus:outline-none"
+        className="min-h-20 resize-none border border-border bg-transparent p-2 font-mono text-sm focus:outline-none"
         placeholder={t('session.notesPlaceholder')}
         value={notes}
         onChange={(e) => onChange(e.target.value)}
@@ -302,7 +302,7 @@ function TagsSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.tags')}</SectionTitle>
       </span>
       <div className="flex flex-wrap gap-2">
@@ -310,7 +310,7 @@ function TagsSection({
           <SessionTagChip key={tag.id} tag={tag} />
         ))}
         <button
-          className="font-mono text-xs text-accent-green"
+          className="font-mono text-sm text-accent-green"
           onClick={onOpenDialog}
         >
           + {t('session.addTag')}
@@ -331,7 +331,7 @@ function RecordingsSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs text-muted-foreground">
+      <span className="font-mono text-sm text-muted-foreground">
         <SectionTitle>{t('sessions.recordings')}</SectionTitle>
         {` (${recordings.length})`}
       </span>
@@ -383,7 +383,7 @@ function RecordingRow({
       <div className="flex items-center justify-between">
         {editing ? (
           <input
-            className="flex-1 bg-transparent font-mono text-xs focus:outline-none"
+            className="flex-1 bg-transparent font-mono text-sm focus:outline-none"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
             onBlur={handleRename}
@@ -392,7 +392,7 @@ function RecordingRow({
           />
         ) : (
           <button
-            className="font-mono text-xs text-muted-foreground"
+            className="font-mono text-sm text-muted-foreground"
             onDoubleClick={() => setEditing(true)}
           >
             &gt; {recording.fileName}

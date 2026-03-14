@@ -24,15 +24,15 @@ export function DefaultTimerConfigDialog({ open, onOpenChange }: DefaultTimerCon
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-mono text-sm">
+          <DialogTitle className="font-mono text-base">
             {t('practice.timerConfig')}
           </DialogTitle>
-          <DialogDescription className="font-mono text-xs">
+          <DialogDescription className="font-mono text-sm">
             {t('practice.defaultTimer')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-3 font-mono text-sm">
+          <label className="flex items-center gap-3 font-mono text-base">
             <input
               type="checkbox"
               checked={defaultTimerSettings.announceNextItem}
@@ -43,7 +43,7 @@ export function DefaultTimerConfigDialog({ open, onOpenChange }: DefaultTimerCon
             />
             {t('practice.announceNextItem')}
           </label>
-          <label className="flex items-center gap-3 font-mono text-sm">
+          <label className="flex items-center gap-3 font-mono text-base">
             <input
               type="checkbox"
               checked={defaultTimerSettings.autoStartNextItem}
@@ -95,27 +95,27 @@ export function CustomTimerConfigDialog({ timerId, open, onOpenChange }: CustomT
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-mono text-sm">
+          <DialogTitle className="font-mono text-base">
             {t('practice.timerConfig')}
           </DialogTitle>
-          <DialogDescription className="font-mono text-xs">
+          <DialogDescription className="font-mono text-sm">
             {timer.label}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-xs text-muted-foreground">
+            <label className="font-mono text-sm text-muted-foreground">
               {t('practice.timerLabel')}
             </label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              className="border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+              className="border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="font-mono text-xs text-muted-foreground">
+            <label className="font-mono text-sm text-muted-foreground">
               {t('practice.timerDuration')}
             </label>
             <div className="flex items-center gap-2">
@@ -125,9 +125,9 @@ export function CustomTimerConfigDialog({ timerId, open, onOpenChange }: CustomT
                 max={999}
                 value={minutes}
                 onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+                className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
               />
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="font-mono text-sm text-muted-foreground">
                 {t('practice.minutes')}
               </span>
               <input
@@ -136,15 +136,15 @@ export function CustomTimerConfigDialog({ timerId, open, onOpenChange }: CustomT
                 max={59}
                 value={seconds}
                 onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+                className="w-16 border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
               />
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="font-mono text-sm text-muted-foreground">
                 {t('practice.seconds')}
               </span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-3 font-mono text-sm">
+            <label className="flex items-center gap-3 font-mono text-base">
               <input
                 type="checkbox"
                 checked={announceEnabled}
@@ -159,12 +159,12 @@ export function CustomTimerConfigDialog({ timerId, open, onOpenChange }: CustomT
                 value={announceText}
                 onChange={(e) => setAnnounceText(e.target.value)}
                 placeholder={t('practice.announceTextPlaceholder')}
-                className="border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent-green"
+                className="border border-border bg-transparent px-3 py-2 font-mono text-base outline-none focus:border-accent-green"
               />
             )}
           </div>
           <button
-            className="mt-2 border border-accent-green bg-accent-green px-4 py-2 font-mono text-sm text-white transition-colors hover:bg-accent-green/90"
+            className="mt-2 border border-accent-green bg-accent-green px-4 py-2 font-mono text-base text-white transition-colors hover:bg-accent-green/90"
             onClick={handleSave}
           >
             {t('practice.save')}

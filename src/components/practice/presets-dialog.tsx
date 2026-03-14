@@ -27,7 +27,7 @@ export function PresetsDialog({ open, onOpenChange, activePlanId }: PresetsDialo
       <DialogContent className="flex max-h-[80vh] flex-col gap-0 p-0">
         <DialogHeader className="border-b border-border px-4 py-3">
           <div className="flex items-center justify-between">
-            <DialogTitle className="font-mono text-sm">
+            <DialogTitle className="font-mono text-base">
               {save.t('practice.presets')}
             </DialogTitle>
             {activePlanId && (
@@ -46,7 +46,7 @@ export function PresetsDialog({ open, onOpenChange, activePlanId }: PresetsDialo
 
         <div className="flex-1 overflow-y-auto">
           {presetsList.length === 0 ? (
-            <p className="p-4 font-mono text-xs text-muted-foreground">
+            <p className="p-4 font-mono text-sm text-muted-foreground">
               {save.t('practice.noPresets')}
             </p>
           ) : (
@@ -107,7 +107,7 @@ function SavePresetControl({
       }}
     >
       <Input
-        className="h-6 w-32 font-mono text-xs"
+        className="h-6 w-32 font-mono text-sm"
         placeholder={t('practice.presetName')}
         value={saveName}
         onChange={(e) => setSaveName(e.target.value)}
@@ -150,8 +150,8 @@ function PresetRow({
       disabled={isLoading}
     >
       <div className="flex flex-col gap-0.5">
-        <span className="font-mono text-xs text-foreground">{preset.name}</span>
-        <span className="font-mono text-3xs text-muted-foreground">
+        <span className="font-mono text-sm text-foreground">{preset.name}</span>
+        <span className="font-mono text-2xs text-muted-foreground">
           {preset.sections.length}s / {itemCount}i
           {totalMinutes > 0 && ` / ${totalMinutes}m`}
         </span>

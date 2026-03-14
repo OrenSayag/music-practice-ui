@@ -46,7 +46,7 @@ export function Metronome() {
       <BpmSlider bpm={bpm} onBpmChange={setBpm} />
 
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-sm text-muted-foreground">
           {t('practice.beats')}
         </span>
         <BeatsCounter beats={beats} onBeatsChange={setBeats} />
@@ -57,7 +57,7 @@ export function Metronome() {
         currentBeat={isPlaying ? currentBeat : -1}
         onToggle={toggleAccent}
       />
-      <span className="font-mono text-2xs text-muted-foreground/60">
+      <span className="font-mono text-xs text-muted-foreground/60">
         {t('practice.tapToToggleAccent')}
       </span>
     </div>
@@ -67,8 +67,8 @@ export function Metronome() {
 export function BpmDisplay({ bpm }: { bpm: number }) {
   return (
     <div className="flex items-end justify-center gap-2">
-      <span className="font-mono text-4xl font-bold">{bpm}</span>
-      <span className="mb-1 font-mono text-sm text-muted-foreground">bpm</span>
+      <span className="font-mono text-5xl font-bold">{bpm}</span>
+      <span className="mb-1 font-mono text-base text-muted-foreground">bpm</span>
     </div>
   );
 }
@@ -85,8 +85,8 @@ export function BpmSlider({ bpm, onBpmChange }: { bpm: number; onBpmChange: (v: 
         className="accent-accent-green"
       />
       <div className="flex justify-between">
-        <span className="font-mono text-xs text-muted-foreground/60">40</span>
-        <span className="font-mono text-xs text-muted-foreground/60">200</span>
+        <span className="font-mono text-sm text-muted-foreground/60">40</span>
+        <span className="font-mono text-sm text-muted-foreground/60">200</span>
       </div>
     </div>
   );
@@ -107,7 +107,7 @@ export function BeatsCounter({
       >
         <Minus className="h-3.5 w-3.5" />
       </button>
-      <span className="w-4 text-center font-mono text-sm">{beats}</span>
+      <span className="w-4 text-center font-mono text-base">{beats}</span>
       <button
         className="text-muted-foreground transition-colors hover:text-foreground"
         onClick={() => onBeatsChange(beats + 1)}
@@ -132,7 +132,7 @@ export function AccentRow({
       {accents.map((isAccented, i) => (
         <button
           key={i}
-          className={`flex h-8 w-8 items-center justify-center border font-mono text-xs transition-colors ${
+          className={`flex h-8 w-8 items-center justify-center border font-mono text-sm transition-colors ${
             i === currentBeat
               ? 'border-accent-green bg-accent-green font-bold text-white'
               : isAccented

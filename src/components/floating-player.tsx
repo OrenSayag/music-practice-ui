@@ -14,7 +14,7 @@ export function FloatingPlayer() {
       <div className="flex items-center gap-2 rounded-full border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <Link
           to="/practice"
-          className="flex items-center gap-2 font-mono text-sm"
+          className="flex items-center gap-2 font-mono text-base"
         >
           <Music className="h-3.5 w-3.5 text-accent-green" />
           {timeStr && (
@@ -22,7 +22,7 @@ export function FloatingPlayer() {
           )}
           {isPlaying && (
             <span className="text-muted-foreground">
-              {bpm} <span className="text-2xs">bpm</span>
+              {bpm} <span className="text-xs">bpm</span>
             </span>
           )}
         </Link>

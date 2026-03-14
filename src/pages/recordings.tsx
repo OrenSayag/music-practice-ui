@@ -37,7 +37,7 @@ export default function RecordingsPage() {
     <div className="flex min-h-0 flex-1 flex-col p-6 md:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="font-mono text-lg font-bold">
+        <h1 className="font-mono text-xl font-bold">
           {'>'} {t('recordings.title')}
         </h1>
       </div>
@@ -70,7 +70,7 @@ export default function RecordingsPage() {
       ) : recordings.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3">
           <Mic className="h-10 w-10 text-muted-foreground/30" />
-          <p className="font-mono text-sm text-muted-foreground">
+          <p className="font-mono text-base text-muted-foreground">
             {t('recordings.noRecordings')}
           </p>
         </div>
@@ -117,10 +117,10 @@ function RecordingCard({
     >
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-0.5">
-          <span className="font-mono text-xs">
+          <span className="font-mono text-sm">
             {'>'} {recording.fileName}
           </span>
-          <span className="font-mono text-2xs text-muted-foreground">
+          <span className="font-mono text-xs text-muted-foreground">
             {recording.session.name
               ? `${recording.session.name} — ${sessionDate}`
               : t('recordings.sessionOn', { date: sessionDate })}
@@ -172,7 +172,7 @@ function FilterTag({
 }) {
   return (
     <button
-      className={`px-2 py-1 font-mono text-xs transition-colors ${
+      className={`px-2 py-1 font-mono text-sm transition-colors ${
         active
           ? 'bg-foreground text-background'
           : 'text-muted-foreground hover:text-foreground'

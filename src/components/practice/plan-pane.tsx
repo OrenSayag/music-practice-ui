@@ -102,7 +102,7 @@ function PlanHeader({
         <div className="flex items-center gap-2">
           <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
           {totalMinutes > 0 && (
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               ({formatTimeProgress(completedMinutes, totalMinutes)})
             </span>
           )}
@@ -112,12 +112,12 @@ function PlanHeader({
               onClick={() => setPresetsOpen(true)}
             >
               <Bookmark className="h-3.5 w-3.5" />
-              <span className="font-mono text-xs">{t('practice.presets')}</span>
+              <span className="font-mono text-sm">{t('practice.presets')}</span>
             </button>
           )}
         </div>
         {totalCount > 0 && (
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-sm text-muted-foreground">
             [{t('practice.progress', { completed: completedCount, total: totalCount })}]
           </span>
         )}
@@ -353,11 +353,11 @@ function SectionHeader({
       >
         <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
       </button>
-      <span className="font-mono text-sm text-accent-green">&gt;</span>
+      <span className="font-mono text-base text-accent-green">&gt;</span>
       {isEditing ? (
         <input
           ref={inputRef}
-          className="flex-1 border-b border-accent-green bg-transparent font-mono text-sm text-accent-green outline-none"
+          className="flex-1 border-b border-accent-green bg-transparent font-mono text-base text-accent-green outline-none"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSave}
@@ -371,14 +371,14 @@ function SectionHeader({
         />
       ) : (
         <span
-          className="cursor-pointer font-mono text-sm text-accent-green underline"
+          className="cursor-pointer font-mono text-base text-accent-green underline"
           onDoubleClick={handleStartEdit}
         >
           {section.name}
         </span>
       )}
       {sectionMinutes > 0 && (
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-sm text-muted-foreground">
           ({formatMinutes(sectionMinutes, t)})
         </span>
       )}
@@ -571,17 +571,17 @@ function PlanItemComponent({
       </button>
 
       <span
-        className={`font-mono text-xs text-muted-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+        className={`font-mono text-sm text-muted-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
       >
         {index}
       </span>
 
-      <span className="font-mono text-xs text-muted-foreground">&mdash;</span>
+      <span className="font-mono text-sm text-muted-foreground">&mdash;</span>
 
       {isEditing ? (
         <input
           ref={inputRef}
-          className="flex-1 border-b border-border bg-transparent font-mono text-sm outline-none"
+          className="flex-1 border-b border-border bg-transparent font-mono text-base outline-none"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSave}
@@ -595,7 +595,7 @@ function PlanItemComponent({
         />
       ) : (
         <span
-          className={`flex-1 cursor-pointer font-mono text-sm ${isCompleted ? 'line-through opacity-50' : ''}`}
+          className={`flex-1 cursor-pointer font-mono text-base ${isCompleted ? 'line-through opacity-50' : ''}`}
           onDoubleClick={handleStartEdit}
         >
           {item.name}
@@ -605,7 +605,7 @@ function PlanItemComponent({
       {isEditingDuration ? (
         <input
           ref={durationInputRef}
-          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-xs text-muted-foreground outline-none"
+          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
           value={durationEditValue}
           placeholder="min"
           onChange={(e) => setDurationEditValue(e.target.value.replace(/[^0-9]/g, ''))}
@@ -617,7 +617,7 @@ function PlanItemComponent({
         />
       ) : (
         <button
-          className={`shrink-0 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+          className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
           onClick={handleStartDurationEdit}
         >
           {durationLabel ?? '—'}
@@ -627,7 +627,7 @@ function PlanItemComponent({
       {isEditingBpm ? (
         <input
           ref={bpmInputRef}
-          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-xs text-muted-foreground outline-none"
+          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-sm text-muted-foreground outline-none"
           value={bpmEditValue}
           placeholder="bpm"
           onChange={(e) => setBpmEditValue(e.target.value.replace(/[^0-9]/g, ''))}
@@ -639,7 +639,7 @@ function PlanItemComponent({
         />
       ) : (
         <button
-          className={`shrink-0 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+          className={`shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
           onClick={handleStartBpmEdit}
         >
           {bpmLabel ?? '—'}
@@ -665,7 +665,7 @@ function AddButton({
 }) {
   return (
     <button
-      className="self-start font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+      className="self-start font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
       onClick={onClick}
     >
       {label}
@@ -679,11 +679,11 @@ function EmptyPlanState({ onCreatePlan }: { onCreatePlan: () => void }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4">
       <Music className="h-12 w-12 text-muted-foreground/50" />
-      <span className="font-mono text-sm text-muted-foreground">
+      <span className="font-mono text-base text-muted-foreground">
         {t('practice.emptyPlan')}
       </span>
       <button
-        className="rounded-sm border border-accent-green px-4 py-2 font-mono text-sm text-accent-green transition-colors hover:bg-accent-green/10"
+        className="rounded-sm border border-accent-green px-4 py-2 font-mono text-base text-accent-green transition-colors hover:bg-accent-green/10"
         onClick={onCreatePlan}
       >
         {t('practice.createPlan')}

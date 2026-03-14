@@ -48,16 +48,16 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-xs text-muted-foreground">{dateStr}</p>
+          <p className="font-mono text-base text-muted-foreground">{dateStr}</p>
           <div className="flex items-center gap-2">
             <button
-              className="border border-border px-4 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="border border-border px-4 py-1.5 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
               onClick={onBack}
             >
               {t('session.backToSession')}
             </button>
             <button
-              className="bg-accent-green px-4 py-1.5 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
+              className="bg-accent-green px-4 py-1.5 font-mono text-base text-white transition-colors hover:bg-accent-green/90"
               onClick={() => onDone(notes, name)}
             >
               $ {t('session.done')}
@@ -66,7 +66,7 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
         </div>
         <input
           type="text"
-          className="w-full border-b border-border bg-transparent font-mono text-lg font-bold text-foreground placeholder:text-muted-foreground focus:outline-none"
+          className="w-full border-b border-border bg-transparent font-mono text-2xl font-bold text-foreground placeholder:text-muted-foreground focus:outline-none"
           placeholder={t('session.namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -91,7 +91,7 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
       <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">
         {/* Left — item breakdown */}
         <div className="md:min-h-0 md:flex-1">
-          <h2 className="mb-3 font-mono text-xs font-bold text-muted-foreground">
+          <h2 className="mb-3 font-mono text-base font-bold text-muted-foreground">
             {t('session.itemBreakdown')}
           </h2>
           <div className="flex flex-col gap-1">
@@ -104,11 +104,11 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
         {/* Right — notes, tags, recordings */}
         <div className="flex w-full flex-col gap-4 md:w-72">
           <div>
-            <h2 className="mb-2 font-mono text-xs font-bold text-muted-foreground">
+            <h2 className="mb-2 font-mono text-base font-bold text-muted-foreground">
               {t('session.notes')}
             </h2>
             <textarea
-              className="w-full resize-none border border-border bg-transparent p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+              className="w-full resize-none border border-border bg-transparent p-3 font-mono text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
               rows={4}
               placeholder={t('session.notesPlaceholder')}
               value={notes}
@@ -116,7 +116,7 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
             />
           </div>
           <div>
-            <h2 className="mb-2 font-mono text-xs font-bold text-muted-foreground">
+            <h2 className="mb-2 font-mono text-base font-bold text-muted-foreground">
               {t('session.tags')}
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -124,7 +124,7 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
                 <SessionTagChip key={tag.id} tag={tag} />
               ))}
               <button
-                className="border border-border px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="border border-border px-2 py-0.5 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
                 onClick={() => setTagsDialogOpen(true)}
               >
                 + {t('session.addTag')}
@@ -137,11 +137,11 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
             />
           </div>
           <div>
-            <h2 className="mb-2 font-mono text-xs font-bold text-muted-foreground">
+            <h2 className="mb-2 font-mono text-base font-bold text-muted-foreground">
               {t('session.recordings')}
             </h2>
             {recordings.length === 0 ? (
-              <p className="font-mono text-xs text-muted-foreground">
+              <p className="font-mono text-base text-muted-foreground">
                 {t('recording.noRecordings')}
               </p>
             ) : (
@@ -165,8 +165,8 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-border p-3">
-      <p className="font-mono text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 font-mono text-lg font-bold">{value}</p>
+      <p className="font-mono text-base text-muted-foreground">{label}</p>
+      <p className="mt-1 font-mono text-2xl font-bold">{value}</p>
     </div>
   );
 }
@@ -201,16 +201,16 @@ function SessionItemRow({
   return (
     <div className="flex items-center justify-between py-1.5">
       <div className="flex items-center gap-2">
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-base text-muted-foreground">
           {String(index).padStart(2, '0')}
         </span>
-        <span className="font-mono text-xs">— {item.name}</span>
+        <span className="font-mono text-base">— {item.name}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="font-mono text-3xs text-muted-foreground">
+        <span className="font-mono text-xs text-muted-foreground">
           {elapsed}{target ? `/${target}` : ''}
         </span>
-        <span className={`rounded px-1.5 py-0.5 font-mono text-3xs ${statusColor}`}>
+        <span className={`rounded px-1.5 py-0.5 font-mono text-xs ${statusColor}`}>
           [{statusLabel}]
         </span>
       </div>
@@ -251,7 +251,7 @@ function RecordingRow({
       <div className="flex items-center gap-2">
         <input
           type="text"
-          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent font-mono text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
           value={editName}
           onChange={(e) => setEditName(e.target.value)}
           onBlur={handleNameBlur}
@@ -264,7 +264,7 @@ function RecordingRow({
             onClick={() => toggleStarMutation.mutate(recording.id)}
           >
             <Star
-              className={`h-3 w-3 ${
+              className={`h-3.5 w-3.5 ${
                 recording.isStarred
                   ? 'fill-current text-accent-amber'
                   : 'text-muted-foreground/40 hover:text-muted-foreground'
@@ -276,7 +276,7 @@ function RecordingRow({
             onClick={() => setDeleteOpen(true)}
             title={t('recording.delete')}
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -308,11 +308,11 @@ function DeleteRecordingDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent size="sm" className="font-mono">
         <AlertDialogHeader>
-          <AlertDialogTitle className="font-mono text-sm">
+          <AlertDialogTitle className="font-mono text-lg">
             {'> '}
             {t('recording.deleteTitle')}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-xs">
+          <AlertDialogDescription className="text-base">
             {t('recording.deleteDescription')}
           </AlertDialogDescription>
         </AlertDialogHeader>

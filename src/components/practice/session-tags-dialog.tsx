@@ -112,7 +112,7 @@ export function SessionTagsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="font-mono text-sm">
+          <DialogTitle className="font-mono text-base">
             // {t('session.tags')}
           </DialogTitle>
         </DialogHeader>
@@ -127,7 +127,7 @@ export function SessionTagsDialog({
               return (
                 <div key={tag.id} className="flex items-center gap-2">
                   <input
-                    className="flex-1 border border-border bg-transparent px-2 py-1 font-mono text-xs focus:outline-none"
+                    className="flex-1 border border-border bg-transparent px-2 py-1 font-mono text-sm focus:outline-none"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
@@ -144,7 +144,7 @@ export function SessionTagsDialog({
                     ))}
                   </div>
                   <button
-                    className="font-mono text-xs text-accent-green"
+                    className="font-mono text-sm text-accent-green"
                     onClick={handleSaveEdit}
                   >
                     {t('practice.save')}
@@ -156,7 +156,7 @@ export function SessionTagsDialog({
             return (
               <div key={tag.id} className="group flex items-center gap-2">
                 <button
-                  className={`border px-2 py-1 font-mono text-xs transition-colors ${
+                  className={`border px-2 py-1 font-mono text-sm transition-colors ${
                     isLinked
                       ? `${colors.text} ${colors.border} ${colors.bg}`
                       : 'border-border text-muted-foreground'
@@ -185,7 +185,7 @@ export function SessionTagsDialog({
         {/* Create new tag */}
         <div className="flex items-center gap-2 border-t border-border pt-3">
           <input
-            className="flex-1 border border-border bg-transparent px-2 py-1 font-mono text-xs placeholder:text-muted-foreground focus:outline-none"
+            className="flex-1 border border-border bg-transparent px-2 py-1 font-mono text-sm placeholder:text-muted-foreground focus:outline-none"
             placeholder={t('session.newTagPlaceholder')}
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
@@ -202,7 +202,7 @@ export function SessionTagsDialog({
             ))}
           </div>
           <button
-            className="font-mono text-xs text-accent-green transition-colors hover:text-accent-green/80"
+            className="font-mono text-sm text-accent-green transition-colors hover:text-accent-green/80"
             onClick={handleCreate}
           >
             + {t('session.addTag')}
@@ -245,7 +245,7 @@ export function SessionTagChip({ tag }: { tag: { name: string; color: string } }
   const colors = colorMap[tag.color as TagColor] ?? colorMap.green;
   return (
     <span
-      className={`border px-2 py-0.5 font-mono text-xs ${colors.text} ${colors.border}`}
+      className={`border px-2 py-0.5 font-mono text-sm ${colors.text} ${colors.border}`}
     >
       [{tag.name}]
     </span>

@@ -36,12 +36,12 @@ export function ChatPlanPreview() {
         <div className="flex items-center gap-2">
           <SectionTitle>{t('practice.todaysPlan')}</SectionTitle>
           {totalMinutes > 0 && (
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-sm text-muted-foreground">
               ({formatMinutes(totalMinutes, t)})
             </span>
           )}
         </div>
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-sm text-muted-foreground">
           [{t('practice.progress', { completed: completedCount, total: totalCount })}]
         </span>
       </div>
@@ -59,7 +59,7 @@ function PreviewSection({ section }: { section: PlanSection }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-mono text-xs font-bold text-accent-green">
+      <span className="font-mono text-sm font-bold text-accent-green">
         &gt; {section.name}
         {sectionMinutes > 0 && (
           <span className="font-normal text-muted-foreground">
@@ -78,9 +78,9 @@ function PreviewSection({ section }: { section: PlanSection }) {
             className="flex items-center gap-3 px-2 py-1.5"
           >
             <div className="h-3.5 w-3.5 shrink-0 border border-muted-foreground" />
-            <span className="flex-1 font-mono text-xs">{item.name}</span>
+            <span className="flex-1 font-mono text-sm">{item.name}</span>
             {durationLabel ? (
-              <span className="shrink-0 font-mono text-xs text-muted-foreground">
+              <span className="shrink-0 font-mono text-sm text-muted-foreground">
                 {durationLabel}
               </span>
             ) : null}
