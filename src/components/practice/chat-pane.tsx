@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDir } from '@/hooks/use-dir';
+import { detectDir } from '@/lib/text';
 import { Send } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { Textarea } from '@/components/ui/textarea';
@@ -74,11 +75,6 @@ export function ChatPane() {
   );
 }
 
-function detectDir(text: string): 'rtl' | 'ltr' {
-  const firstStrong = text.match(/[\p{Script=Arabic}\p{Script=Hebrew}]|[a-zA-Z]/u);
-  if (!firstStrong) return 'ltr';
-  return /[\p{Script=Arabic}\p{Script=Hebrew}]/u.test(firstStrong[0]) ? 'rtl' : 'ltr';
-}
 
 function ChatMessage({
   role,

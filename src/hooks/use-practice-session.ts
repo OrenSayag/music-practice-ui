@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import i18n from '@/i18n';
+import { detectLang } from '@/lib/text';
 import type { PlanItem, PlanSection } from '@/services/plans';
 import type { SessionItemInput } from '@/services/sessions';
 import {
@@ -6,6 +8,12 @@ import {
   useEndSession,
   useSaveSessionItems,
 } from '@/services/sessions';
+
+function speak(text: string) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = detectLang(text);
+  speechSynthesis.speak(utterance);
+}
 
 export interface CustomTimer {
   id: string;
@@ -199,8 +207,7 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
         const text = section
           ? `${section.name} - ${item.name}`
           : item.name;
-        const utterance = new SpeechSynthesisUtterance(text);
-        speechSynthesis.speak(utterance);
+        speak(text);
       }
 
       setActiveItem(item);
@@ -447,19 +454,18 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
     if (nextPending) {
       if (defaultTimerSettings.announceNextItem) {
         const section = sections.find((s) => s.id === nextPending.sectionId);
+        const next = i18n.t('practice.next');
         const announcement = section
-          ? `next - ${section.name} - ${nextPending.name}`
-          : `next - ${nextPending.name}`;
-        const utterance = new SpeechSynthesisUtterance(announcement);
-        speechSynthesis.speak(utterance);
+          ? `${next} - ${section.name} - ${nextPending.name}`
+          : `${next} - ${nextPending.name}`;
+        speak(announcement);
       }
 
       if (defaultTimerSettings.autoStartNextItem) {
         startItem(nextPending, allItems, sections);
       }
     } else {
-      const utterance = new SpeechSynthesisUtterance('done');
-      speechSynthesis.speak(utterance);
+      speak(i18n.t('practice.done'));
     }
   }, [activeItem, defaultTimerSettings.announceNextItem, defaultTimerSettings.autoStartNextItem, startItem]);
 
@@ -468,8 +474,7 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
     if (pendingAnnouncements.current.length === 0) return;
     const texts = pendingAnnouncements.current.splice(0);
     for (const text of texts) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.speak(utterance);
+      speak(text);
     }
   }, [customTimers]);
 
