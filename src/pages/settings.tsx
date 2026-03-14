@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthUser } from '@/layouts/authenticated-layout';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -9,10 +9,18 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useUpdatePreferences } from '@/services/user/user-queries';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  useUpdatePreferences,
+  useUpdateProfile,
+  useUploadAvatar,
+  useDeleteAvatar,
+} from '@/services/user/user-queries';
 import { playPreviewClick } from '@/hooks/use-metronome';
 import type { MetronomeSound } from '@/services/auth/auth-types';
 import { AudioInputDialog } from '@/components/settings/audio-input-dialog';
+import { Camera, Trash2 } from 'lucide-react';
 
 const METRONOME_SOUNDS: MetronomeSound[] = ['wood', 'glass', 'electromagnetic', 'arcane'];
 
@@ -24,6 +32,12 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
+
+      {!user.isGuest && (
+        <ProfileCard
+          handlers={handlers}
+        />
+      )}
 
       <Card>
         <CardHeader>
@@ -136,11 +150,106 @@ export default function SettingsPage() {
   );
 }
 
+function ProfileCard({
+  handlers,
+}: {
+  handlers: ReturnType<typeof useSettingsPage>['handlers'];
+}) {
+  const { t } = useTranslation();
+  const { user } = useAuthUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const initial = user.firstName?.[0] ?? user.email?.[0] ?? 'U';
+  const avatarSrc = user.image
+    ? `${user.image}?t=${Date.now()}`
+    : undefined;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('settings.profile')}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-6">
+        <div className="flex items-center gap-4">
+          <div className="group relative cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <Avatar className="h-16 w-16">
+              {avatarSrc ? <AvatarImage src={avatarSrc} /> : null}
+              <AvatarFallback className="text-lg">{initial}</AvatarFallback>
+            </Avatar>
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+              <Camera className="h-5 w-5 text-white" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {t('settings.changeAvatar')}
+            </Button>
+            {user.image && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handlers.handleAvatarRemove}
+              >
+                <Trash2 className="h-3 w-3" />
+                {t('settings.removeAvatar')}
+              </Button>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handlers.handleAvatarChange(file);
+              e.target.value = '';
+            }}
+          />
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">{t('settings.firstName')}</label>
+            <Input
+              defaultValue={user.firstName || ''}
+              onBlur={(e) => handlers.handleNameBlur('firstName', e.target.value)}
+              placeholder={t('settings.firstName')}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">{t('settings.lastName')}</label>
+            <Input
+              defaultValue={user.lastName || ''}
+              onBlur={(e) => handlers.handleNameBlur('lastName', e.target.value)}
+              placeholder={t('settings.lastName')}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">{t('settings.email')}</label>
+            <Input
+              value={user.email || ''}
+              readOnly
+              className="text-muted-foreground"
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 const VOLUME_KEY = 'metronome-volume';
 
 function useSettingsPage() {
   const { user, setUser } = useAuthUser();
   const updatePreferences = useUpdatePreferences();
+  const updateProfile = useUpdateProfile();
+  const uploadAvatar = useUploadAvatar();
+  const deleteAvatarMutation = useDeleteAvatar();
   const [audioDialogOpen, setAudioDialogOpen] = useState(false);
   const [volume, setVolumeState] = useState(() => {
     const stored = localStorage.getItem(VOLUME_KEY);
@@ -164,8 +273,39 @@ function useSettingsPage() {
     localStorage.setItem(VOLUME_KEY, String(clamped));
   };
 
+  const handleNameBlur = (field: 'firstName' | 'lastName', value: string) => {
+    const trimmed = value.trim();
+    if (trimmed === (user[field] || '')) return;
+    setUser({ ...user, [field]: trimmed || '' });
+    updateProfile.mutate({ [field]: trimmed });
+  };
+
+  const handleAvatarChange = (file: File) => {
+    uploadAvatar.mutate(file, {
+      onSuccess: (data) => {
+        setUser({ ...user, image: data.image });
+      },
+    });
+  };
+
+  const handleAvatarRemove = () => {
+    deleteAvatarMutation.mutate(undefined, {
+      onSuccess: () => {
+        setUser({ ...user, image: null });
+      },
+    });
+  };
+
   return {
-    handlers: { setWeekStartDay, setMetronomeSound, volume, setVolume },
+    handlers: {
+      setWeekStartDay,
+      setMetronomeSound,
+      volume,
+      setVolume,
+      handleNameBlur,
+      handleAvatarChange,
+      handleAvatarRemove,
+    },
     audioDialogOpen,
     setAudioDialogOpen,
   };

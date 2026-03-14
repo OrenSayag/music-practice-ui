@@ -23,8 +23,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-1 flex-col gap-8">
       <TopBar
-        name={user.isGuest ? 'Guest' : user.firstName || 'User'}
-        initial={user.isGuest ? 'G' : (user.firstName?.[0] ?? 'U')}
+        name={user.isGuest ? 'Guest' : user.firstName || user.email || 'User'}
+        initial={user.isGuest ? 'G' : (user.firstName?.[0] ?? user.email?.[0] ?? 'U')}
         image={user.image}
         totalTime={totalTimeFormatted}
         date={dateString}

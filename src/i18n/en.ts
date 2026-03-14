@@ -62,6 +62,12 @@ export const en = {
   'settings.sound.electromagnetic': 'Electromagnetic',
   'settings.sound.arcane': 'Arcane',
   'settings.metronomeVolume': 'Metronome Volume',
+  'settings.profile': 'Profile',
+  'settings.firstName': 'First Name',
+  'settings.lastName': 'Last Name',
+  'settings.email': 'Email',
+  'settings.changeAvatar': 'Change Picture',
+  'settings.removeAvatar': 'Remove Picture',
 
   // Sidebar
   'sidebar.guest': 'Guest',

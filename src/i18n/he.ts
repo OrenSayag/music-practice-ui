@@ -64,6 +64,12 @@ export const he: Record<TranslationKey, string> = {
   'settings.sound.electromagnetic': 'אלקטרומגנטי',
   'settings.sound.arcane': 'מיסטי',
   'settings.metronomeVolume': 'עוצמת מטרונום',
+  'settings.profile': 'פרופיל',
+  'settings.firstName': 'שם פרטי',
+  'settings.lastName': 'שם משפחה',
+  'settings.email': 'אימייל',
+  'settings.changeAvatar': 'שינוי תמונה',
+  'settings.removeAvatar': 'הסרת תמונה',
 
   // Sidebar
   'sidebar.guest': 'אורח',
