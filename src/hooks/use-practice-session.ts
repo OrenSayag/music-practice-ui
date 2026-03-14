@@ -59,6 +59,8 @@ export interface PracticeSessionState {
 export interface PracticeSessionActions {
   startItem: (item: PlanItem, allItems: PlanItem[], sections?: PlanSection[], options?: { announce?: boolean }) => void;
   stopItem: () => void;
+  setItemBpm: (itemId: string, bpm: number) => void;
+  clearSession: () => void;
   toggleTimer: () => void;
   addCustomTimer: () => void;
   removeCustomTimer: (id: string) => void;
@@ -217,6 +219,9 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     }
   }, [activeItem, remainingSeconds]);
 
+  // Track actual BPM used per item during practice
+  const itemBpmMap = useRef<Map<string, number>>(new Map());
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTickTime = useRef<number>(Date.now());
   const allItemsRef = useRef<PlanItem[]>([]);
@@ -306,11 +311,16 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     [clearTimer]
   );
 
-  const cancelSession = useCallback(() => {
-    stopItem();
+  const clearSession = useCallback(() => {
     setSessionId(null);
     setSessionStartedAt(null);
-  }, [stopItem]);
+    itemBpmMap.current.clear();
+  }, []);
+
+  const cancelSession = useCallback(() => {
+    stopItem();
+    clearSession();
+  }, [stopItem, clearSession]);
 
   const endSession = useCallback(
     async (
@@ -324,6 +334,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
       // Build session items from plan items
       // Completed items use target duration; everything else is 0
+      // Use actual metronome BPM if captured, fall back to plan BPM
       const sessionItems: SessionItemInput[] = allItems.map((item) => {
         const status: 'done' | 'partial' | 'none' =
           item.status === 'completed' ? 'done' : 'none';
@@ -334,12 +345,13 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
           status === 'done' && targetSeconds ? targetSeconds : 0;
         const section = sections
           .find((s) => s.items.some((i) => i.id === item.id));
+        const actualBpm = itemBpmMap.current.get(item.id);
         return {
           name: item.name,
           section: section?.name,
           durationSeconds,
           targetDurationSeconds: targetSeconds,
-          bpm: item.bpm ?? undefined,
+          bpm: actualBpm ?? item.bpm ?? undefined,
           status,
         };
       });
@@ -379,10 +391,6 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
         completedItems,
         avgBpm,
       };
-
-      // Clear session state
-      setSessionId(null);
-      setSessionStartedAt(null);
 
       return summary;
     },
@@ -485,6 +493,10 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
 
   const setOnItemComplete = useCallback((cb: ((itemId: string) => void) | null) => {
     onItemCompleteRef.current = cb;
+  }, []);
+
+  const setItemBpm = useCallback((itemId: string, bpm: number) => {
+    itemBpmMap.current.set(itemId, bpm);
   }, []);
 
   const setSections = useCallback((sections: PlanSection[]) => {
@@ -611,6 +623,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     pendingActiveItemId,
     startItem,
     stopItem,
+    setItemBpm,
     toggleTimer,
     addCustomTimer,
     removeCustomTimer,
@@ -624,6 +637,7 @@ export function usePracticeSession(): PracticeSessionState & PracticeSessionActi
     beginSession,
     endSession,
     cancelSession,
+    clearSession,
     restoreActiveItem,
   };
 }

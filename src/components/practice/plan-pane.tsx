@@ -4,6 +4,7 @@ import { SectionTitle } from '@/components/section-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Music, Trash2, Square, CheckSquare, GripVertical, Play, Pause, Bookmark } from 'lucide-react';
+import { useMetronomeContext } from './metronome';
 import { PresetsDialog } from './presets-dialog';
 import { usePracticeSessionContext } from './practice-session-provider';
 import {
@@ -446,15 +447,26 @@ function PlanItemComponent({
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession } = usePracticeSessionContext();
+  const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession, setItemBpm } = usePracticeSessionContext();
+  const { bpm: metronomeBpm, setBpm } = useMetronomeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
   const [isEditingDuration, setIsEditingDuration] = useState(false);
   const [durationEditValue, setDurationEditValue] = useState('');
+  const [isEditingBpm, setIsEditingBpm] = useState(false);
+  const [bpmEditValue, setBpmEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const durationInputRef = useRef<HTMLInputElement>(null);
+  const bpmInputRef = useRef<HTMLInputElement>(null);
   const isCompleted = item.status === 'completed';
   const isActive = activeItem?.id === item.id;
+
+  // Track metronome BPM changes while this item is active
+  useEffect(() => {
+    if (isActive) {
+      setItemBpm(item.id, metronomeBpm);
+    }
+  }, [isActive, metronomeBpm, item.id, setItemBpm]);
 
   const handleToggle = () => {
     handlers.toggleItem(item.id, isCompleted ? 'pending' : 'completed');
@@ -497,11 +509,34 @@ function PlanItemComponent({
     }
   };
 
+  const handleStartBpmEdit = () => {
+    setBpmEditValue(item.bpm ? String(item.bpm) : '');
+    setIsEditingBpm(true);
+    setTimeout(() => bpmInputRef.current?.focus(), 0);
+  };
+
+  const handleBpmSave = () => {
+    setIsEditingBpm(false);
+    const trimmed = bpmEditValue.trim();
+    if (!trimmed) {
+      if (item.bpm !== null) {
+        handlers.updateItem(item.id, { bpm: null });
+      }
+      return;
+    }
+    const bpm = parseInt(trimmed, 10);
+    if (!isNaN(bpm) && bpm > 0 && bpm !== item.bpm) {
+      handlers.updateItem(item.id, { bpm });
+    }
+  };
+
   const durationLabel = item.targetDurationMinutes
     ? isMobile
       ? t('practice.durationShort', { min: item.targetDurationMinutes })
       : t('practice.duration', { min: item.targetDurationMinutes })
     : null;
+
+  const bpmLabel = item.bpm ? t('practice.bpm', { bpm: item.bpm }) : null;
 
   return (
     <div className={`group flex items-center gap-3 py-1.5 ${isActive ? 'text-accent-green' : ''}`}>
@@ -520,7 +555,10 @@ function PlanItemComponent({
             toggleTimer();
           } else {
             if (!isInSession) await beginSession();
+            if (item.bpm) setBpm(item.bpm);
             startItem(item, allItems, undefined, { announce: true });
+            const bpmToRecord = item.bpm ?? metronomeBpm;
+            setItemBpm(item.id, bpmToRecord);
           }
         }}
       >
@@ -590,6 +628,28 @@ function PlanItemComponent({
           onClick={handleStartDurationEdit}
         >
           {durationLabel ?? '—'}
+        </button>
+      )}
+
+      {isEditingBpm ? (
+        <input
+          ref={bpmInputRef}
+          className="w-12 shrink-0 border-b border-border bg-transparent text-center font-mono text-xs text-muted-foreground outline-none"
+          value={bpmEditValue}
+          placeholder="bpm"
+          onChange={(e) => setBpmEditValue(e.target.value.replace(/[^0-9]/g, ''))}
+          onBlur={handleBpmSave}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleBpmSave();
+            if (e.key === 'Escape') setIsEditingBpm(false);
+          }}
+        />
+      ) : (
+        <button
+          className={`shrink-0 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground ${isCompleted ? 'line-through opacity-50' : ''}`}
+          onClick={handleStartBpmEdit}
+        >
+          {bpmLabel ?? '—'}
         </button>
       )}
 
@@ -664,7 +724,7 @@ interface PracticeHandlers {
   updateSection: (sectionId: string, input: { name: string }) => void;
   deleteSection: (sectionId: string) => void;
   addItem: (sectionId: string) => void;
-  updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null }) => void;
+  updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null; bpm?: number | null }) => void;
   toggleItem: (itemId: string, status: 'pending' | 'completed') => void;
   deleteItem: (itemId: string) => void;
   reorderPlan: (planId: string, input: ReorderInput) => void;
@@ -740,7 +800,7 @@ function usePlanPane() {
       });
     },
 
-    updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null }) => {
+    updateItem: (itemId: string, input: { name?: string; targetDurationMinutes?: number | null; bpm?: number | null }) => {
       updateItemMutation.mutate({ itemId, ...input });
     },
 

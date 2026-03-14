@@ -10,6 +10,7 @@ import { PracticeToolbar } from '@/components/practice/practice-toolbar';
 import { ToolsPane } from '@/components/practice/tools-pane';
 import { MobilePlayerFooter } from '@/components/practice/mobile-player-footer';
 import { usePracticeSessionContext } from '@/components/practice/practice-session-provider';
+import { useMetronomeContext } from '@/components/practice/metronome';
 import { ChatPane } from '@/components/practice/chat-pane';
 import { ChatPlanPreview } from '@/components/practice/chat-plan-preview';
 import { SessionSummary } from '@/components/practice/session-summary';
@@ -29,7 +30,8 @@ function PracticePageInner() {
   const { view, toggleView, isMobile } = usePracticeShell();
   const [summaryData, setSummaryData] = useState<SessionSummaryData | null>(null);
   const [pendingRecording, setPendingRecording] = useState<PendingRecording | null>(null);
-  const { endSession, cancelSession, isInSession, sessionId } = usePracticeSessionContext();
+  const { endSession, cancelSession, clearSession, isInSession, sessionId } = usePracticeSessionContext();
+  const metronome = useMetronomeContext();
   const { data: activePlan } = useActivePlan();
   const endSessionMutation = useEndSessionMutation();
   const { isRecording, durationSeconds: recordingDuration, startRecording, stopRecording } = useAudioRecorder();
@@ -73,6 +75,7 @@ function PracticePageInner() {
           });
         }
       }
+      if (metronome.isPlaying) metronome.togglePlay();
       const allItems = activePlan.sections.flatMap((s) => s.items);
       const summary = await endSession(allItems, activePlan.sections);
       if (summary) {
@@ -82,7 +85,7 @@ function PracticePageInner() {
     } catch {
       // Global onError handles toast
     }
-  }, [endSession, activePlan, isRecording, stopRecording, sessionId, uploadRecording]);
+  }, [endSession, activePlan, isRecording, stopRecording, sessionId, uploadRecording, metronome]);
 
   const handleCancelSession = useCallback(() => {
     if (isRecording) {
@@ -108,12 +111,13 @@ function PracticePageInner() {
           ...(notesChanged && { notes }),
         });
       }
+      clearSession();
       setSummaryData(null);
       if (activePlan) {
         resetPlanItems.mutate(activePlan.id);
       }
     },
-    [summaryData, endSessionMutation, activePlan, resetPlanItems]
+    [summaryData, endSessionMutation, activePlan, resetPlanItems, clearSession]
   );
 
   if (summaryData) {
