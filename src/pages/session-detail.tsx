@@ -307,7 +307,7 @@ function TagsSection({
       </span>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <SessionTagChip key={tag.id} tag={tag as any} />
+          <SessionTagChip key={tag.id} tag={tag} />
         ))}
         <button
           className="font-mono text-xs text-accent-green"

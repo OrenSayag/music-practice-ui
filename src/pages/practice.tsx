@@ -30,7 +30,7 @@ function PracticePageInner() {
   const { view, toggleView, isMobile } = usePracticeShell();
   const [summaryData, setSummaryData] = useState<SessionSummaryData | null>(null);
   const [pendingRecording, setPendingRecording] = useState<PendingRecording | null>(null);
-  const { endSession, cancelSession, clearSession, isInSession, sessionId } = usePracticeSessionContext();
+  const { endSession, cancelSession, clearSession, sessionId } = usePracticeSessionContext();
   const metronome = useMetronomeContext();
   const { data: activePlan } = useActivePlan();
   const endSessionMutation = useEndSessionMutation();
@@ -181,7 +181,7 @@ function usePracticeShell() {
   const isMobile = useIsMobile();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const view = pathname === '/practice/chat' ? 'chat' : 'plan';
+  const view: 'chat' | 'plan' = pathname === '/practice/chat' ? 'chat' : 'plan';
 
   const toggleView = () => {
     navigate(view === 'plan' ? '/practice/chat' : '/practice');

@@ -28,7 +28,7 @@ export function useChatPane() {
 
   // Load chat history on mount
   useEffect(() => {
-    apiClient.get('/chat/history').then((history: Array<{ id: string; role: string; content: string }>) => {
+    apiClient.get<Array<{ id: string; role: string; content: string }>>('/chat/history').then((history) => {
       if (history.length > 0) {
         setMessages(history.map((m) => ({
           id: m.id,

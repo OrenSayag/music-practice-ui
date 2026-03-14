@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 function subscribe(callback: () => void) {
   document.addEventListener('fullscreenchange', callback);

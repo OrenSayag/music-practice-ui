@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -241,8 +241,8 @@ function ColorDot({
 
 // -- Inline tag chip for session summary --
 
-export function SessionTagChip({ tag }: { tag: UserTag }) {
-  const colors = colorMap[tag.color];
+export function SessionTagChip({ tag }: { tag: { name: string; color: string } }) {
+  const colors = colorMap[tag.color as TagColor] ?? colorMap.green;
   return (
     <span
       className={`border px-2 py-0.5 font-mono text-xs ${colors.text} ${colors.border}`}

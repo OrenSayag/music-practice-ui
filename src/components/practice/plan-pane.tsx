@@ -15,7 +15,9 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DraggableAttributes,
 } from '@dnd-kit/core';
+import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -317,8 +319,8 @@ function SectionHeader({
   section: PlanSection;
   onUpdate: (name: string) => void;
   onDelete: () => void;
-  dragAttributes?: Record<string, unknown>;
-  dragListeners?: Record<string, unknown>;
+  dragAttributes?: DraggableAttributes;
+  dragListeners?: SyntheticListenerMap;
 }) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
@@ -442,13 +444,13 @@ function PlanItemComponent({
   index: number;
   handlers: PracticeHandlers;
   allItems: PlanItem[];
-  dragAttributes?: Record<string, unknown>;
-  dragListeners?: Record<string, unknown>;
+  dragAttributes?: DraggableAttributes;
+  dragListeners?: SyntheticListenerMap;
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const { activeItem, isTimerRunning, selectedTimerId, startItem, toggleTimer, isInSession, beginSession } = usePracticeSessionContext();
-  const { bpm: metronomeBpm, setBpm } = useMetronomeContext();
+  const { setBpm } = useMetronomeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
   const [isEditingDuration, setIsEditingDuration] = useState(false);
