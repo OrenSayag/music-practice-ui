@@ -22,7 +22,6 @@ export interface Plan {
   id: string;
   userId: string;
   name: string;
-  isActive: boolean;
   createdAt: string;
   updatedAt: string;
   sections: PlanSection[];

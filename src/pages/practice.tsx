@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useActivePlan } from '@/services/plans';
+import { useActivePlan, useResetPlanItems } from '@/services/plans';
 import { useEndSession as useEndSessionMutation } from '@/services/sessions';
 import { useUploadRecording } from '@/services/recordings';
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
@@ -29,11 +29,12 @@ function PracticePageInner() {
   const { view, toggleView, isMobile } = usePracticeShell();
   const [summaryData, setSummaryData] = useState<SessionSummaryData | null>(null);
   const [pendingRecording, setPendingRecording] = useState<PendingRecording | null>(null);
-  const { endSession, isInSession, sessionId } = usePracticeSessionContext();
+  const { endSession, cancelSession, isInSession, sessionId } = usePracticeSessionContext();
   const { data: activePlan } = useActivePlan();
   const endSessionMutation = useEndSessionMutation();
   const { isRecording, durationSeconds: recordingDuration, startRecording, stopRecording } = useAudioRecorder();
   const uploadRecording = useUploadRecording();
+  const resetPlanItems = useResetPlanItems();
 
   const handleRecordToggle = useCallback(async () => {
     if (isRecording) {
@@ -83,6 +84,18 @@ function PracticePageInner() {
     }
   }, [endSession, activePlan, isRecording, stopRecording, sessionId, uploadRecording]);
 
+  const handleCancelSession = useCallback(() => {
+    if (isRecording) {
+      stopRecording();
+    }
+    cancelSession();
+    setPendingRecording(null);
+    setSummaryData(null);
+    if (activePlan) {
+      resetPlanItems.mutate(activePlan.id);
+    }
+  }, [cancelSession, isRecording, stopRecording, activePlan, resetPlanItems]);
+
   const handleSummaryDone = useCallback(
     async (notes: string, name: string) => {
       if (!summaryData) return;
@@ -96,14 +109,17 @@ function PracticePageInner() {
         });
       }
       setSummaryData(null);
+      if (activePlan) {
+        resetPlanItems.mutate(activePlan.id);
+      }
     },
-    [summaryData, endSessionMutation]
+    [summaryData, endSessionMutation, activePlan, resetPlanItems]
   );
 
   if (summaryData) {
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <SessionSummary data={summaryData} onDone={handleSummaryDone} />
+        <SessionSummary data={summaryData} onDone={handleSummaryDone} onBack={() => setSummaryData(null)} />
       </div>
     );
   }
@@ -115,6 +131,7 @@ function PracticePageInner() {
           view={view}
           onChatClick={toggleView}
           onEndSession={handleEndSession}
+          onCancelSession={handleCancelSession}
           isRecording={isRecording}
           recordingDuration={recordingDuration}
           onRecordToggle={handleRecordToggle}
@@ -137,7 +154,7 @@ function PracticePageInner() {
           </>
         )}
       </div>
-      {isMobile && <MobilePlayerFooter onEndSession={handleEndSession} />}
+      {isMobile && <MobilePlayerFooter onEndSession={handleEndSession} onCancelSession={handleCancelSession} />}
       <RecordingPreviewDialog
         open={pendingRecording !== null}
         blob={pendingRecording?.blob ?? null}

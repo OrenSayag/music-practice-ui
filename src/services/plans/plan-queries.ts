@@ -144,6 +144,36 @@ export const useDeleteItem = () => {
   });
 };
 
+export const useResetPlanItems = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (planId: string) =>
+      apiClient.post(`/plans/${planId}/reset-items`, {}),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['plans', 'active'] });
+      const previous = queryClient.getQueryData<Plan>(['plans', 'active']);
+      if (previous) {
+        queryClient.setQueryData<Plan>(['plans', 'active'], {
+          ...previous,
+          sections: previous.sections.map((s) => ({
+            ...s,
+            items: s.items.map((i) => ({ ...i, status: 'pending' as const })),
+          })),
+        });
+      }
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['plans', 'active'], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans', 'active'] });
+    },
+  });
+};
+
 export const useReorderPlan = () => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -17,13 +17,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { SessionTagChip, SessionTagsDialog } from './session-tags-dialog';
 import { AudioPlayer } from './audio-player';
-
 interface SessionSummaryProps {
   data: SessionSummaryData;
   onDone: (notes: string, name: string) => void;
+  onBack: () => void;
 }
 
-export function SessionSummary({ data, onDone }: SessionSummaryProps) {
+export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
   const { t } = useTranslation();
   const [name, setName] = useState(data.name ?? '');
   const [notes, setNotes] = useState(data.notes ?? '');
@@ -49,12 +49,20 @@ export function SessionSummary({ data, onDone }: SessionSummaryProps) {
       <div className="mb-6 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <p className="font-mono text-xs text-muted-foreground">{dateStr}</p>
-          <button
-            className="bg-accent-green px-4 py-1.5 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
-            onClick={() => onDone(notes, name)}
-          >
-            $ {t('session.done')}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="border border-border px-4 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+              onClick={onBack}
+            >
+              {t('session.backToSession')}
+            </button>
+            <button
+              className="bg-accent-green px-4 py-1.5 font-mono text-xs text-white transition-colors hover:bg-accent-green/90"
+              onClick={() => onDone(notes, name)}
+            >
+              $ {t('session.done')}
+            </button>
+          </div>
         </div>
         <input
           type="text"

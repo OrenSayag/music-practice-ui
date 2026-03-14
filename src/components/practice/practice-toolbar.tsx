@@ -5,11 +5,13 @@ import { useFullscreen } from '@/hooks/use-fullscreen';
 import { useActivePlan } from '@/services/plans';
 import { usePracticeSessionContext } from './practice-session-provider';
 import { PresetsDialog } from './presets-dialog';
+import { CancelSessionDialog } from './cancel-session-dialog';
 
 interface PracticeToolbarProps {
   view: 'plan' | 'chat';
   onChatClick: () => void;
   onEndSession?: () => void;
+  onCancelSession?: () => void;
   isRecording?: boolean;
   recordingDuration?: number;
   onRecordToggle?: () => void;
@@ -19,12 +21,14 @@ export function PracticeToolbar({
   view,
   onChatClick,
   onEndSession,
+  onCancelSession,
   isRecording,
   recordingDuration = 0,
   onRecordToggle,
 }: PracticeToolbarProps) {
   const { t } = useTranslation();
   const [presetsOpen, setPresetsOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const { data: activePlan } = useActivePlan();
   const { isInSession } = usePracticeSessionContext();
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -63,6 +67,12 @@ export function PracticeToolbar({
                   <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-red-500" />
                 )}
                 {isRecording ? formatRecordingDuration(recordingDuration) : t('practice.rec')}
+              </button>
+              <button
+                className="border border-border px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+                onClick={() => setCancelOpen(true)}
+              >
+                {t('session.cancel')}
               </button>
               <button
                 className="flex items-center gap-1.5 bg-red-500 px-3 py-1 font-mono text-xs text-white transition-colors hover:bg-red-600"
@@ -113,6 +123,14 @@ export function PracticeToolbar({
         open={presetsOpen}
         onOpenChange={setPresetsOpen}
         activePlanId={activePlan?.id}
+      />
+      <CancelSessionDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        onConfirm={() => {
+          setCancelOpen(false);
+          onCancelSession?.();
+        }}
       />
     </>
   );

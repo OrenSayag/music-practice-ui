@@ -156,6 +156,10 @@ export const en = {
   'session.statusNone': 'none',
   'session.endSession': 'end',
   'session.inSession': 'in session',
+  'session.cancelTitle': 'cancel session',
+  'session.cancelDescription': 'are you sure? all progress from this session will be lost.',
+  'session.confirmCancel': 'cancel session',
+  'session.backToSession': 'back to session',
 
   // Recordings
   'recordings.title': 'recordings',

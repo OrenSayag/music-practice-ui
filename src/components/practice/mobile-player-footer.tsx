@@ -5,19 +5,22 @@ import { useMetronomeContext } from './metronome';
 import { usePracticeSessionContext } from './practice-session-provider';
 import { MobileMetronomeConfig } from './mobile-metronome-config';
 import { MobileTimerConfig } from './mobile-timer-config';
+import { CancelSessionDialog } from './cancel-session-dialog';
 
 type MobileOverlay = 'metronome' | 'timer' | null;
 
 interface MobilePlayerFooterProps {
   onEndSession?: () => void;
+  onCancelSession?: () => void;
 }
 
-export function MobilePlayerFooter({ onEndSession }: MobilePlayerFooterProps) {
+export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlayerFooterProps) {
   const { t } = useTranslation();
   const { bpm, isPlaying, togglePlay } = useMetronomeContext();
   const { remainingSeconds, selectedTimerId, customTimers, isInSession } =
     usePracticeSessionContext();
   const [overlay, setOverlay] = useState<MobileOverlay>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   const displaySeconds =
     selectedTimerId === null
@@ -46,12 +49,20 @@ export function MobilePlayerFooter({ onEndSession }: MobilePlayerFooterProps) {
         </div>
         <div className="flex items-center gap-3">
           {isInSession && (
-            <button
-              className="bg-red-500 px-2 py-1 font-mono text-[0.5rem] text-white"
-              onClick={onEndSession}
-            >
-              {t('session.endSession')}
-            </button>
+            <>
+              <button
+                className="border border-border px-2 py-1 font-mono text-[0.5rem] text-muted-foreground"
+                onClick={() => setCancelOpen(true)}
+              >
+                {t('session.cancel')}
+              </button>
+              <button
+                className="bg-red-500 px-2 py-1 font-mono text-[0.5rem] text-white"
+                onClick={onEndSession}
+              >
+                {t('session.endSession')}
+              </button>
+            </>
           )}
           <button
             className="flex items-center gap-2"
@@ -73,6 +84,14 @@ export function MobilePlayerFooter({ onEndSession }: MobilePlayerFooterProps) {
         </div>
       </div>
 
+      <CancelSessionDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        onConfirm={() => {
+          setCancelOpen(false);
+          onCancelSession?.();
+        }}
+      />
       {overlay === 'metronome' && (
         <MobileMetronomeConfig onClose={() => setOverlay(null)} />
       )}

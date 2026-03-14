@@ -158,6 +158,10 @@ export const he: Record<TranslationKey, string> = {
   'session.statusNone': 'לא התחיל',
   'session.endSession': 'סיום',
   'session.inSession': 'בתרגול',
+  'session.cancelTitle': 'ביטול תרגול',
+  'session.cancelDescription': 'בטוח? כל ההתקדמות מתרגול זה תאבד.',
+  'session.confirmCancel': 'ביטול תרגול',
+  'session.backToSession': 'חזרה לתרגול',
 
   // Recordings
   'recordings.title': 'הקלטות',
