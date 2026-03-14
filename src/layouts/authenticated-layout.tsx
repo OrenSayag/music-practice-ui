@@ -4,17 +4,17 @@ import { FloatingPlayer } from '@/components/floating-player';
 import { ErrorPage } from '@/components/error-page';
 import { Spinner } from '@/components/ui/spinner';
 import { ApiError } from '@/services/api/api-client';
-import { getMe, logout } from '@/services/auth/auth-api';
+import { getMe } from '@/services/auth/auth-api';
 import type { User } from '@/services/auth/auth-types';
 import { MetronomeProvider } from '@/components/practice/metronome';
 import { PracticeSessionProvider } from '@/components/practice/practice-session-provider';
 import { usePracticeStateSync } from '@/hooks/use-practice-state-sync';
 import type { PracticeState } from '@/services/user/practice-state-types';
-import { LogOut, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFullscreen } from '@/hooks/use-fullscreen';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 interface AuthContextValue {
@@ -62,7 +62,7 @@ function PracticeStateSyncProvider({ children }: { children: React.ReactNode }) 
 
 export default function AuthenticatedLayout() {
   const { t } = useTranslation();
-  const { user, setUser, error, isLoading, retry, handleLogout } = useAuth();
+  const { user, setUser, error, isLoading, retry } = useAuth();
 
   if (isLoading) {
     return (
@@ -89,7 +89,7 @@ export default function AuthenticatedLayout() {
       <PracticeStateSyncProvider>
         <MetronomeProvider>
           <PracticeSessionProvider>
-            <LayoutShell handleLogout={handleLogout} />
+            <LayoutShell />
           </PracticeSessionProvider>
         </MetronomeProvider>
       </PracticeStateSyncProvider>
@@ -97,7 +97,7 @@ export default function AuthenticatedLayout() {
   );
 }
 
-function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
+function LayoutShell() {
   const { pathname } = useLocation();
   const isPractice = pathname.startsWith('/practice');
   const { isFullscreen } = useFullscreen();
@@ -108,7 +108,7 @@ function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
       <div className="flex h-screen overflow-hidden">
         {!hideChrome && <AppSidebar />}
         <div className="flex flex-1 flex-col">
-          {!hideChrome && <MobileHeader handleLogout={handleLogout} />}
+          {!hideChrome && <MobileHeader />}
           <main
             className={`flex min-h-0 flex-1 flex-col ${
               isPractice ? '' : 'overflow-y-auto p-6 pb-20 md:p-10 md:pb-10'
@@ -124,29 +124,23 @@ function LayoutShell({ handleLogout }: { handleLogout: () => void }) {
   );
 }
 
-function MobileHeader({ handleLogout }: { handleLogout: () => void }) {
+function MobileHeader() {
   const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur md:hidden supports-[backdrop-filter]:bg-background/60">
       <span className="text-base font-medium">{t('appName')}</span>
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/settings">
-            <Settings className="h-4 w-4" />
-          </Link>
-        </Button>
-        <Button variant="ghost" size="icon" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" />
-        </Button>
-      </div>
+      <Button variant="ghost" size="icon" asChild>
+        <Link to="/settings">
+          <Settings className="h-4 w-4" />
+        </Link>
+      </Button>
     </header>
   );
 }
 
 function useAuth() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -172,14 +166,5 @@ function useAuth() {
     fetchUser();
   }, [fetchUser]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch {
-      // continue to login regardless
-    }
-    navigate('/login');
-  };
-
-  return { user, setUser, error, isLoading, retry: fetchUser, handleLogout };
+  return { user, setUser, error, isLoading, retry: fetchUser };
 }

@@ -20,7 +20,9 @@ import {
 import { playPreviewClick } from '@/hooks/use-metronome';
 import type { MetronomeSound } from '@/services/auth/auth-types';
 import { AudioInputDialog } from '@/components/settings/audio-input-dialog';
-import { Camera, Trash2 } from 'lucide-react';
+import { Camera, LogOut, Trash2 } from 'lucide-react';
+import { logout } from '@/services/auth/auth-api';
+import { useNavigate } from 'react-router';
 
 const METRONOME_SOUNDS: MetronomeSound[] = ['wood', 'glass', 'electromagnetic', 'arcane'];
 
@@ -146,6 +148,8 @@ export default function SettingsPage() {
         open={audioDialogOpen}
         onOpenChange={setAudioDialogOpen}
       />
+
+      <LogoutButton />
     </div>
   );
 }
@@ -239,6 +243,31 @@ function ProfileCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function LogoutButton() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // continue to login regardless
+    }
+    navigate('/login');
+  };
+
+  return (
+    <Button
+      variant="outline"
+      onClick={handleLogout}
+      className="gap-2 text-destructive hover:text-destructive"
+    >
+      <LogOut className="h-4 w-4" />
+      {t('sidebar.logout')}
+    </Button>
   );
 }
 
