@@ -165,7 +165,7 @@ function PracticePageInner() {
           </>
         )}
       </div>
-      {isMobile && <MobilePlayerFooter onEndSession={handleEndSession} onCancelSession={handleCancelSession} />}
+      {isMobile && <MobilePlayerFooter onEndSession={handleEndSession} onCancelSession={handleCancelSession} view={view} onToggleView={toggleView} />}
       <RecordingPreviewDialog
         open={pendingRecording !== null}
         blob={pendingRecording?.blob ?? null}

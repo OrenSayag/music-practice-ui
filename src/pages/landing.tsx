@@ -83,8 +83,14 @@ function LandingHeader() {
   );
 }
 
+function useThemeSuffix() {
+  const { theme } = useTheme();
+  return theme;
+}
+
 function HeroSection() {
   const { t } = useTranslation();
+  const suffix = useThemeSuffix();
 
   return (
     <section className="flex flex-col items-center gap-8 px-6 pb-32 pt-24 text-center md:pb-40 md:pt-32">
@@ -105,7 +111,7 @@ function HeroSection() {
 
       <div className="relative mx-auto w-full max-w-4xl">
         <img
-          src="/screenshots/dashboard_desktop.png"
+          src={`/screenshots/dashboard-desktop-${suffix}.png`}
           alt="Practice Helper Dashboard"
           width={1280}
           height={800}
@@ -113,7 +119,7 @@ function HeroSection() {
           className="w-full rounded-lg border shadow-2xl"
         />
         <img
-          src="/screenshots/practice_mobile.png"
+          src={`/screenshots/practice-mobile-${suffix}.png`}
           alt="Practice Helper Mobile"
           width={375}
           height={812}
@@ -171,6 +177,7 @@ function ProblemCard({
 
 function FeaturesSection() {
   const { t } = useTranslation();
+  const suffix = useThemeSuffix();
 
   const screenshotFeatures: {
     icon: React.ComponentType<{ className?: string }>;
@@ -183,22 +190,22 @@ function FeaturesSection() {
       icon: ListChecks,
       title: t('landing.featurePlans'),
       desc: t('landing.featurePlansDesc') + ' ' + t('landing.featureTimerDesc'),
-      desktop: '/screenshots/practice_desktop.png',
-      mobile: '/screenshots/practice_mobile.png',
+      desktop: `/screenshots/practice-desktop-${suffix}.png`,
+      mobile: `/screenshots/practice-mobile-${suffix}.png`,
     },
     {
       icon: BarChart3,
       title: t('landing.featureDashboard'),
       desc: t('landing.featureDashboardDesc'),
-      desktop: '/screenshots/dashboard_desktop.png',
-      mobile: '/screenshots/dashboard_mobile.png',
+      desktop: `/screenshots/dashboard-desktop-${suffix}.png`,
+      mobile: `/screenshots/dashboard-mobile-${suffix}.png`,
     },
     {
       icon: Tags,
       title: t('landing.featureNotes'),
       desc: t('landing.featureNotesDesc'),
-      desktop: '/screenshots/sessions_desktop.png',
-      mobile: '/screenshots/sessions_mobile.png',
+      desktop: `/screenshots/sessions-desktop-${suffix}.png`,
+      mobile: `/screenshots/sessions-mobile-${suffix}.png`,
     },
     {
       icon: Mic,
