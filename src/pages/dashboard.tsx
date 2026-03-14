@@ -238,7 +238,7 @@ function DesktopHeatmapGrid({
     <div className="flex flex-col gap-1">
       {days.map((day) => (
         <div key={day.dow} className="flex items-center gap-1">
-          <span className="w-7 shrink-0 text-[11px] text-muted-foreground">
+          <span className="w-7 shrink-0 text-xs text-muted-foreground">
             {day.shortLabel}
           </span>
           {Array.from({ length: TILE_COUNT }, (_, i) => (
@@ -262,7 +262,7 @@ function MobileHeatmapGrid({
     <div className="flex justify-between gap-1">
       {days.map((day) => (
         <div key={day.dow} className="flex flex-1 flex-col-reverse items-center gap-1">
-          <span className="text-[9px] text-muted-foreground">{day.narrowLabel}</span>
+          <span className="text-3xs text-muted-foreground">{day.narrowLabel}</span>
           {Array.from({ length: TILE_COUNT }, (_, i) => (
             <div
               key={i}

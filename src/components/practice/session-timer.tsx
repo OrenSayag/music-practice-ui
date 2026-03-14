@@ -76,7 +76,7 @@ export function SessionTimer({ onConfigRequest }: SessionTimerProps) {
             )}
           </div>
         </div>
-        <span className="font-mono text-[56px] font-bold leading-none">
+        <span className="font-mono text-timer font-bold leading-none">
           {formatTime(displaySeconds)}
         </span>
         <div className="flex items-center gap-2">

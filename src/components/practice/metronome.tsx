@@ -57,7 +57,7 @@ export function Metronome() {
         currentBeat={isPlaying ? currentBeat : -1}
         onToggle={toggleAccent}
       />
-      <span className="font-mono text-[10px] text-muted-foreground/60">
+      <span className="font-mono text-2xs text-muted-foreground/60">
         {t('practice.tapToToggleAccent')}
       </span>
     </div>
@@ -85,8 +85,8 @@ export function BpmSlider({ bpm, onBpmChange }: { bpm: number; onBpmChange: (v: 
         className="accent-accent-green"
       />
       <div className="flex justify-between">
-        <span className="font-mono text-[11px] text-muted-foreground/60">40</span>
-        <span className="font-mono text-[11px] text-muted-foreground/60">200</span>
+        <span className="font-mono text-xs text-muted-foreground/60">40</span>
+        <span className="font-mono text-xs text-muted-foreground/60">200</span>
       </div>
     </div>
   );

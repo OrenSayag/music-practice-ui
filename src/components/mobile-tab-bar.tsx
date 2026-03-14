@@ -20,7 +20,7 @@ export function MobileTabBar() {
               key={item.href}
               to={item.href}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1 text-[10px] font-medium transition-colors',
+                'flex flex-col items-center gap-0.5 px-3 py-1 text-2xs font-medium transition-colors',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground',

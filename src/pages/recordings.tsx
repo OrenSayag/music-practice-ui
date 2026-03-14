@@ -120,7 +120,7 @@ function RecordingCard({
           <span className="font-mono text-xs">
             {'>'} {recording.fileName}
           </span>
-          <span className="font-mono text-[0.625rem] text-muted-foreground">
+          <span className="font-mono text-2xs text-muted-foreground">
             {recording.session.name
               ? `${recording.session.name} — ${sessionDate}`
               : t('recordings.sessionOn', { date: sessionDate })}

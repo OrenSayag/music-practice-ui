@@ -42,7 +42,7 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
             {timeStr}
           </button>
           {isInSession && (
-            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-[0.5rem] text-accent-green">
+            <span className="rounded bg-accent-green/20 px-1.5 py-0.5 font-mono text-3xs text-accent-green">
               {t('practice.inSession')}
             </span>
           )}
@@ -51,13 +51,13 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
           {isInSession && (
             <>
               <button
-                className="border border-border px-2 py-1 font-mono text-[0.5rem] text-muted-foreground"
+                className="border border-border px-2 py-1 font-mono text-3xs text-muted-foreground"
                 onClick={() => setCancelOpen(true)}
               >
                 {t('session.cancel')}
               </button>
               <button
-                className="bg-red-500 px-2 py-1 font-mono text-[0.5rem] text-white"
+                className="bg-red-500 px-2 py-1 font-mono text-3xs text-white"
                 onClick={onEndSession}
               >
                 {t('session.endSession')}
@@ -69,7 +69,7 @@ export function MobilePlayerFooter({ onEndSession, onCancelSession }: MobilePlay
             onClick={() => setOverlay('metronome')}
           >
             <span className="font-mono text-lg font-bold text-muted-foreground">{bpm}</span>
-            <span className="font-mono text-[0.55rem] text-muted-foreground">bpm</span>
+            <span className="font-mono text-3xs text-muted-foreground">bpm</span>
           </button>
           <button
             className="flex h-10 w-10 items-center justify-center bg-accent-green text-white"

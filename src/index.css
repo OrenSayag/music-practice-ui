@@ -46,6 +46,14 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
+    /* Custom font sizes */
+    --text-2xs: 0.625rem;
+    --text-2xs--line-height: 1rem;
+    --text-3xs: 0.5rem;
+    --text-3xs--line-height: 0.75rem;
+    --text-timer: 3.5rem;
+    --text-timer--line-height: 1;
+
     /* App-specific accent tokens */
     --color-accent-green: var(--accent-green);
     --color-accent-amber: var(--accent-amber);

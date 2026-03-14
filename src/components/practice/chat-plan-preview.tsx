@@ -80,7 +80,7 @@ function PreviewSection({ section }: { section: PlanSection }) {
             <div className="h-3.5 w-3.5 shrink-0 border border-muted-foreground" />
             <span className="flex-1 font-mono text-xs">{item.name}</span>
             {durationLabel ? (
-              <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
+              <span className="shrink-0 font-mono text-xs text-muted-foreground">
                 {durationLabel}
               </span>
             ) : null}

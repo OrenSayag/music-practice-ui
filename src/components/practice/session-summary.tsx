@@ -90,7 +90,7 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
       {/* Two columns */}
       <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">
         {/* Left — item breakdown */}
-        <div className="min-h-0 flex-1">
+        <div className="md:min-h-0 md:flex-1">
           <h2 className="mb-3 font-mono text-xs font-bold text-muted-foreground">
             {t('session.itemBreakdown')}
           </h2>
@@ -207,10 +207,10 @@ function SessionItemRow({
         <span className="font-mono text-xs">— {item.name}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="font-mono text-[0.5rem] text-muted-foreground">
+        <span className="font-mono text-3xs text-muted-foreground">
           {elapsed}{target ? `/${target}` : ''}
         </span>
-        <span className={`rounded px-1.5 py-0.5 font-mono text-[0.5rem] ${statusColor}`}>
+        <span className={`rounded px-1.5 py-0.5 font-mono text-3xs ${statusColor}`}>
           [{statusLabel}]
         </span>
       </div>

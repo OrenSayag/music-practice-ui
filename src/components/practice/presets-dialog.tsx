@@ -151,7 +151,7 @@ function PresetRow({
     >
       <div className="flex flex-col gap-0.5">
         <span className="font-mono text-xs text-foreground">{preset.name}</span>
-        <span className="font-mono text-[0.5rem] text-muted-foreground">
+        <span className="font-mono text-3xs text-muted-foreground">
           {preset.sections.length}s / {itemCount}i
           {totalMinutes > 0 && ` / ${totalMinutes}m`}
         </span>

@@ -43,7 +43,7 @@ export function MobileMetronomeConfig({ onClose }: MobileMetronomeConfigProps) {
           currentBeat={isPlaying ? currentBeat : -1}
           onToggle={toggleAccent}
         />
-        <span className="font-mono text-[10px] text-muted-foreground/60">
+        <span className="font-mono text-2xs text-muted-foreground/60">
           {t('practice.tapToToggleAccent')}
         </span>
       </div>

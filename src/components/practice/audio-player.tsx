@@ -103,7 +103,7 @@ export function AudioPlayer({ src, durationHint }: AudioPlayerProps) {
           />
         </div>
       </div>
-      <span className="shrink-0 font-mono text-[0.5rem] text-muted-foreground">
+      <span className="shrink-0 font-mono text-3xs text-muted-foreground">
         {formatTime(currentTime)}/{formatTime(effectiveDuration)}
       </span>
     </div>

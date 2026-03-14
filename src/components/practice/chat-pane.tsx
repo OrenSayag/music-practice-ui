@@ -23,7 +23,7 @@ export function ChatPane() {
       <div className="flex shrink-0 items-center justify-between p-4 pb-0">
         <SectionTitle>{t('practice.planChat')}</SectionTitle>
         <button
-          className="font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           onClick={handleClear}
         >
           {t('practice.clear')}
@@ -50,7 +50,7 @@ export function ChatPane() {
 
       <form onSubmit={handleSubmit} className="flex shrink-0 items-start gap-3 border-t border-border p-4">
         <Textarea
-          className="max-h-32 min-h-10 flex-1 resize-none font-mono text-[13px] placeholder:text-muted-foreground/60"
+          className="max-h-32 min-h-10 flex-1 resize-none font-mono text-sm placeholder:text-muted-foreground/60"
           placeholder={t('practice.chatPlaceholder')}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -93,12 +93,12 @@ function ChatMessage({
       className={`flex flex-col gap-1 ${isUser ? 'rounded bg-muted p-3' : ''}`}
       dir={appDir}
     >
-      <span className="font-mono text-[11px] font-medium text-accent-green">
+      <span className="font-mono text-xs font-medium text-accent-green">
         {isUser ? t('practice.you') : t('practice.assistant')}
       </span>
       <div
         dir={contentDir}
-        className="max-w-none space-y-2 font-mono text-[13px] leading-relaxed [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-3 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_a]:text-accent-green [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-muted-foreground [&_blockquote]:pl-3 [&_blockquote]:text-muted-foreground"
+        className="max-w-none space-y-2 font-mono text-sm leading-relaxed [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-3 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_a]:text-accent-green [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-muted-foreground [&_blockquote]:pl-3 [&_blockquote]:text-muted-foreground"
       >
         <Markdown>{content}</Markdown>
       </div>
@@ -111,10 +111,10 @@ function ThinkingIndicator() {
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-mono text-[11px] font-medium text-accent-green">
+      <span className="font-mono text-xs font-medium text-accent-green">
         {t('practice.assistant')}
       </span>
-      <p className="animate-pulse font-mono text-[13px] text-muted-foreground">...</p>
+      <p className="animate-pulse font-mono text-sm text-muted-foreground">...</p>
     </div>
   );
 }

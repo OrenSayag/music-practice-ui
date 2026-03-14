@@ -22,7 +22,7 @@ export function FloatingPlayer() {
           )}
           {isPlaying && (
             <span className="text-muted-foreground">
-              {bpm} <span className="text-[0.6rem]">bpm</span>
+              {bpm} <span className="text-2xs">bpm</span>
             </span>
           )}
         </Link>
