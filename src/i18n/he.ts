@@ -213,6 +213,7 @@ export const he: Record<TranslationKey, string> = {
   'sessions.items': '{{count}} פריטים',
   'sessions.days': '{{count}} ימים',
   'sessions.done': '$ סיום',
+  'sessions.back': '$ חזרה',
   'sessions.sessionComplete': 'תרגול_הושלם',
   'sessions.totalTime': 'זמן_כולל',
   'sessions.itemsDone': 'פריטים_שהושלמו',

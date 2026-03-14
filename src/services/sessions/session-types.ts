@@ -48,6 +48,7 @@ export interface SessionStats {
 export interface SessionsListResponse {
   sessions: SessionListItem[];
   stats: SessionStats;
+  nextCursor: string | null;
 }
 
 export interface SessionDetailItem {

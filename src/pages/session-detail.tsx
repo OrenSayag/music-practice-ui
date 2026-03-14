@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router';
 import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SectionTitle } from '@/components/section-title';
 import { AudioPlayer } from '@/components/practice/audio-player';
@@ -74,15 +75,20 @@ function SessionDetailContent({
             {name ? ` — ${name}` : ''}
           </span>
         </div>
-        <button
-          className="rounded-sm bg-accent-green px-4 py-1.5 font-mono text-xs text-black"
+        <Button
+          variant="outline"
+          size="xs"
           onClick={() => {
             handleSave();
-            navigate('/sessions');
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate('/sessions');
+            }
           }}
         >
-          {t('sessions.done')}
-        </button>
+          {t('sessions.back')}
+        </Button>
       </div>
 
       {/* Stats */}

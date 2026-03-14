@@ -11,6 +11,7 @@ import type {
   RecentSession,
   WeeklyStats,
 } from '@/services/dashboard/dashboard-types';
+import { useNavigate } from 'react-router';
 import { ArrowUpRight, ArrowDownRight, Music } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -326,6 +327,7 @@ function RecentSessionRow({
   showSeparator: boolean;
 }) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const sessionDate = new Date(session.startedAt);
   const dayName = sessionDate
     .toLocaleDateString(i18n.language, { weekday: 'short' })
@@ -336,7 +338,10 @@ function RecentSessionRow({
 
   return (
     <>
-      <div className="flex items-center justify-between py-3">
+      <div
+        className="flex cursor-pointer items-center justify-between py-3 transition-colors hover:bg-muted/30"
+        onClick={() => navigate(`/sessions/${session.id}`)}
+      >
         <div className="flex flex-col gap-1">
           <span className="text-sm font-bold">{dayName} <span className="font-normal text-muted-foreground">{timeStr}</span></span>
           {session.name ? (

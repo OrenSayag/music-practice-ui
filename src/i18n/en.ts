@@ -211,6 +211,7 @@ export const en = {
   'sessions.items': '{{count}} items',
   'sessions.days': '{{count}} days',
   'sessions.done': '$ done',
+  'sessions.back': '$ back',
   'sessions.sessionComplete': 'session_complete',
   'sessions.totalTime': 'total_time',
   'sessions.itemsDone': 'items_done',

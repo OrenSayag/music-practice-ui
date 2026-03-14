@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { apiClient } from '@/services/api/api-client';
 import type {
   StartSessionResponse,
@@ -11,7 +16,17 @@ import type {
 export const sessionQueries = {
   list: () => ({
     queryKey: ['sessions'] as const,
-    queryFn: () => apiClient.get<SessionsListResponse>('/sessions'),
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
+      const params = new URLSearchParams();
+      if (pageParam) params.set('cursor', pageParam);
+      const qs = params.toString();
+      return apiClient.get<SessionsListResponse>(
+        `/sessions${qs ? `?${qs}` : ''}`
+      );
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage: SessionsListResponse) =>
+      lastPage.nextCursor ?? undefined,
   }),
   detail: (sessionId: string) => ({
     queryKey: ['sessions', sessionId] as const,
@@ -21,7 +36,7 @@ export const sessionQueries = {
 };
 
 export const useListSessions = () => {
-  return useQuery(sessionQueries.list());
+  return useInfiniteQuery(sessionQueries.list());
 };
 
 export const useSessionDetail = (sessionId: string) => {

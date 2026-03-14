@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Trash2, Filter, Music } from 'lucide-react';
@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SectionTitle } from '@/components/section-title';
 import { useListSessions, useDeleteSession } from '@/services/sessions';
@@ -27,13 +28,22 @@ const colorMap: Record<TagColor, string> = {
 };
 
 export default function SessionsPage() {
-  const { data, isLoading } = useListSessions();
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useListSessions();
   const {
     sessionToDelete,
     setSessionToDelete,
     handleDelete,
     isDeleting,
   } = useSessionsPage();
+
+  const sessions = data?.pages.flatMap((p) => p.sessions) ?? [];
+  const stats = data?.pages[0]?.stats;
 
   return (
     <div className="flex flex-1 flex-col gap-8">
@@ -43,10 +53,13 @@ export default function SessionsPage() {
 
       {data ? (
         <>
-          <StatsRow stats={data.stats} />
+          {stats ? <StatsRow stats={stats} /> : null}
           <SessionsList
-            sessions={data.sessions}
+            sessions={sessions}
             onDelete={setSessionToDelete}
+            hasNextPage={!!hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={fetchNextPage}
           />
         </>
       ) : null}
@@ -139,11 +152,18 @@ function StatCard({ label, value }: { label: string; value: string }) {
 function SessionsList({
   sessions,
   onDelete,
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
 }: {
   sessions: SessionListItem[];
   onDelete: (session: SessionListItem) => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
 }) {
   const { t } = useTranslation();
+  const loadMoreRef = useLoadMoreSentinel(hasNextPage, isFetchingNextPage, onLoadMore);
 
   return (
     <div className="flex flex-col gap-2">
@@ -166,6 +186,12 @@ function SessionsList({
               onDelete={() => onDelete(session)}
             />
           ))}
+          <div ref={loadMoreRef} className="h-1" />
+          {isFetchingNextPage ? (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : null}
         </div>
       )}
     </div>
@@ -347,7 +373,37 @@ function formatDuration(totalSeconds: number): string {
   return `${min}m`;
 }
 
-// -- Hook --
+// -- Hooks --
+
+function useLoadMoreSentinel(
+  hasNextPage: boolean,
+  isFetchingNextPage: boolean,
+  fetchNextPage: () => void
+) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      rootMargin: '200px',
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleIntersect]);
+
+  return ref;
+}
 
 function useSessionsPage() {
   const [sessionToDelete, setSessionToDelete] =
