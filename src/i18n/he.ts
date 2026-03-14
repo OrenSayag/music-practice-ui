@@ -193,8 +193,8 @@ export const he: Record<TranslationKey, string> = {
   'settings.noDevices': 'לא נמצאו מכשירי שמע',
 
   // Sessions
-  'nav.sessions': 'תרגולים',
-  'sessions.title': 'תרגולים',
+  'nav.sessions': 'היסטוריה',
+  'sessions.title': 'היסטוריה',
   'sessions.subtitle': 'היסטוריית תרגול ותובנות',
   'sessions.filter': 'סינון',
   'sessions.thisWeek': 'השבוע',
