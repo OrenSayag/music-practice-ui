@@ -12,7 +12,11 @@ import i18n from '@/i18n';
 const queryClient = new QueryClient({
   defaultOptions: {
     mutations: {
-      onError: () => {
+      onError: (error) => {
+        if (error instanceof Error && 'status' in error && (error as { status: number }).status === 403) {
+          toast.error(error.message);
+          return;
+        }
         toast.error(i18n.t('error.defaultTitle'));
       },
     },

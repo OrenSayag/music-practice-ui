@@ -55,7 +55,10 @@ function PracticePageInner() {
     const fileName = name.trim() || undefined;
     uploadRecording.mutate(
       { sessionId, blob: pendingRecording.blob, durationSeconds: pendingRecording.durationSeconds, fileName },
-      { onSuccess: () => setPendingRecording(null) },
+      {
+        onSuccess: () => setPendingRecording(null),
+        onError: () => setPendingRecording(null),
+      },
     );
   }, [pendingRecording, sessionId, uploadRecording]);
 

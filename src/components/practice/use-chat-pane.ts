@@ -15,6 +15,16 @@ export function useChatPane() {
       new DefaultChatTransport({
         api: '/api/chat/stream',
         credentials: 'include',
+        fetch: async (input, init) => {
+          const response = await fetch(input, init);
+          if (response.status === 403) {
+            const data = await response.json().catch(() => null);
+            throw new Error(
+              (data as { error?: string })?.error ?? 'Forbidden',
+            );
+          }
+          return response;
+        },
       }),
     []
   );
