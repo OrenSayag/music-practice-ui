@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SectionTitle } from '@/components/section-title';
 import { AudioPlayer } from '@/components/practice/audio-player';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
   SessionTagsDialog,
   SessionTagChip,
@@ -351,8 +352,10 @@ function RecordingRow({
   recording: Recording;
   sessionId: string;
 }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [fileName, setFileName] = useState(recording.fileName);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const renameMutation = useRenameRecording();
   const deleteMutation = useDeleteRecording();
   const streamUrl = `/api/sessions/${sessionId}/recordings/${recording.id}/stream`;
@@ -366,6 +369,11 @@ function RecordingRow({
       });
     }
     setEditing(false);
+  };
+
+  const handleDelete = () => {
+    deleteMutation.mutate({ sessionId, recordingId: recording.id });
+    setConfirmOpen(false);
   };
 
   return (
@@ -390,12 +398,7 @@ function RecordingRow({
         )}
         <button
           className="text-muted-foreground/50 hover:text-muted-foreground"
-          onClick={() =>
-            deleteMutation.mutate({
-              sessionId,
-              recordingId: recording.id,
-            })
-          }
+          onClick={() => setConfirmOpen(true)}
         >
           <Trash2 className="h-3 w-3" />
         </button>
@@ -403,6 +406,15 @@ function RecordingRow({
       <AudioPlayer
         src={streamUrl}
         durationHint={recording.durationSeconds}
+      />
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleDelete}
+        title={t('recording.deleteTitle')}
+        description={t('recording.deleteDescription')}
+        cancelLabel={t('session.cancel')}
+        confirmLabel={t('recording.confirmDelete')}
       />
     </div>
   );
