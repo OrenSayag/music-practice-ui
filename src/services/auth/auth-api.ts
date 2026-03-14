@@ -1,9 +1,5 @@
 import { apiClient } from '@/services/api/api-client';
-import type { LoginResponse, MeResponse, GuestLoginResponse } from './auth-types';
-
-export function login(email: string): Promise<LoginResponse> {
-  return apiClient.post<LoginResponse>('/auth/login', { email }, { skipAuthRedirect: true });
-}
+import type { MeResponse, GuestLoginResponse } from './auth-types';
 
 export function getMe(): Promise<MeResponse> {
   return apiClient.get<MeResponse>('/user/me');

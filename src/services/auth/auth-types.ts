@@ -22,6 +22,3 @@ export interface MeResponse {
   user: User;
 }
 
-export interface LoginResponse {
-  message: string;
-}

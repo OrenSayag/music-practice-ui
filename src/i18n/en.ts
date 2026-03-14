@@ -12,16 +12,9 @@ export const en = {
 
   // Login
   'login.title': 'Music Practice',
-  'login.description': 'Enter your email to receive a sign-in link',
-  'login.email': 'Email',
-  'login.emailPlaceholder': 'you@example.com',
-  'login.sending': 'Sending...',
-  'login.sendLink': 'Send Sign-In Link',
-  'login.checkEmail': 'Check your email',
-  'login.sentLinkTo': 'We sent a sign-in link to',
-  'login.checkSpam':
-    "Click the link in the email to sign in. If you don't see it, check your spam folder.",
-  'login.failedToSend': 'Failed to send sign-in link',
+  'login.description': 'Sign in to track your practice sessions',
+  'login.continueWithGoogle': 'Continue with Google',
+  'login.failedToSend': 'Failed to sign in',
   'login.or': 'or',
   'login.continueAsGuest': 'Continue as Guest',
 

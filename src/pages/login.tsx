@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Mail, CheckCircle, UserRound } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Card,
   CardContent,
@@ -14,36 +12,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { login, guestLogin } from '@/services/auth/auth-api';
+import { guestLogin } from '@/services/auth/auth-api';
 import { getOrCreateGuestId } from '@/services/auth/guest-id';
 import { ApiError } from '@/services/api/api-client';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const { email, isSubmitting, isGuestLoading, isSent, handlers } = useLoginForm();
-
-  if (isSent) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-sm text-center">
-          <CardHeader>
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <CheckCircle className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle>{t('login.checkEmail')}</CardTitle>
-            <CardDescription>
-              {t('login.sentLinkTo')} <strong>{email}</strong>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-base text-muted-foreground">
-              {t('login.checkSpam')}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const { isGuestLoading, handlers } = useLoginForm();
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -55,30 +30,13 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form onSubmit={handlers.handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">{t('login.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t('login.emailPlaceholder')}
-                value={email}
-                onChange={handlers.handleEmailChange}
-                required
-                autoFocus
-              />
-            </div>
-            <Button type="submit" disabled={isSubmitting || isGuestLoading} className="w-full">
-              {isSubmitting ? (
-                t('login.sending')
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4" />
-                  {t('login.sendLink')}
-                </>
-              )}
-            </Button>
-          </form>
+          <Button
+            onClick={handlers.handleGoogleLogin}
+            className="w-full"
+          >
+            <GoogleIcon />
+            {t('login.continueWithGoogle')}
+          </Button>
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
@@ -89,7 +47,7 @@ export default function LoginPage() {
           <Button
             variant="outline"
             onClick={handlers.handleGuestLogin}
-            disabled={isSubmitting || isGuestLoading}
+            disabled={isGuestLoading}
             className="w-full"
           >
             <UserRound className="mr-2 h-4 w-4" />
@@ -101,30 +59,50 @@ export default function LoginPage() {
   );
 }
 
+function GoogleIcon() {
+  return (
+    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+      <path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        fill="#EA4335"
+      />
+    </svg>
+  );
+}
+
 function useLoginForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGuestLoading, setIsGuestLoading] = useState(false);
-  const [isSent, setIsSent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleGoogleLogin = async () => {
+    const res = await fetch('/api/auth/csrf', { credentials: 'include' });
+    const { csrfToken } = await res.json();
 
-    try {
-      await login(email);
-      setIsSent(true);
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? error.message
-          : t('login.failedToSend');
-      toast.error(message);
-    } finally {
-      setIsSubmitting(false);
-    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/auth/signin/google';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'csrfToken';
+    input.value = csrfToken;
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
   };
 
   const handleGuestLogin = async () => {
@@ -146,15 +124,10 @@ function useLoginForm() {
   };
 
   return {
-    email,
-    isSubmitting,
     isGuestLoading,
-    isSent,
     handlers: {
-      handleSubmit,
+      handleGoogleLogin,
       handleGuestLogin,
-      handleEmailChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setEmail(e.target.value),
     },
   };
 }

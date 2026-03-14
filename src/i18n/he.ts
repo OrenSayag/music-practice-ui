@@ -14,16 +14,9 @@ export const he: Record<TranslationKey, string> = {
 
   // Login
   'login.title': 'תרגול מוזיקה',
-  'login.description': 'הכניסו את האימייל שלכם כדי לקבל קישור כניסה',
-  'login.email': 'אימייל',
-  'login.emailPlaceholder': 'you@example.com',
-  'login.sending': 'שולח...',
-  'login.sendLink': 'שליחת קישור כניסה',
-  'login.checkEmail': 'בדקו את האימייל',
-  'login.sentLinkTo': 'שלחנו קישור כניסה אל',
-  'login.checkSpam':
-    'לחצו על הקישור באימייל כדי להיכנס. אם אינכם רואים אותו, בדקו את תיקיית הספאם.',
-  'login.failedToSend': 'שליחת קישור הכניסה נכשלה',
+  'login.description': 'התחברו כדי לעקוב אחר התרגולים שלכם',
+  'login.continueWithGoogle': 'המשך עם Google',
+  'login.failedToSend': 'ההתחברות נכשלה',
   'login.or': 'או',
   'login.continueAsGuest': 'המשך כאורח',
 
