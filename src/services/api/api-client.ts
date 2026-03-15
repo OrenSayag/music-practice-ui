@@ -51,8 +51,8 @@ async function request<T>(
 }
 
 export const apiClient = {
-  get<T>(path: string): Promise<T> {
-    return request<T>(path);
+  get<T>(path: string, options?: { skipAuthRedirect?: boolean }): Promise<T> {
+    return request<T>(path, options);
   },
 
   post<T>(path: string, body?: unknown, options?: { skipAuthRedirect?: boolean }): Promise<T> {

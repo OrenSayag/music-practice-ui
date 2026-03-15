@@ -12,13 +12,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { useRedirectIfAuthenticated } from '@/hooks/use-redirect-if-authenticated';
 import { guestLogin } from '@/services/auth/auth-api';
 import { getOrCreateGuestId } from '@/services/auth/guest-id';
 import { ApiError } from '@/services/api/api-client';
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const { isChecking } = useRedirectIfAuthenticated();
   const { isGuestLoading, handlers } = useLoginForm();
+
+  if (isChecking) return null;
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">

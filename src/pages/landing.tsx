@@ -6,6 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useRedirectIfAuthenticated } from '@/hooks/use-redirect-if-authenticated';
 import {
     BarChart3,
     BotMessageSquare,
@@ -22,6 +23,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 export default function LandingPage() {
+  const { isChecking } = useRedirectIfAuthenticated();
+
+  if (isChecking) return null;
+
   return (
     <div className="flex min-h-screen flex-col bg-background font-mono text-foreground">
       <LandingHeader />
