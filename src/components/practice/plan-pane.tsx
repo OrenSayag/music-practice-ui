@@ -463,6 +463,11 @@ function PlanItemComponent({
   const isCompleted = item.status === 'completed';
   const isActive = activeItem?.id === item.id;
 
+  // Auto-set metronome BPM when this item becomes active (covers auto-advance)
+  useEffect(() => {
+    if (isActive && item.bpm) setBpm(item.bpm);
+  }, [isActive, item.bpm, setBpm]);
+
   const handleToggle = () => {
     handlers.toggleItem(item.id, isCompleted ? 'pending' : 'completed');
   };
@@ -551,7 +556,6 @@ function PlanItemComponent({
               toggleTimer();
             } else {
               if (!isInSession) await beginSession();
-              if (item.bpm) setBpm(item.bpm);
               startItem(item, allItems, undefined, { announce: true });
             }
           }}
