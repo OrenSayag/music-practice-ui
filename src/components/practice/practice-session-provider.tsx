@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import {
   usePracticeSession,
   type PracticeSessionState,
@@ -20,15 +20,22 @@ export function usePracticeSessionContext() {
 }
 
 export function PracticeSessionProvider({ children }: { children: React.ReactNode }) {
-  const { data } = useActiveSession();
+  const { data, isSuccess } = useActiveSession();
 
   const initialSession: InitialSession | undefined =
     data?.session
       ? { id: data.session.id, startedAt: new Date(data.session.startedAt) }
       : undefined;
 
+  // Lock the key after the first successful query to prevent background
+  // refetches (e.g. on tab focus) from changing it and remounting the tree.
+  const keyRef = useRef<string | null>(null);
+  if (keyRef.current === null && isSuccess) {
+    keyRef.current = initialSession?.id ?? 'none';
+  }
+
   return (
-    <PracticeSessionInner key={initialSession?.id ?? 'none'} initialSession={initialSession}>
+    <PracticeSessionInner key={keyRef.current ?? 'none'} initialSession={initialSession}>
       {children}
     </PracticeSessionInner>
   );
