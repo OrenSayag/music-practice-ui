@@ -11,6 +11,10 @@ const BPM_KEY = 'metronome-bpm';
 const BEATS_KEY = 'metronome-beats';
 const ACCENTS_KEY = 'metronome-accents';
 
+export const STORAGE_KEY_ACTIVE_ITEM_ID = 'practice-active-item-id';
+export const STORAGE_KEY_TIMER_STARTED_AT = 'practice-timer-started-at';
+export const STORAGE_KEY_TIMER_REMAINING = 'practice-timer-remaining';
+
 function writeServerStateToLocalStorage(state: PracticeState) {
   const timersForStorage = state.customTimers.map((t) => ({
     ...t,
@@ -29,6 +33,14 @@ function writeServerStateToLocalStorage(state: PracticeState) {
   localStorage.setItem(BPM_KEY, String(state.metronome.bpm));
   localStorage.setItem(BEATS_KEY, String(state.metronome.beats));
   localStorage.setItem(ACCENTS_KEY, JSON.stringify(state.metronome.accents));
+
+  if (state.activeItemTimer && !localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID)) {
+    localStorage.setItem(STORAGE_KEY_ACTIVE_ITEM_ID, state.activeItemTimer.activeItemId);
+    if (state.activeItemTimer.startedAt !== null) {
+      localStorage.setItem(STORAGE_KEY_TIMER_STARTED_AT, String(state.activeItemTimer.startedAt));
+    }
+    localStorage.setItem(STORAGE_KEY_TIMER_REMAINING, String(state.activeItemTimer.remainingAtStart));
+  }
 }
 
 /**
@@ -173,10 +185,21 @@ export function collectPracticeState(): PracticeState {
     }
   } catch { /* empty */ }
 
+  let activeItemTimer: PracticeState['activeItemTimer'] = null;
+  const activeItemId = localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID);
+  if (activeItemId) {
+    const remainingRaw = localStorage.getItem(STORAGE_KEY_TIMER_REMAINING);
+    const remaining = remainingRaw ? parseInt(remainingRaw, 10) : 0;
+    const startedAtRaw = localStorage.getItem(STORAGE_KEY_TIMER_STARTED_AT);
+    const startedAt = startedAtRaw ? parseInt(startedAtRaw, 10) : null;
+    activeItemTimer = { activeItemId, startedAt, remainingAtStart: remaining };
+  }
+
   return {
     customTimers,
     defaultTimerSettings,
     selectedTimerId,
     metronome: { bpm, beats, accents },
+    activeItemTimer,
   };
 }

@@ -18,11 +18,18 @@ export interface PracticeStateMetronome {
   accents: boolean[];
 }
 
+export interface PracticeStateActiveItemTimer {
+  activeItemId: string;
+  startedAt: number | null;
+  remainingAtStart: number;
+}
+
 export interface PracticeState {
   customTimers: PracticeStateCustomTimer[];
   defaultTimerSettings: PracticeStateDefaultTimerSettings;
   selectedTimerId: string | null;
   metronome: PracticeStateMetronome;
+  activeItemTimer?: PracticeStateActiveItemTimer | null;
 }
 
 export interface PracticeStateResponse {

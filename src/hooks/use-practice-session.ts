@@ -95,6 +95,38 @@ const STORAGE_KEY_CUSTOM_TIMERS = 'practice-custom-timers';
 const STORAGE_KEY_DEFAULT_TIMER_SETTINGS = 'practice-default-timer-settings';
 const STORAGE_KEY_SELECTED_TIMER = 'practice-selected-timer';
 
+import {
+  STORAGE_KEY_ACTIVE_ITEM_ID,
+  STORAGE_KEY_TIMER_STARTED_AT,
+  STORAGE_KEY_TIMER_REMAINING,
+} from './use-practice-state-sync';
+
+function saveTimerToStorage(activeItemId: string, startedAt: number | null, remaining: number) {
+  localStorage.setItem(STORAGE_KEY_ACTIVE_ITEM_ID, activeItemId);
+  if (startedAt !== null) {
+    localStorage.setItem(STORAGE_KEY_TIMER_STARTED_AT, String(startedAt));
+  } else {
+    localStorage.removeItem(STORAGE_KEY_TIMER_STARTED_AT);
+  }
+  localStorage.setItem(STORAGE_KEY_TIMER_REMAINING, String(remaining));
+}
+
+function clearTimerStorage() {
+  localStorage.removeItem(STORAGE_KEY_ACTIVE_ITEM_ID);
+  localStorage.removeItem(STORAGE_KEY_TIMER_STARTED_AT);
+  localStorage.removeItem(STORAGE_KEY_TIMER_REMAINING);
+}
+
+function loadTimerFromStorage(): { activeItemId: string; startedAt: number | null; remaining: number } | null {
+  const id = localStorage.getItem(STORAGE_KEY_ACTIVE_ITEM_ID);
+  if (!id) return null;
+  const remainingRaw = localStorage.getItem(STORAGE_KEY_TIMER_REMAINING);
+  const remaining = remainingRaw ? parseInt(remainingRaw, 10) : 0;
+  const startedAtRaw = localStorage.getItem(STORAGE_KEY_TIMER_STARTED_AT);
+  const startedAt = startedAtRaw ? parseInt(startedAtRaw, 10) : null;
+  return { activeItemId: id, startedAt, remaining };
+}
+
 function loadCustomTimers(): CustomTimer[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CUSTOM_TIMERS);
@@ -140,7 +172,11 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
 
   const [sessionId, setSessionId] = useState<string | null>(initialSession?.id ?? null);
   const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(initialSession?.startedAt ?? null);
-  const [pendingActiveItemId, setPendingActiveItemId] = useState<string | null>(null);
+  const [pendingActiveItemId, setPendingActiveItemId] = useState<string | null>(() => {
+    if (!initialSession) return null;
+    const stored = loadTimerFromStorage();
+    return stored?.activeItemId ?? null;
+  });
 
   const isInSession = sessionId !== null;
 
@@ -160,6 +196,11 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
       localStorage.setItem(STORAGE_KEY_SELECTED_TIMER, selectedTimerId);
     }
   }, [selectedTimerId]);
+
+  const isTimerRunningRef = useRef(isTimerRunning);
+  isTimerRunningRef.current = isTimerRunning;
+  const remainingRef = useRef(remainingSeconds);
+  remainingRef.current = remainingSeconds;
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTickTime = useRef<number>(Date.now());
@@ -215,6 +256,7 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
       setRemainingSeconds(seconds);
       setIsTimerRunning(seconds > 0);
       setSelectedTimerId(null);
+      saveTimerToStorage(item.id, seconds > 0 ? Date.now() : null, seconds);
     },
     [clearTimer]
   );
@@ -226,6 +268,7 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
     setIsTimerRunning(false);
     setNextItemName(null);
     setPendingActiveItemId(null);
+    clearTimerStorage();
   }, [clearTimer]);
 
   // Restore active item after page refresh (called by consumer with resolved plan data)
@@ -240,11 +283,25 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
       setNextItemName(pendingAfter ? pendingAfter.name : null);
 
       setActiveItem(item);
-      const seconds = (item.targetDurationMinutes ?? 0) * 60;
+
+      const stored = loadTimerFromStorage();
+      let seconds: number;
+      if (stored && stored.activeItemId === item.id) {
+        if (stored.startedAt !== null) {
+          const elapsed = Math.floor((Date.now() - stored.startedAt) / 1000);
+          seconds = Math.max(0, stored.remaining - elapsed);
+        } else {
+          seconds = Math.max(0, stored.remaining);
+        }
+      } else {
+        seconds = (item.targetDurationMinutes ?? 0) * 60;
+      }
+
       setRemainingSeconds(seconds);
-      setIsTimerRunning(false); // Restored paused
+      setIsTimerRunning(false);
       setSelectedTimerId(null);
       setPendingActiveItemId(null);
+      saveTimerToStorage(item.id, null, seconds);
     },
     [clearTimer]
   );
@@ -334,7 +391,15 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
 
   const toggleTimer = useCallback(() => {
     if (selectedTimerId === null) {
-      setIsTimerRunning((prev) => !prev);
+      const wasRunning = isTimerRunningRef.current;
+      setIsTimerRunning(!wasRunning);
+      if (activeItem) {
+        saveTimerToStorage(
+          activeItem.id,
+          !wasRunning ? Date.now() : null,
+          remainingRef.current
+        );
+      }
     } else {
       setCustomTimers((prev) =>
         prev.map((t) =>
@@ -342,7 +407,7 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
         )
       );
     }
-  }, [selectedTimerId]);
+  }, [selectedTimerId, activeItem]);
 
   const addCustomTimer = useCallback(() => {
     const id = `custom-${++nextTimerId}`;
@@ -408,6 +473,9 @@ export function usePracticeSession(initialSession?: InitialSession): PracticeSes
       const seconds = (activeItem?.targetDurationMinutes ?? 0) * 60;
       setRemainingSeconds(seconds);
       setIsTimerRunning(false);
+      if (activeItem) {
+        saveTimerToStorage(activeItem.id, null, seconds);
+      }
     } else {
       setCustomTimers((prev) =>
         prev.map((t) =>

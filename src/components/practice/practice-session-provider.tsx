@@ -70,6 +70,8 @@ function useSyncSessionState(
     session.customTimers,
     session.defaultTimerSettings,
     session.selectedTimerId,
+    session.activeItem?.id,
+    session.isTimerRunning,
     syncToServer,
   ]);
 }
