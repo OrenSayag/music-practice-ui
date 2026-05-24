@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { SessionTagChip, SessionTagsDialog } from './session-tags-dialog';
 import { AudioPlayer } from './audio-player';
+import { SharePracticeButton } from './share-practice-button';
 interface SessionSummaryProps {
   data: SessionSummaryData;
   onDone: (notes: string, name: string) => void;
@@ -50,6 +51,14 @@ export function SessionSummary({ data, onDone, onBack }: SessionSummaryProps) {
         <div className="flex items-center justify-between">
           <p className="font-mono text-base text-muted-foreground">{dateStr}</p>
           <div className="flex items-center gap-2">
+            <SharePracticeButton
+              summary={{
+                name,
+                durationSeconds: data.durationSeconds,
+                notes,
+                items: data.items,
+              }}
+            />
             <button
               className="border border-border px-4 py-1.5 font-mono text-base text-muted-foreground transition-colors hover:text-foreground"
               onClick={onBack}

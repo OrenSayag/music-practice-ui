@@ -1,3 +1,5 @@
+import type { TeacherPatch } from '@/services/user/teacher-schema';
+
 export type MetronomeSound = 'wood' | 'glass' | 'electromagnetic' | 'arcane';
 
 export interface User {
@@ -9,6 +11,7 @@ export interface User {
   isGuest: boolean;
   weekStartDay: number;
   metronomeSound: MetronomeSound;
+  teacher: TeacherPatch | null;
 }
 
 export interface GuestLoginResponse {

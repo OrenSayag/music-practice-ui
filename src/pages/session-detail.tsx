@@ -11,6 +11,7 @@ import {
   SessionTagsDialog,
   SessionTagChip,
 } from '@/components/practice/session-tags-dialog';
+import { SharePracticeButton } from '@/components/practice/share-practice-button';
 import { useSessionDetail, useEndSession } from '@/services/sessions';
 import { useSessionTags } from '@/services/tags';
 import {
@@ -77,20 +78,35 @@ function SessionDetailContent({
             {name ? ` — ${name}` : ''}
           </span>
         </div>
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => {
-            handleSave();
-            if (window.history.length > 1) {
-              navigate(-1);
-            } else {
-              navigate('/sessions');
-            }
-          }}
-        >
-          {t('sessions.back')}
-        </Button>
+        <div className="flex items-center gap-2">
+          <SharePracticeButton
+            summary={{
+              name,
+              durationSeconds: session.durationSeconds,
+              notes,
+              items: session.items.map((item) => ({
+                name: item.name,
+                durationSeconds: item.durationSeconds,
+                bpm: item.bpm,
+                status: item.status,
+              })),
+            }}
+          />
+          <Button
+            variant="outline"
+            size="xs"
+            onClick={() => {
+              handleSave();
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate('/sessions');
+              }
+            }}
+          >
+            {t('sessions.back')}
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

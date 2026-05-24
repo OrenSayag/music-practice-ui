@@ -44,6 +44,18 @@ export const useActiveSession = () => {
   return useQuery(sessionQueries.active());
 };
 
+interface WeekStatsResponse {
+  totalSeconds: number;
+  weekStartIso: string;
+}
+
+export const useWeekStats = () => {
+  return useQuery({
+    queryKey: ['sessions', 'stats', 'week'] as const,
+    queryFn: () => apiClient.get<WeekStatsResponse>('/sessions/stats/week'),
+  });
+};
+
 export const useListSessions = () => {
   return useInfiniteQuery(sessionQueries.list());
 };

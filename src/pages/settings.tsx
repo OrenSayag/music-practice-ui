@@ -20,6 +20,7 @@ import {
 import { playPreviewClick } from '@/hooks/use-metronome';
 import type { MetronomeSound } from '@/services/auth/auth-types';
 import { AudioInputDialog } from '@/components/settings/audio-input-dialog';
+import { TeacherCard } from '@/components/settings/teacher-card';
 import { Camera, LogOut, Trash2 } from 'lucide-react';
 import { logout } from '@/services/auth/auth-api';
 import { useNavigate } from 'react-router';
@@ -40,6 +41,8 @@ export default function SettingsPage() {
           handlers={handlers}
         />
       )}
+
+      {!user.isGuest && <TeacherCard />}
 
       <Card>
         <CardHeader>

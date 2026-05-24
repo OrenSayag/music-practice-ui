@@ -1,15 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/services/api/api-client';
 import type { MetronomeSound, MeResponse } from '@/services/auth/auth-types';
+import type { TeacherPatch } from '@/services/user/teacher-schema';
 
 interface UpdatePreferencesInput {
   weekStartDay?: number;
   metronomeSound?: MetronomeSound;
+  teacher?: TeacherPatch | null;
 }
 
 interface PreferencesResponse {
   weekStartDay: number;
   metronomeSound: MetronomeSound;
+  teacher: TeacherPatch | null;
 }
 
 interface UpdateProfileInput {
