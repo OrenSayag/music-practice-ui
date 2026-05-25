@@ -1,6 +1,8 @@
 import type { i18n as I18n, TFunction } from 'i18next';
 import type { LanguageCode } from '@/i18n/languages';
 
+const CHECKED_STATUSES = new Set(['done', 'partial']);
+
 export interface ShareItem {
   name: string;
   durationSeconds: number;
@@ -56,10 +58,11 @@ export async function buildPracticeShareMessage({
     lines.push(t('share.message.weekTotal', { time: formatDurationLabel(weekTotalSeconds) }));
   }
 
-  if (summary.items.length > 0) {
+  const checkedItems = summary.items.filter((item) => CHECKED_STATUSES.has(item.status));
+  if (checkedItems.length > 0) {
     lines.push('');
     lines.push(t('share.message.itemsHeader'));
-    summary.items.forEach((item, idx) => {
+    checkedItems.forEach((item, idx) => {
       const bpm = item.bpm
         ? t('share.message.bpmSuffix', { bpm: item.bpm })
         : '';
@@ -67,7 +70,6 @@ export async function buildPracticeShareMessage({
         t('share.message.itemLine', {
           idx: idx + 1,
           name: item.name,
-          status: statusLabel(t, item.status),
           duration: formatDurationLabel(item.durationSeconds),
           bpm,
         }),
@@ -81,12 +83,6 @@ export async function buildPracticeShareMessage({
   }
 
   return lines.join('\n');
-}
-
-function statusLabel(t: TFunction, status: string): string {
-  if (status === 'done') return t('session.statusDone');
-  if (status === 'partial') return t('session.statusPartial');
-  return t('session.statusNone');
 }
 
 async function loadFixedT(i18n: I18n, lng: LanguageCode): Promise<TFunction> {
